@@ -213,9 +213,253 @@ section{padding:90px 0;}
 .vip-social-link svg{flex-shrink:0;opacity:.7;}
 .vip-social-link:hover svg{opacity:1;}
 
+
+/* ── VIP Full-Page Plant Detail ──────────────────────────── */
+#vip-detail-page{
+  display:none;
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  z-index:180;
+  background:#0e1810;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+}
+#vip-detail-page.open{display:block;}
+.dp-hero{
+  position:relative;width:100%;
+  height:55vw;max-height:400px;min-height:200px;
+  background:linear-gradient(135deg,#142319,#0a1208);
+  overflow:hidden;display:flex;align-items:center;justify-content:center;
+}
+.dp-hero-img{
+  width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;
+}
+.dp-hero-ph{font-size:4rem;opacity:.2;}
+.dp-hero-overlay{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(to bottom,transparent 40%,rgba(10,18,10,.8) 100%);
+  pointer-events:none;
+}
+.dp-hero-back{
+  position:absolute;top:14px;left:14px;z-index:2;
+  background:rgba(10,18,10,.75);border:1px solid rgba(185,137,63,.4);
+  color:#e3c88a;border-radius:6px;padding:9px 15px;
+  font-size:.82rem;cursor:pointer;
+  display:flex;align-items:center;gap:6px;
+  -webkit-tap-highlight-color:transparent;
+}
+.dp-hero-label{
+  position:absolute;top:14px;right:14px;z-index:2;
+  background:rgba(185,137,63,.15);border:1px solid rgba(185,137,63,.4);
+  color:#e3c88a;border-radius:20px;padding:4px 12px;
+  font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+}
+.dp-body{padding:22px 18px 100px;max-width:680px;margin:0 auto;}
+.dp-botanical{font-size:.76rem;color:rgba(248,243,232,.38);font-style:italic;margin-bottom:5px;}
+.dp-name{font-family:'Fraunces',serif;font-size:clamp(1.5rem,5vw,2.2rem);
+  font-weight:300;color:#f8f3e8;line-height:1.15;margin-bottom:8px;}
+.dp-tagline{font-size:.9rem;color:rgba(248,243,232,.52);font-style:italic;
+  margin-bottom:20px;padding-bottom:16px;
+  border-bottom:1px solid rgba(185,137,63,.15);}
+.dp-care-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:22px;}
+.dp-care-item{background:rgba(255,255,255,.05);border-radius:7px;padding:11px 13px;}
+.dp-care-label{font-size:.63rem;text-transform:uppercase;letter-spacing:.1em;
+  color:#b9893f;margin-bottom:3px;}
+.dp-care-val{font-size:.82rem;color:rgba(248,243,232,.72);line-height:1.4;}
+.dp-section{margin-bottom:20px;}
+.dp-section h3{font-size:.68rem;text-transform:uppercase;letter-spacing:.14em;
+  color:#b9893f;margin-bottom:10px;padding-bottom:7px;
+  border-bottom:1px solid rgba(185,137,63,.15);}
+.dp-desc{font-size:.9rem;color:rgba(248,243,232,.62);line-height:1.7;}
+.dp-uses{list-style:none;padding:0;margin:0;}
+.dp-uses li{font-size:.86rem;color:rgba(248,243,232,.62);padding:5px 0;
+  display:flex;gap:9px;}
+.dp-uses li::before{content:'›';color:#b9893f;flex-shrink:0;}
+.dp-tip{background:rgba(185,137,63,.07);border-left:2px solid rgba(185,137,63,.35);
+  border-radius:0 6px 6px 0;padding:10px 13px;margin-bottom:7px;
+  font-size:.84rem;color:rgba(248,243,232,.62);line-height:1.55;}
+.dp-cta{
+  position:fixed;bottom:0;left:0;right:0;z-index:190;
+  display:none;
+  background:linear-gradient(to top,#0e1810 75%,transparent);
+  padding:16px 18px 22px;
+  gap:10px;flex-wrap:wrap;
+}
+#vip-detail-page.open .dp-cta{display:flex;}
+.dp-email,.dp-wa{
+  flex:1;min-width:120px;text-align:center;
+  padding:13px 16px;border-radius:6px;
+  text-decoration:none;font-size:.86rem;font-weight:600;
+  -webkit-tap-highlight-color:transparent;
+}
+.dp-email{background:#b9893f;color:#142319;}
+.dp-wa{background:#25D366;color:#fff;}
+.dp-back-btn{
+  width:100%;background:rgba(255,255,255,.06);
+  color:rgba(248,243,232,.55);border:1px solid rgba(255,255,255,.08);
+  border-radius:6px;padding:12px;font-size:.84rem;cursor:pointer;
+  margin-top:12px;margin-bottom:4px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* ── Fullscreen Image Viewer ──────────────────────────────── */
+#img-viewer{
+  display:none;position:fixed;top:0;left:0;right:0;bottom:0;
+  z-index:300;background:rgba(0,0,0,.96);
+  align-items:center;justify-content:center;flex-direction:column;
+}
+#img-viewer.open{display:flex;}
+.iv-img{max-width:96vw;max-height:82vh;object-fit:contain;border-radius:3px;}
+.iv-close{
+  position:absolute;top:16px;right:16px;
+  background:rgba(255,255,255,.12);border:none;color:#fff;
+  width:40px;height:40px;border-radius:50%;font-size:1.2rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  -webkit-tap-highlight-color:transparent;
+}
+.iv-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);
+  background:rgba(255,255,255,.12);border:none;color:#fff;
+  width:44px;height:44px;border-radius:50%;font-size:1.4rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  -webkit-tap-highlight-color:transparent;
+}
+.iv-prev{left:10px;}.iv-next{right:10px;}
+.iv-dots{display:flex;gap:8px;margin-top:14px;}
+.iv-dot{width:8px;height:8px;border-radius:50%;
+  background:rgba(255,255,255,.28);cursor:pointer;
+  -webkit-tap-highlight-color:transparent;}
+.iv-dot.active{background:#b9893f;}
+
+
+/* ── VIP Detail Page (page-switch like main website) ─── */
+.vip-sect{display:block;}
+.vip-sect.hidden{display:none;}
+
+/* Detail sections */
+#vip-detail-sect{
+  background:#0e1810;
+  min-height:100vh;
+  padding-bottom:100px;
+}
+.vdet-hero{
+  position:relative;
+  width:100%;height:58vw;max-height:420px;min-height:200px;
+  background:linear-gradient(135deg,#142319,#0a1208);
+  overflow:hidden;display:flex;align-items:center;justify-content:center;
+}
+.vdet-hero img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;}
+.vdet-hero-ph{font-size:4rem;opacity:.2;color:#f8f3e8;}
+.vdet-hero-overlay{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to bottom,transparent 35%,rgba(10,18,10,.82) 100%);
+}
+.vdet-back{
+  position:absolute;top:14px;left:14px;z-index:2;
+  background:rgba(10,18,10,.76);border:1px solid rgba(185,137,63,.4);
+  color:#e3c88a;border-radius:6px;padding:9px 16px;
+  font-size:.82rem;cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;
+  -webkit-tap-highlight-color:transparent;
+  border:none;
+}
+.vdet-label{
+  position:absolute;top:14px;right:14px;z-index:2;
+  background:rgba(185,137,63,.15);border:1px solid rgba(185,137,63,.4);
+  color:#e3c88a;border-radius:20px;padding:4px 12px;
+  font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+}
+.vdet-body{padding:22px 18px 0;max-width:700px;margin:0 auto;}
+.vdet-bot{font-size:.75rem;color:rgba(248,243,232,.38);font-style:italic;margin-bottom:5px;}
+.vdet-name{font-family:'Fraunces',serif;
+  font-size:clamp(1.5rem,5vw,2.2rem);font-weight:300;
+  color:#f8f3e8;line-height:1.15;margin-bottom:8px;}
+.vdet-tag{font-size:.9rem;color:rgba(248,243,232,.52);font-style:italic;
+  margin-bottom:18px;padding-bottom:16px;
+  border-bottom:1px solid rgba(185,137,63,.15);}
+.vdet-price{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(185,137,63,.12);border:1px solid rgba(185,137,63,.28);
+  border-radius:6px;padding:8px 14px;margin-bottom:18px;
+  font-size:.9rem;color:#e3c88a;font-weight:500;
+}
+.vdet-size{font-size:.8rem;color:rgba(248,243,232,.45);margin-left:6px;}
+.vdet-care{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:22px;}
+.vdet-ci{background:rgba(255,255,255,.05);border-radius:7px;padding:11px 13px;}
+.vdet-cl{font-size:.63rem;text-transform:uppercase;letter-spacing:.1em;color:#b9893f;margin-bottom:3px;}
+.vdet-cv{font-size:.82rem;color:rgba(248,243,232,.72);line-height:1.4;}
+.vdet-sec{margin-bottom:20px;}
+.vdet-sec h3{font-size:.68rem;text-transform:uppercase;letter-spacing:.14em;
+  color:#b9893f;margin-bottom:10px;padding-bottom:7px;
+  border-bottom:1px solid rgba(185,137,63,.15);}
+.vdet-desc{font-size:.9rem;color:rgba(248,243,232,.62);line-height:1.7;}
+.vdet-uses{list-style:none;padding:0;margin:0;}
+.vdet-uses li{font-size:.86rem;color:rgba(248,243,232,.62);
+  padding:5px 0;display:flex;gap:9px;}
+.vdet-uses li::before{content:'›';color:#b9893f;flex-shrink:0;}
+.vdet-tip{background:rgba(185,137,63,.07);
+  border-left:2px solid rgba(185,137,63,.35);
+  border-radius:0 6px 6px 0;padding:10px 13px;margin-bottom:7px;
+  font-size:.84rem;color:rgba(248,243,232,.62);line-height:1.55;}
+.vdet-cta{
+  display:flex;gap:10px;flex-wrap:wrap;
+  margin-top:24px;padding:16px 0;
+  border-top:1px solid rgba(185,137,63,.15);
+}
+.vdet-email,.vdet-wa{
+  flex:1;min-width:130px;text-align:center;
+  padding:13px 16px;border-radius:6px;
+  text-decoration:none;font-size:.86rem;font-weight:600;
+  -webkit-tap-highlight-color:transparent;
+}
+.vdet-email{background:#b9893f;color:#142319;}
+.vdet-wa{background:#25D366;color:#fff;}
+.vdet-back-btn{
+  width:100%;background:rgba(255,255,255,.06);
+  color:rgba(248,243,232,.55);border:1px solid rgba(255,255,255,.08);
+  border-radius:6px;padding:12px;font-size:.84rem;cursor:pointer;
+  margin-top:10px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* ── Fullscreen image viewer ─────────────────────────── */
+#img-viewer{
+  display:none;position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  z-index:9000;background:rgba(0,0,0,.97);
+  align-items:center;justify-content:center;flex-direction:column;
+}
+#img-viewer.open{display:flex;}
+.iv-img{max-width:96vw;max-height:82vh;object-fit:contain;border-radius:3px;}
+.iv-close{position:absolute;top:16px;right:16px;
+  background:rgba(255,255,255,.12);border:none;color:#fff;
+  width:40px;height:40px;border-radius:50%;font-size:1.2rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;}
+.iv-arrow{position:absolute;top:50%;transform:translateY(-50%);
+  background:rgba(255,255,255,.12);border:none;color:#fff;
+  width:44px;height:44px;border-radius:50%;font-size:1.4rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;}
+.iv-prev{left:8px;}.iv-next{right:8px;}
+.iv-dots{display:flex;gap:8px;margin-top:14px;}
+.iv-dot{width:8px;height:8px;border-radius:50%;
+  background:rgba(255,255,255,.28);cursor:pointer;}
+.iv-dot.active{background:#b9893f;}
+
 </style>
 </head>
 <body>
+<script>
+(function(){
+  var VK='ssn_vip_plants';
+  try{
+    var arr=JSON.parse(localStorage.getItem(VK)||'null');
+    if(arr&&arr.length>0) return; // already seeded
+    localStorage.setItem(VK, JSON.stringify([{"name": "Ficus Ali (14 ft)", "botanical": "Ficus binnendijkii 'Alii'", "cat": "ficus", "tagline": "Elegant long-leaf ficus in a premium 28-pot — ideal for lobbies and entrances.", "description": "Ficus Ali is prized for its long, drooping, willow-like leaves in deep green. A sophisticated indoor statement tree available in a premium 28-pot at 14 ft — ideal for hotel lobbies, corporate atriums, and premium residences.", "care": {"water": "Moderate — keep moist, allow surface to dry", "light": "Bright indirect light", "soil": "Rich, well-draining mix", "difficulty": "Easy", "growth": "Medium"}, "uses": ["Hotel lobbies and reception", "Corporate atriums", "Premium home interiors", "Covered outdoor courtyards"], "tips": ["Rotate monthly for even growth", "Avoid draughts — causes leaf drop", "Wipe leaves to maintain gloss"], "price": "₹50,000", "size": "28 Pot", "height": "14 ft"}, {"name": "Ficus Ali (18 ft — Naked)", "botanical": "Ficus binnendijkii 'Alii'", "cat": "ficus", "tagline": "A commanding 18 ft naked-trunk Ficus Ali — rare at this scale.", "description": "A spectacular naked-trunk Ficus Ali at 18 ft — one of the tallest specimens available. Clean, upright form with graceful drooping foliage. A landmark statement for grand atriums, hotel entrances, and open estates.", "care": {"water": "Moderate", "light": "Bright indirect to full sun", "soil": "Well-draining rich mix", "difficulty": "Moderate", "growth": "Medium"}, "uses": ["Grand hotel and resort entrances", "Large atriums and conservatories", "Open estate plantings"], "tips": ["Stake firmly during establishment", "Feed quarterly with balanced fertiliser"], "price": "₹2,00,000 – ₹2,50,000", "size": "Naked trunk", "height": "18 ft"}, {"name": "Bismarckia Nobilis", "botanical": "Bismarckia nobilis", "cat": "palm", "tagline": "Striking silver-blue fan fronds — the most architectural palm available.", "description": "The Bismarckia Nobilis is prized for its dramatic silver-blue fan fronds on a clean, imposing trunk. A true focal point for grand entrances, open lawns and resort landscapes. Imported specimen with 2.5m clear trunk.", "care": {"water": "Low — drought tolerant", "light": "Full sun", "soil": "Sandy, well-draining", "difficulty": "Easy", "growth": "Slow"}, "uses": ["Grand entrance plantings", "Resort and hotel landscapes", "Open lawn focal points"], "tips": ["Never overwater", "Full sun essential for silver colouration"], "price": "₹1,25,000", "size": "Naked", "height": "2.5m Clear Trunk"}, {"name": "Baobab (Adansonia Digitata)", "botanical": "Adansonia digitata", "cat": "avenue", "tagline": "One of the rarest trees on earth — an ancient living sculpture at 30 ft.", "description": "An extraordinary Adansonia digitata at 30 ft — among the tallest specimens available. The iconic swollen trunk stores water and creates an instantly recognisable silhouette. A once-in-a-generation collector's tree. Price on request.", "care": {"water": "Very low — highly drought tolerant", "light": "Full sun", "soil": "Sandy, well-draining", "difficulty": "Hard", "growth": "Very slow"}, "uses": ["Ultra-premium collector estates", "Botanical garden centrepieces", "Luxury resort landmark plantings"], "tips": ["Handle with extreme care during transplanting", "Never overwater", "Full sun essential"], "price": "₹40,00,000", "size": "Naked", "height": "30 ft"}, {"name": "Cassia Rainbow", "botanical": "Cassia fistula hybrid", "cat": "avenue", "tagline": "Vivid rainbow blooms on a mature naked trunk — a rare ornamental avenue tree.", "description": "The Cassia Rainbow is a spectacular flowering avenue tree with cascades of colourful blooms across golden, pink and white shades. A rare mature specimen at 25 ft — a centrepiece for estate drives and resort boulevards.", "care": {"water": "Moderate — tolerates dry periods", "light": "Full sun", "soil": "Well-draining loam", "difficulty": "Easy", "growth": "Medium"}, "uses": ["Estate and resort avenues", "Boulevard plantings", "Statement garden centrepieces"], "tips": ["Full sun produces the most vibrant bloom", "Prune lightly after flowering"], "price": "₹3,95,000", "size": "Naked", "height": "25 ft"}, {"name": "Gulmohar Yellow", "botanical": "Peltophorum pterocarpum", "cat": "avenue", "tagline": "Rare yellow-flowering Gulmohar — a radiant canopy tree for avenues and estates.", "description": "The Yellow Gulmohar (Peltophorum) offers a stunning golden canopy of blooms in summer. A mature 25 ft specimen on a clean naked trunk — ideal for formal avenues, resort drives, and estate landscapes where the classic orange Gulmohar would be too common.", "care": {"water": "Low — drought tolerant once established", "light": "Full sun", "soil": "Well-draining", "difficulty": "Easy", "growth": "Fast"}, "uses": ["Avenue and boulevard plantings", "Estate and resort landscapes", "Formal garden drives"], "tips": ["Very drought tolerant once established", "Fast-growing — prune to shape annually"], "price": "₹3,95,000", "size": "Naked", "height": "25 ft"}, {"name": "Chorisia Speciosa (Silk Floss Tree)", "botanical": "Ceiba speciosa", "cat": "avenue", "tagline": "Thorny bottle trunk, vivid pink blooms — one of our rarest ornamentals.", "description": "The Silk Floss Tree is immediately recognisable by its distinctive thorny, swollen trunk and vivid pink and crimson seasonal blossoms. Available in 40/40 container at 17 ft and as a naked specimen. A conversation-stopping rarity for premium landscapes.", "care": {"water": "Low — drought tolerant", "light": "Full sun", "soil": "Well-draining", "difficulty": "Moderate", "growth": "Fast"}, "uses": ["Statement garden focal points", "Avenue and street planting", "Large estate grounds"], "tips": ["Handle with care — trunk has sharp thorns", "Blooms when partially deciduous in dry season"], "price": "₹1,55,000 – ₹3,00,000", "size": "40/40 Pot or Naked", "height": "17–25 ft"}, {"name": "Camellia", "botanical": "Camellia japonica", "cat": "ornamental", "tagline": "Glossy evergreen foliage with elegant seasonal blooms — an imported prestige specimen.", "description": "A refined Camellia specimen in a premium Duro pot, trained to 2.8m. Brings elegant seasonal blooms and glossy dark evergreen foliage. Equally at home in a formal courtyard, a shaded garden border, or as a potted display in a premium interior. Imported.", "care": {"water": "Moderate — keep consistently moist", "light": "Partial shade to bright indirect", "soil": "Acidic, well-draining", "difficulty": "Moderate", "growth": "Slow"}, "uses": ["Formal courtyards", "Entry gardens", "Premium potted displays", "Shaded garden borders"], "tips": ["Prefers slightly acidic soil", "Mulch around roots to retain moisture", "Protect from harsh afternoon sun"], "price": "₹65,000", "size": "Duro Pot", "height": "2.8m"}, {"name": "Livistonia Palm", "botanical": "Livistonia rotundifolia", "cat": "palm", "tagline": "Graceful weeping fan fronds on a clean clear trunk — available in 5 heights.", "description": "The Livistonia offers graceful, weeping fan fronds cascading from a clean clear trunk. Available in five trunk heights from 3.5m to 7.5m — a refined choice for entrances, avenues, resort courtyards and premium landscapes.", "care": {"water": "Moderate", "light": "Full sun to partial shade", "soil": "Well-draining mix", "difficulty": "Easy", "growth": "Medium"}, "uses": ["Avenue plantings", "Resort entrances", "Courtyard focal points", "Paired entrance specimens"], "tips": ["Remove old fronds cleanly to maintain trunk appearance", "Fertilise quarterly with palm-specific feed"], "price": "₹60,000 – ₹1,00,000", "size": "Naked", "height": "3.5m – 7.5m Clear Trunk"}, {"name": "Livistonia Double", "botanical": "Livistonia rotundifolia", "cat": "palm", "tagline": "Two Livistonia trunks together — a matched pair for symmetrical entrances.", "description": "A double-trunk Livistonia specimen with two clean trunks rising together — creates a symmetrical, dramatic statement for formal entrance gates, hotel porticos and grand driveways. Available at 3.5m clear trunk height.", "care": {"water": "Moderate", "light": "Full sun", "soil": "Well-draining", "difficulty": "Easy", "growth": "Medium"}, "uses": ["Symmetrical entrance gate pairs", "Hotel porticos", "Grand driveway plantings"], "tips": ["The double form is ideal as a matched pair for formal entrances", "Feed monthly during growing season"], "price": "₹1,50,000", "size": "Naked", "height": "3.5m Clear Trunk"}, {"name": "Copernicia Alba", "botanical": "Copernicia alba", "cat": "palm", "tagline": "The wax palm — dramatic silvery fronds on a clean clear trunk.", "description": "Copernicia Alba is a stately wax palm with distinctive silvery-blue fronds and a clean, impressive trunk. Available as a single specimen (2.5m clear trunk) or as a dramatic 3-in-1 multi-stem planting. A prestige specimen for resort and hotel landscapes.", "care": {"water": "Low — drought tolerant", "light": "Full sun", "soil": "Sandy, well-draining", "difficulty": "Easy", "growth": "Slow"}, "uses": ["Grand entrance plantings", "Resort and hotel landscapes", "Premium estate gardens"], "tips": ["Highly drought tolerant once established", "One of the hardiest ornamental palms"], "price": "₹60,000 – ₹1,50,000", "size": "Single or 3-in-1", "height": "2.5m Clear Trunk"}, {"name": "Dicksonia (Tree Fern)", "botanical": "Dicksonia antarctica", "cat": "indoor", "tagline": "Ancient tree fern — lush prehistoric fronds on a fibrous trunk.", "description": "The Tree Fern is one of the oldest plant forms on earth, with graceful arching fronds radiating from a fibrous trunk. Creates a lush, tropical atmosphere in covered atriums, conservatories and shaded gardens. Available in 20-pot at 5 ft.", "care": {"water": "High — keep trunk moist at all times", "light": "Bright indirect — no direct sun", "soil": "Rich, moist, well-draining", "difficulty": "Moderate", "growth": "Very slow"}, "uses": ["Indoor atriums", "Covered courtyards", "Shaded garden areas", "Conservatories"], "tips": ["Mist the trunk daily — absorbs moisture through the fibrous bark", "Never let trunk dry out"], "price": "₹30,000", "size": "20 Pot", "height": "5 ft"}, {"name": "Dracaena Draco Multi Heads", "botanical": "Dracaena draco", "cat": "ornamental", "tagline": "The Dragon Blood Tree — multiple heads for a dramatic, ancient silhouette.", "description": "The Dracaena Draco with multiple branching heads creates a uniquely dramatic, prehistoric silhouette — one of the most distinctive ornamental trees available. A premium specimen in a 24-pot at 6 ft. The multi-head form is rare and highly sought after.", "care": {"water": "Low — very drought tolerant", "light": "Full sun to bright indirect", "soil": "Sandy, well-draining", "difficulty": "Easy", "growth": "Very slow"}, "uses": ["Statement garden focal points", "Premium terrace and rooftop plantings", "Indoor atriums with high ceilings"], "tips": ["Extremely drought tolerant", "The multi-head form takes decades to develop — treat with care"], "price": "₹30,000", "size": "24 Pot", "height": "6 ft"}, {"name": "Washingtonia Palm", "botanical": "Washingtonia robusta", "cat": "palm", "tagline": "The classic sky-reaching desert palm — dramatic and low maintenance.", "description": "Washingtonia palms with clean naked trunks at 3m are available as single or double specimens. Their dramatic height and feathery crown make them ideal for grand avenue and entrance plantings. Extremely hardy and low maintenance.", "care": {"water": "Low — drought tolerant", "light": "Full sun", "soil": "Sandy, well-draining", "difficulty": "Very Easy", "growth": "Fast"}, "uses": ["Avenue and boulevard plantings", "Large estate entrances", "Resort landscapes"], "tips": ["One of the hardiest palms available", "The double form creates a striking matched pair"], "price": "₹80,000 – ₹1,75,000", "size": "Naked", "height": "3m – 3.5m Clear Trunk"}, {"name": "Brachychiton Rupestris (Bottle Tree)", "botanical": "Brachychiton rupestris", "cat": "avenue", "tagline": "The iconic swollen-trunk Bottle Tree — instantly recognizable worldwide.", "description": "One of our rarest imports — the iconic Bottle Tree with its dramatically swollen trunk stores water and creates an instantly recognisable silhouette. Available in six size options. A true collector's specimen representing decades of slow growth.", "care": {"water": "Very low — highly drought tolerant", "light": "Full sun", "soil": "Sandy, well-draining", "difficulty": "Hard", "growth": "Very slow"}, "uses": ["Rare collector's gardens", "Luxury resort centrepieces", "Museum and botanical garden displays"], "tips": ["Handle with extreme care during transplanting", "Full sun essential"], "price": "₹8,00,000", "size": "Naked", "height": "Available in 6 sizes"}, {"name": "Ficus Bonsai (Ceramic Pot)", "botanical": "Ficus microcarpa", "cat": "ficus", "tagline": "A premium trained Ficus bonsai in an elegant ceramic pot — ready to display.", "description": "A mature Ficus microcarpa bonsai trained over many years, presented in a premium ceramic pot. The intricate branching and aerial root structure make this a living work of art — a perfect gift or prestige display piece for a premium interior.", "care": {"water": "Moderate — keep moist, allow surface to dry", "light": "Bright indirect light", "soil": "Well-draining bonsai mix", "difficulty": "Moderate", "growth": "Slow"}, "uses": ["Premium interior display", "Corporate gifting", "Reception and entrance tables", "Collector's piece"], "tips": ["Prune lightly to maintain form", "Mist daily to maintain humidity", "Repot every 2 years"], "price": "₹2,75,000", "size": "Ceramic Pot", "height": "Bonsai form"}, {"name": "Erythrina Crista Galli", "botanical": "Erythrina crista-galli", "cat": "avenue", "tagline": "The Coral Tree — vivid crimson blooms on a gnarled, sculptural trunk.", "description": "The Erythrina Crista Galli is the national flower of Argentina, prized for its vivid crimson blossom clusters and gnarled, sculptural trunk. A rare 18 ft naked specimen — a breathtaking focal point for premium landscape projects.", "care": {"water": "Moderate — tolerates dry periods", "light": "Full sun", "soil": "Well-draining", "difficulty": "Moderate", "growth": "Medium"}, "uses": ["Statement garden focal points", "Premium estate landscapes", "Botanical collection pieces"], "tips": ["Prune after flowering to maintain shape", "Blooms are most vivid in full sun"], "price": "₹9,50,000", "size": "Naked", "height": "18 ft"}, {"name": "Gulmohar (Flamboyant Tree)", "botanical": "Delonix regia", "cat": "avenue", "tagline": "The Flame of the Forest — spectacular orange canopy, mature naked specimen.", "description": "The Gulmohar in full bloom is one of the most spectacular sights in tropical horticulture. A mature 20 ft naked specimen delivers an immediate, established canopy of vivid orange-red flowers. A premium choice for estate entrances and resort avenues.", "care": {"water": "Low — drought tolerant once established", "light": "Full sun", "soil": "Well-draining", "difficulty": "Easy", "growth": "Fast"}, "uses": ["Estate and resort avenues", "Boulevard and street plantings", "Open garden centrepieces"], "tips": ["Extremely drought tolerant once established", "Full sun produces the most vivid bloom"], "price": "₹60,000", "size": "Naked", "height": "20 ft"}, {"name": "Spathodea (African Tulip Tree)", "botanical": "Spathodea campanulata", "cat": "avenue", "tagline": "The African Tulip Tree — dramatic orange blossoms year-round.", "description": "Spathodea campanulata produces large, vivid orange-red tulip-shaped flowers almost continuously throughout the year. A mature 18 ft naked specimen provides an immediate, dramatic presence — perfect for resort gardens, estate avenues and premium landscape projects.", "care": {"water": "Moderate", "light": "Full sun", "soil": "Well-draining loam", "difficulty": "Easy", "growth": "Fast"}, "uses": ["Resort garden focal points", "Estate avenues", "Boulevard plantings", "Premium landscape projects"], "tips": ["Fast-growing — prune annually to control form", "Flowers attract birds"], "price": "₹85,000", "size": "Naked", "height": "18 ft"}, {"name": "Lagerstroemia Speciosa (Queen Crepe Myrtle)", "botanical": "Lagerstroemia speciosa", "cat": "avenue", "tagline": "The Queen Crepe Myrtle — lavender-pink blooms on a graceful mature trunk.", "description": "Lagerstroemia Speciosa earns its name as the Queen of tropical flowering trees — producing spectacular lavender to pink blooms on a graceful, pale-barked trunk. A mature 15 ft naked specimen brings immediate colour and elegance to any premium garden.", "care": {"water": "Moderate — tolerates dry periods", "light": "Full sun", "soil": "Well-draining", "difficulty": "Easy", "growth": "Medium"}, "uses": ["Estate and resort gardens", "Boulevard accent planting", "Premium garden centrepieces"], "tips": ["Full sun produces the most prolific bloom", "Prune in winter to encourage flowering"], "price": "₹85,000", "size": "Naked", "height": "15 ft"}, {"name": "Cassia Fistula (Golden Shower)", "botanical": "Cassia fistula", "cat": "avenue", "tagline": "The Golden Shower — cascades of yellow blooms, mature naked specimen.", "description": "Cassia Fistula earns the name Golden Shower in full bloom — long, drooping clusters of vivid yellow flowers cascade from every branch. A beloved avenue and garden tree, this mature 15 ft naked specimen provides immediate impact.", "care": {"water": "Low — drought tolerant", "light": "Full sun", "soil": "Well-draining", "difficulty": "Very Easy", "growth": "Fast"}, "uses": ["Avenue and boulevard plantings", "Estate garden centrepieces", "Resort landscape drives"], "tips": ["Very low maintenance once established", "Full sun gives the most vivid flowering"], "price": "₹65,000", "size": "Naked", "height": "15 ft"}]));
+  }catch(e){}
+})();
+</script>
 <div id="access-denied">
   <div class="ad-icon">&#127807;</div>
   <div class="ad-title">Private Collection</div>
@@ -258,7 +502,7 @@ section{padding:90px 0;}
     </div>
   </section>
 
-  <section class="col-sec" id="col-sec">
+  <div class="vip-sect" id="vip-main-sects"><section class="col-sec" id="col-sec">
     <div class="wrap">
       <div class="col-hd reveal">
         <span class="eyg">The Private Collection</span>
@@ -413,7 +657,81 @@ function checkAccess(){
   var given=p.get('key')||p.get('access')||window.location.hash.replace('#','');
   return given===stored;
 }
-function getPlants(){try{return JSON.parse(localStorage.getItem(VIP_KEY)||'[]');}catch{return [];}}
+
+// ── Baked-in default VIP plants (show without localStorage) ──────
+var VIP_BAKED_PLANTS = [
+  {
+    name:'Baobab (Adansonia Digitata)',
+    botanical:'Adansonia digitata',
+    cat:'avenue',
+    tagline:'One of the rarest trees on earth — an ancient living sculpture.',
+    description:'An extraordinary Adansonia digitata specimen with its iconic swollen trunk — a true collector\u2019s tree. prized worldwide for its ancient, sculptural silhouette and its rarity outside its native Africa and Madagascar. Available as a naked specimen on special request.',
+    care:{
+      water:'Very low — highly drought tolerant, stores water in trunk',
+      light:'Full sun — essential for healthy growth',
+      soil:'Sandy, extremely well-draining — never waterlogged',
+      difficulty:'Hard — requires expert handling',
+      growth:'Very slow — each specimen represents many decades'
+    },
+    uses:['Ultra-premium collector\u2019s gardens and estates','Botanical garden centrepieces','Luxury resort landmark plantings','Museum and heritage landscape displays'],
+    tips:['Never overwater — trunk stores water; overwatering causes root rot','Requires full sun throughout the day','Handle with extreme care during transplanting'],
+    image:null
+  },
+  {
+    name:'Bismarckia Nobilis',
+    botanical:'Bismarckia nobilis',
+    cat:'palm',
+    tagline:'Striking silver-blue fan fronds — the most architectural palm available.',
+    description:'Prized for its striking silver-blue fan fronds atop a clean, tall trunk. One of the most architectural palms available — a true focal point for grand entrances and open lawns. Imported specimen with 2.5m clear trunk.',
+    care:{water:'Low — drought tolerant once established',light:'Full sun',soil:'Sandy, well-draining',difficulty:'Easy',growth:'Slow'},
+    uses:['Grand entrance plantings','Resort and hotel landscapes','Open lawn focal points'],
+    tips:['Extremely drought tolerant once rooted','Never overwater','Requires full sun for best silver colouration'],
+    image:null
+  },
+  {
+    name:'Ficus Bonsai Topiary — Forest Shape',
+    botanical:'Ficus microcarpa',
+    cat:'ficus',
+    tagline:'Hand-trained multi-head forest topiary — a signature of Kadiyam.',
+    description:'A spectacular multi-headed forest-form topiary trained over many years at the Kadiyam nursery. Each trunk intertwines naturally, creating a breathtaking silhouette. Available at 14 ft height.',
+    care:{water:'Moderate',light:'Full sun to bright partial shade',soil:'Well-draining loamy mix',difficulty:'Moderate',growth:'Medium'},
+    uses:['Grand entrance statements','Resort and hotel landscapes','Avenue and boulevard plantings','Premium private gardens'],
+    tips:['Prune canopy pads twice yearly to maintain form','Water deeply every 2-3 days in summer','Apply slow-release fertiliser in spring'],
+    image:null
+  },
+  {
+    name:'Chorisia Speciosa (Silk Floss Tree)',
+    botanical:'Ceiba speciosa',
+    cat:'avenue',
+    tagline:'Thorny bottle trunk, vivid seasonal blossoms — a rare ornamental.',
+    description:'The Silk Floss Tree is recognized by its thorny, bottle-shaped trunk and vivid seasonal blossoms in shades of pink and crimson. A rare ornamental specimen. Imported — strictly limited availability.',
+    care:{water:'Low — drought tolerant',light:'Full sun',soil:'Well-draining',difficulty:'Moderate',growth:'Fast'},
+    uses:['Avenue and street planting','Statement garden focal points','Large estate grounds'],
+    tips:['Handle with care — trunk has sharp thorns','Flowers appear when partially deciduous in dry season'],
+    image:null
+  },
+  {
+    name:'Brachychiton Rupestris (Bottle Tree)',
+    botanical:'Brachychiton rupestris',
+    cat:'avenue',
+    tagline:'The iconic swollen-trunk Bottle Tree — instantly recognizable worldwide.',
+    description:'One of our rarest imports — the iconic Bottle Tree with its dramatically swollen trunk. Available in six size options. A true collector\u2019s specimen representing decades of growth.',
+    care:{water:'Very low — highly drought tolerant',light:'Full sun',soil:'Sandy, well-draining',difficulty:'Hard',growth:'Very slow'},
+    uses:['Rare collector gardens','Luxury resort centrepieces','Botanical garden displays'],
+    tips:['One of the slowest-growing trees — each specimen represents decades','Full sun essential'],
+    image:null
+  }
+];
+
+function getPlants(){
+  try{
+    var stored=JSON.parse(localStorage.getItem(VIP_KEY)||'[]');
+    if(stored&&stored.length>0) return stored;
+    // No localStorage data — seed with baked defaults
+    try{localStorage.setItem(VIP_KEY,JSON.stringify(VIP_BAKED_PLANTS));}catch(e){}
+    return VIP_BAKED_PLANTS;
+  }catch(e){return VIP_BAKED_PLANTS;}
+}
 
 function renderAll(){
   var plants=getPlants();
@@ -436,7 +754,7 @@ function renderAll(){
     var imgH=p.image?'<img src="'+p.image+'" alt="'+p.name+'">':'<span class="ni">'+icon+'</span>';
     var w=((p.care||{}).water||'').split('\u2014')[0].trim();
     var d=(p.care||{}).difficulty||'';
-    return '<div class="vip-card reveal" onclick="openMod('+i+')">'
+    return '<div class="vip-card reveal" onclick="openDp('+i+')">'
       +'<div class="vci">'+(p.image?'<img src="'+p.image+'">'+'<span class="vlbl">&#9670; Exclusive</span>':'<span class="ni">'+icon+'</span>')+'</div>'
       +'<div class="vcb"><div class="vcn">'+p.name+'</div>'
       +(p.botanical?'<div class="vcbot">'+p.botanical+'</div>':'')
@@ -448,28 +766,19 @@ function renderAll(){
 }
 function fcat(c){activeCat=c;renderAll();}
 
-function openMod(i){
-  var plants=getPlants();
-  var filtered=activeCat==='all'?plants:plants.filter(function(p){return p.cat===activeCat;});
-  var p=filtered[i]; if(!p) return;
-  curName=p.name;
-  document.getElementById('mimg-wrap').innerHTML=p.image
-    ?'<img class="mimg" src="'+p.image+'" alt="'+p.name+'">'
-    :'<div class="miph">'+(CICON[p.cat]||'&#127807;')+'</div>';
-  document.getElementById('m-name').textContent=p.name||'';
-  document.getElementById('m-bot').textContent=p.botanical||'';
-  document.getElementById('m-tag').textContent=p.tagline||'';
-  var care=p.care||{};
-  var items=[['&#128167;','Water',care.water],['&#9728;','Light',care.light],['&#127807;','Soil',care.soil],['&#11088;','Difficulty',care.difficulty],['&#128200;','Growth',care.growth]].filter(function(x){return x[2];});
-  document.getElementById('m-care').innerHTML=items.map(function(x){return '<div class="mci"><div class="mcil">'+x[0]+' '+x[1]+'</div><div class="mciv">'+x[2]+'</div></div>';}).join('');
-  document.getElementById('m-desc').textContent=p.description||'';
-  var us=document.getElementById('m-uses-sec'), ul=document.getElementById('m-uses');
-  if(p.uses&&p.uses.length){ul.innerHTML=p.uses.map(function(u){return '<li>'+u+'</li>';}).join('');us.style.display='';}else us.style.display='none';
-  var ts=document.getElementById('m-tips-sec'), tg=document.getElementById('m-tips');
-  if(p.tips&&p.tips.length){tg.innerHTML=p.tips.map(function(t){return '<div class="tchip">'+t+'</div>';}).join('');ts.style.display='';}else ts.style.display='none';
-  document.getElementById('mb-ov').classList.add('open');
-  document.body.style.overflow='hidden';
-}
+
+// ── Full-page plant detail ────────────────────────────────
+
+
+
+
+// ── Fullscreen image viewer ───────────────────────────────
+
+
+
+
+
+
 function closeMod(e){
   if(e&&e.target!==document.getElementById('mb-ov')) return;
   document.getElementById('mb-ov').classList.remove('open');
@@ -573,6 +882,119 @@ if(checkAccess()){
   });
   try{ localStorage.setItem(VK, JSON.stringify(arr)); }catch(e){}
 })();
+
+// ── VIP page-switch navigation ────────────────────────────
+var _dpImages=[], _dpCur=0;
+var CATLBL={ornamental:'Ornamental',avenue:'Avenue & Shade',palm:'Palm',flowering:'Flowering',fruit:'Fruit',bamboo:'Bamboo',aquatic:'Aquatic',desert:'Desert',ficus:'Ficus',indoor:'Indoor',pots:'Planters',custom:'Special'};
+
+function showVipCollection(){
+  document.getElementById('vip-detail-sect').classList.add('hidden');
+  document.getElementById('vip-main-sects').classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function openDp(idx){
+  var plants=getPlants();
+  var filtered=activeCat==='all'?plants:plants.filter(function(p){return p.cat===activeCat;});
+  var p=filtered[idx]; if(!p) return;
+  curName=p.name;
+
+  // Images
+  var images=p.images&&p.images.length?p.images:(p.image?[p.image]:[]);
+  _dpImages=images; _dpCur=0;
+
+  // Hero
+  var heroEl=document.getElementById('vdet-hero-img');
+  if(images.length>0){
+    heroEl.innerHTML='<img src="'+images[0]+'" alt="'+p.name+'" onclick="openImgViewer(0)" style="width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;">';
+  } else {
+    heroEl.innerHTML='<div class="vdet-hero-ph">'+(CICON[p.cat]||'&#127807;')+'</div>';
+  }
+
+  // Label
+  var lbl=document.getElementById('vdet-label');
+  if(lbl) lbl.textContent='\u25c6 '+(CATLBL[p.cat]||'Exclusive');
+
+  // Text
+  document.getElementById('vdet-bot').textContent=p.botanical||'';
+  document.getElementById('vdet-name').textContent=p.name||'';
+  document.getElementById('vdet-tag').textContent=p.tagline||'';
+  document.getElementById('vdet-desc').textContent=p.description||'';
+
+  // Price
+  var priceEl=document.getElementById('vdet-price');
+  if(p.price){priceEl.innerHTML='&#9670; '+p.price+(p.size?'<span class="vdet-size">&#183; '+p.size+(p.height?' &#183; '+p.height:'')+'</span>':'');priceEl.style.display='';}
+  else priceEl.style.display='none';
+
+  // Care
+  var care=p.care||{};
+  var cItems=[['Water',care.water],['Light',care.light],['Soil',care.soil],['Difficulty',care.difficulty],['Growth',care.growth]].filter(function(x){return x[1];});
+  document.getElementById('vdet-care').innerHTML=cItems.map(function(x){
+    return '<div class="vdet-ci"><div class="vdet-cl">'+x[0]+'</div><div class="vdet-cv">'+x[1]+'</div></div>';
+  }).join('');
+
+  // Uses
+  var usW=document.getElementById('vdet-uses-wrap');
+  if(p.uses&&p.uses.length){
+    document.getElementById('vdet-uses').innerHTML=p.uses.map(function(u){return '<li>'+u+'</li>';}).join('');
+    usW.style.display='';
+  } else usW.style.display='none';
+
+  // Tips
+  var tpW=document.getElementById('vdet-tips-wrap');
+  if(p.tips&&p.tips.length){
+    document.getElementById('vdet-tips').innerHTML=p.tips.map(function(t){return '<div class="vdet-tip">'+t+'</div>';}).join('');
+    tpW.style.display='';
+  } else tpW.style.display='none';
+
+  // Show detail, hide collection
+  document.getElementById('vip-main-sects').classList.add('hidden');
+  document.getElementById('vip-detail-sect').classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'instant'});
+}
+
+// ── Fullscreen image viewer ───────────────────────────────
+function openImgViewer(startIdx){
+  if(!_dpImages.length) return;
+  _dpCur=startIdx||0; renderIV();
+  document.getElementById('img-viewer').classList.add('open');
+}
+function closeImgViewer(){
+  document.getElementById('img-viewer').classList.remove('open');
+}
+function ivNav(dir){
+  _dpCur=(_dpCur+dir+_dpImages.length)%_dpImages.length; renderIV();
+}
+function ivCur(n){_dpCur=n;renderIV();}
+function renderIV(){
+  var src=_dpImages[_dpCur]||'';
+  document.getElementById('iv-img').src=src;
+  var multi=_dpImages.length>1;
+  document.getElementById('iv-prev').style.display=multi?'':'none';
+  document.getElementById('iv-next').style.display=multi?'':'none';
+  document.getElementById('iv-dots').innerHTML=multi?
+    _dpImages.map(function(_,i){return '<div class="iv-dot'+(i===_dpCur?' active':'')+'" onclick="ivCur('+i+')"></div>';}).join(''):'';
+}
+document.addEventListener('DOMContentLoaded',function(){
+  var el=document.getElementById('img-viewer');
+  if(el){
+    var sx=0;
+    el.addEventListener('touchstart',function(e){sx=e.touches[0].clientX;},{passive:true});
+    el.addEventListener('touchend',function(e){
+      var d=sx-e.changedTouches[0].clientX;
+      if(Math.abs(d)>50) ivNav(d>0?1:-1);
+    },{passive:true});
+  }
+});
+document.addEventListener('keydown',function(e){
+  var iv=document.getElementById('img-viewer');
+  if(iv&&iv.classList.contains('open')){
+    if(e.key==='ArrowLeft') ivNav(-1);
+    if(e.key==='ArrowRight') ivNav(1);
+    if(e.key==='Escape') closeImgViewer();
+  }
+});
+
 </script>
 
 
@@ -605,6 +1027,49 @@ if(checkAccess()){
       <a href="https://wa.me/919440179027?text=Hello%2C%20I%20am%20interested%20in%20plants%20from%20your%20nursery." target="_blank" rel="noopener" class="vdp-wa-btn">&#128172; WhatsApp</a>
     </div>
   </div>
+</div>
+
+
+<!-- VIP Full-Page Plant Detail -->
+<div id="vip-detail-page">
+  <div class="dp-hero" id="dp-hero">
+    <button class="dp-hero-back" onclick="closeDp()">&#8592; Back to Collection</button>
+    <span class="dp-hero-label" id="dp-label">&#9670; Exclusive</span>
+    <div class="dp-hero-overlay"></div>
+    <div id="dp-hero-content"></div>
+  </div>
+  <div class="dp-body">
+    <div class="dp-botanical" id="dp-bot"></div>
+    <h1 class="dp-name" id="dp-name"></h1>
+    <div class="dp-tagline" id="dp-tagline"></div>
+    <div class="dp-care-grid" id="dp-care"></div>
+    <div class="dp-section">
+      <h3>About This Plant</h3>
+      <p class="dp-desc" id="dp-desc"></p>
+    </div>
+    <div class="dp-section" id="dp-uses-sec">
+      <h3>Best Used For</h3>
+      <ul class="dp-uses" id="dp-uses"></ul>
+    </div>
+    <div class="dp-section" id="dp-tips-sec">
+      <h3>Care Tips</h3>
+      <div id="dp-tips"></div>
+    </div>
+    <button class="dp-back-btn" onclick="closeDp()">&#8592; Back to Private Collection</button>
+  </div>
+  <div class="dp-cta">
+    <a href="mailto:srisatyanarayananursery@yahoo.co.in?subject=VIP%20Plant%20Enquiry" class="dp-email">&#9993; Email Enquiry</a>
+    <a href="https://wa.me/919440179027" target="_blank" rel="noopener" class="dp-wa">&#128172; WhatsApp</a>
+  </div>
+</div>
+
+<!-- Fullscreen Image Viewer -->
+<div id="img-viewer">
+  <button class="iv-close" onclick="closeImgViewer()">&#10005;</button>
+  <button class="iv-arrow iv-prev" id="iv-prev" onclick="ivNav(-1)">&#8249;</button>
+  <img class="iv-img" id="iv-img" src="" alt="">
+  <button class="iv-arrow iv-next" id="iv-next" onclick="ivNav(1)">&#8250;</button>
+  <div class="iv-dots" id="iv-dots"></div>
 </div>
 
 </body>

@@ -387,11 +387,18 @@ section{padding:108px 0;}
 .enquire-banner p{color:rgba(248,243,232,.65);font-size:.92rem;margin-bottom:20px;}
 
 /* ─── GALLERY ─────────────────────────────────────────────── */
-.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;}
+.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+@media(max-width:640px){.gallery-grid{grid-template-columns:repeat(2,1fr);gap:6px;}}
+@media(max-width:400px){.gallery-grid{grid-template-columns:1fr;gap:8px;}}
 .g-tall{grid-row:span 2;}
 .g-frame{background:var(--cream2);border:1px solid var(--line);
   min-height:200px;display:flex;align-items:center;justify-content:center;
-  position:relative;overflow:hidden;border-radius:4px;}
+  position:relative;overflow:hidden;border-radius:4px;cursor:pointer;}
+.g-frame img{width:100%;height:100%;object-fit:cover;display:block;
+  image-rendering:auto;-webkit-backface-visibility:hidden;
+  transform:translateZ(0);transition:transform .4s ease;}
+.g-frame:hover img{transform:scale(1.04);}
+.g-tall{min-height:340px;}
 .g-frame svg{width:38%;opacity:.62;}
 .g-frame svg path,.g-frame svg circle{stroke:var(--green);fill:none;stroke-width:1.2;}
 .g-cap{position:absolute;bottom:0;left:0;right:0;padding:11px 13px;font-size:.72rem;
@@ -914,6 +921,22 @@ footer{background:var(--green-deep);color:rgba(248,243,232,.5);padding:0;overflo
   .ft-social-inner{justify-content:center;text-align:center;}
   .ft-social-copy,.ft-social-tagline{display:none;}
 }
+
+
+/* Gallery lightbox */
+.g-lightbox{display:none;position:fixed;inset:0;z-index:999;
+  background:rgba(10,16,12,.93);backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;flex-direction:column;}
+.g-lightbox.open{display:flex;}
+.g-lightbox-img{max-width:95vw;max-height:85vh;object-fit:contain;
+  border-radius:4px;box-shadow:0 20px 60px rgba(0,0,0,.6);}
+.g-lightbox-cap{color:rgba(248,243,232,.7);font-size:.84rem;
+  margin-top:12px;text-align:center;max-width:600px;}
+.g-lightbox-close{position:absolute;top:20px;right:24px;
+  background:rgba(255,255,255,.1);border:none;color:#fff;
+  width:36px;height:36px;border-radius:50%;font-size:1.1rem;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.g-lightbox-close:hover{background:rgba(255,255,255,.2);}
 
 </style>
 </head>
@@ -3736,8 +3759,10 @@ function renderClients(filter){
   }
   el.innerHTML=filtered.map(function(v){
     var photoSection=v.photo
-      ?'<div style="width:72px;height:72px;border-radius:50%;overflow:hidden;border:2px solid rgba(185,137,63,.4);margin:0 auto 16px;flex-shrink:0;"><img src="'+v.photo+'" style="width:100%;height:100%;object-fit:cover;" alt="'+v.org+'"></div>'
-      :'<div style="width:56px;height:56px;border-radius:50%;background:var(--cream2);border:2px solid var(--line);margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;">&#127775;</div>';
+      ?'<div style="width:80px;height:80px;border-radius:50%;overflow:hidden;border:2.5px solid rgba(185,137,63,.5);margin:0 auto 14px;box-shadow:0 4px 16px rgba(20,35,25,.12);">'
+        +'<img src="'+v.photo+'" style="width:100%;height:100%;object-fit:cover;" alt="'+v.org+'">'
+        +'</div>'
+      :'<div style="width:64px;height:64px;border-radius:50%;background:var(--cream2);border:2px solid var(--line);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;">&#127775;</div>';
     return '<div class="client-card" style="text-align:center;">'
       +photoSection
       +'<span class="cc-type '+v.type+'">'+( TYPE_LABELS[v.type]||v.type)+'</span>'
@@ -3947,28 +3972,41 @@ document.addEventListener('DOMContentLoaded', function(){
 // ── Gallery: load admin-managed photos ───────────────────────────
 (function(){
   var GAL_LS = 'ssn_gallery';
+  function buildGalleryCard(p, i, total){
+    var tall=[0, Math.floor(total/2)];
+    var div=document.createElement('div');
+    div.className='g-frame'+(tall.indexOf(i)>=0?' g-tall':'');
+    div.style.cursor='pointer';
+    if(p.src){
+      div.onclick=function(){openGalleryLightbox(p.src, p.caption);};
+      div.innerHTML='<img src="'+p.src+'" alt="'+(p.caption||'')+'">'
+        +'<span class="g-cap">'+(p.caption||'')+'</span>';
+    } else {
+      div.innerHTML='<div style="width:100%;height:100%;background:var(--line);display:flex;align-items:center;justify-content:center;font-size:2rem;">&#128247;</div>'
+        +'<span class="g-cap">'+(p.caption||'')+'</span>';
+    }
+    return div;
+  }
   function loadAdminGallery(){
     try{
       var photos=JSON.parse(localStorage.getItem(GAL_LS)||'[]');
-      if(!photos.length) return;
       var grid=document.querySelector('.gallery-grid');
       if(!grid) return;
-      // Build tall indices for visual variety
-      var tall=[0,4];
-      var newCards=photos.map(function(p,i){
-        var div=document.createElement('div');
-        div.className='g-frame'+(tall.indexOf(i)>=0?' g-tall':'');
-        div.innerHTML=(p.src?'<img src="'+p.src+'" alt="'+p.caption+'" style="width:100%;height:100%;object-fit:cover;display:block;">'
-          :'<div style="width:100%;height:100%;background:var(--line);display:flex;align-items:center;justify-content:center;font-size:2rem;">&#128247;</div>')
-          +'<span class="g-cap">'+(p.caption||'')+'</span>';
-        return div;
-      });
-      // Clear existing and add admin photos first, then keep built-in ones
-      var existing=Array.from(grid.querySelectorAll('.g-frame'));
-      // Prepend admin photos
-      newCards.reverse().forEach(function(card){
-        grid.insertBefore(card,grid.firstChild);
-      });
+      if(photos.length>0){
+        // Admin has photos — REPLACE all static images with admin-managed ones
+        grid.innerHTML='';
+        photos.forEach(function(p,i){
+          grid.appendChild(buildGalleryCard(p,i,photos.length));
+        });
+      } else {
+        // No admin photos — add click handler to existing static images
+        grid.querySelectorAll('.g-frame img').forEach(function(img){
+          img.parentElement.style.cursor='pointer';
+          img.parentElement.onclick=function(){
+            openGalleryLightbox(img.src, img.alt);
+          };
+        });
+      }
     }catch(e){}
   }
   document.addEventListener('DOMContentLoaded',loadAdminGallery);
@@ -3999,6 +4037,31 @@ document.addEventListener('DOMContentLoaded', function(){
   document.addEventListener('DOMContentLoaded', applyLogo);
   window.addEventListener('storage', function(e){ if(e.key===LOGO_LS) applyLogo(); });
 })();
+</script>
+
+
+<!-- Gallery lightbox -->
+<div class="g-lightbox" id="g-lightbox" onclick="closeGalleryLightbox()">
+  <button class="g-lightbox-close" onclick="closeGalleryLightbox()">&#10005;</button>
+  <img class="g-lightbox-img" id="g-lb-img" src="" alt="">
+  <div class="g-lightbox-cap" id="g-lb-cap"></div>
+</div>
+
+
+<script>
+function openGalleryLightbox(src, cap){
+  document.getElementById('g-lb-img').src = src;
+  document.getElementById('g-lb-cap').textContent = cap || '';
+  document.getElementById('g-lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeGalleryLightbox(){
+  document.getElementById('g-lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e){
+  if(e.key==='Escape') closeGalleryLightbox();
+});
 </script>
 
 </body>

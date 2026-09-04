@@ -574,22 +574,41 @@ input,select,textarea{font-family:inherit;}
       <div class="sec-hd" style="margin-bottom:16px;">
         <div>
           <h2>Gallery Management</h2>
-          <p style="font-size:.8rem;color:var(--muted);margin-top:3px;" id="gal-sub">Photos shown in the website Gallery page</p>
+          <p style="font-size:.8rem;color:var(--muted);margin-top:3px;" id="gal-sub">Manage photos shown in the website Gallery page</p>
         </div>
-        <button class="btn btn-gold" onclick="document.getElementById('gal-upload-inp').click()">&#128247; Add Photos</button>
+        <button class="btn btn-gold" onclick="trigGalUpload()">&#43; Add Photos</button>
       </div>
-      <!-- Hidden file input — triggered by button above -->
-      <input type="file" accept="image/*" multiple id="gal-upload-inp"
-        style="display:none;" onchange="handleGalUpload(this)">
-      <div style="background:var(--cream);border:2px dashed var(--line);border-radius:8px;padding:24px;text-align:center;margin-bottom:16px;cursor:pointer;" onclick="document.getElementById('gal-upload-inp').click()">
-        <div style="font-size:2rem;margin-bottom:8px;">&#128247;</div>
-        <div style="font-size:.84rem;color:var(--muted);">Click <strong>Add Photos</strong> above or tap here to upload images</div>
-        <div style="font-size:.74rem;color:var(--muted);margin-top:4px;">JPG, PNG &middot; Multiple files &middot; Max 3MB each</div>
+
+      <!-- Hidden file input -->
+      <input type="file" accept="image/*" multiple id="gal-upload-inp" style="display:none;" onchange="handleGalUpload(this)">
+
+      <!-- Upload drop zone -->
+      <div style="background:var(--cream);border:2px dashed var(--line);border-radius:8px;padding:20px;
+        text-align:center;margin-bottom:20px;cursor:pointer;" onclick="trigGalUpload()"
+        id="gal-drop-zone">
+        <div style="font-size:1.8rem;margin-bottom:6px;">&#128247;</div>
+        <div style="font-size:.84rem;color:var(--muted);">
+          <strong>Click here</strong> or tap <strong>+ Add Photos</strong> above<br>
+          <span style="font-size:.76rem;">JPG, PNG &middot; Multiple files &middot; Max 3MB each &middot; Higher resolution = sharper gallery</span>
+        </div>
       </div>
+
+      <!-- Static embedded images notice -->
+      <div id="gal-static-notice" style="background:#fffbf0;border:1px solid rgba(185,137,63,.3);border-radius:6px;padding:12px 16px;margin-bottom:16px;font-size:.8rem;color:#6b4c00;display:none;">
+        <strong>&#9432; 8 built-in gallery photos</strong> are showing on the website right now (from the plant catalog).
+        Once you upload your own photos above, they will replace the built-in ones completely.
+      </div>
+
+      <!-- Admin-managed photos -->
       <div class="gal-admin-grid" id="gal-admin-grid"></div>
+
+      <!-- Clear all -->
+      <div id="gal-clear-wrap" style="display:none;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);">
+        <button class="btn btn-danger btn-sm" onclick="clearAllGallery()">&#128465; Remove All Photos (restore built-in)</button>
+      </div>
     </div>
 
-    <!-- GALLERY CAPTION FORM -->
+    <!-- GALLERY CAPTION FORM<!-- GALLERY CAPTION FORM -->
         <div class="form-overlay" id="gal-cap-overlay">
           <div class="form-panel" style="max-width:420px;">
             <div class="fp-hd"><h2>Edit Caption</h2>
@@ -865,8 +884,8 @@ input,select,textarea{font-family:inherit;}
           <input class="fi" id="vi-loc" placeholder="e.g. Hyderabad, Andhra Pradesh">
         </div>
         <div class="fg fp-full">
-          <label class="flbl">Quote / Testimonial</label>
-          <textarea class="fta" id="vi-quote" rows="3" placeholder="Optional — a short testimonial from the client..."></textarea>
+          <label class="flbl">Quote / Testimonial <span style="font-size:.68rem;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;">(optional — leave blank for photo-only)</span></label>
+          <textarea class="fta" id="vi-quote" rows="2" placeholder="Optional — leave blank to show only the photo and name"></textarea>
         </div>
         <div class="fg">
           <label class="flbl">Year Visited</label>
@@ -926,6 +945,31 @@ input,select,textarea{font-family:inherit;}
 <div class="toast" id="toast"></div>
 
 <script>
+
+function getApiKey(){return localStorage.getItem('ssn_anthropic_key')||'';}
+function saveApiKey(){
+  var val=document.getElementById('api-key-inp').value.trim();
+  if(!val){toast('Enter your API key first','err');return;}
+  localStorage.setItem('ssn_anthropic_key',val);
+  document.getElementById('api-key-inp').value='';
+  document.getElementById('api-key-inp').placeholder='Key saved (hidden)';
+  document.getElementById('api-key-status').textContent='Key saved. AI Auto-Fill is now active.';
+  document.getElementById('api-key-status').style.color='#276027';
+  toast('API key saved! AI Auto-Fill active.','ok');
+}
+function clearApiKey(){
+  localStorage.removeItem('ssn_anthropic_key');
+  document.getElementById('api-key-inp').placeholder='sk-ant-...';
+  document.getElementById('api-key-inp').value='';
+  document.getElementById('api-key-status').textContent='Key removed.';
+  toast('API key removed.','ok');
+}
+
+// ── Login constants (must be first) ──
+var ADMIN_PWD_KEY='ssn_admin_pwd';
+var DEFAULT_PWD='nursery2024';
+var SESSION_KEY='ssn_admin_session';
+
 const PLANT_DATA = {
   "ornamental__croton": {
     name: "Croton",
@@ -1941,35 +1985,38 @@ function delPlant(key){
 }
 
 // ══ AI AUTOFILL ══════════════════════════════════════════
-async function aiGenerate(){
+function aiGenerate(){
   var nm=document.getElementById('ai-inp').value.trim();
   if(!nm){toast('Enter a plant name first','err');return;}
   document.getElementById('ai-loading').classList.add('show');
-  try{
-    var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,
-        messages:[{role:'user',content:'Botanist for Gangumalla nursery Kadiyam. JSON only for "'+nm+'": {"botanical":"","tagline":"","description":"","category":"ornamental|avenue|palm|flowering|fruit|bamboo|aquatic|desert|ficus|indoor|pots","water":"","light":"","soil":"","difficulty":"Easy|Moderate|Hard|Very Easy|Beginner","growth":"","uses":[],"tips":[]}'}]})});
-    var d=await r.json();
-    var t=(d.content||[]).map(b=>b.text||'').join('');
+  var prompt='Botanist for Gangumalla nursery Kadiyam. JSON only for "'+nm+'": {"botanical":"","tagline":"","description":"","category":"ornamental|avenue|palm|flowering|fruit|bamboo|aquatic|desert|ficus|indoor|pots","water":"","light":"","soil":"","difficulty":"Easy|Moderate|Hard|Very Easy|Beginner","growth":"","uses":[],"tips":[]}';
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+  }).then(function(r){return r.json();})
+  .then(function(d){
+    var t=(d.content||[]).map(function(b){return b.text||'';}).join('');
     var p=JSON.parse(t.replace(/```json?/g,'').replace(/```/g,'').trim());
     document.getElementById('f-name').value=nm;
     document.getElementById('f-bot').value=p.botanical||'';
     document.getElementById('f-tagline').value=p.tagline||'';
     document.getElementById('f-desc').value=p.description||'';
-    if(p.category)document.getElementById('f-cat').value=p.category;
+    if(p.category) document.getElementById('f-cat').value=p.category;
     document.getElementById('f-water').value=p.water||'';
     document.getElementById('f-light').value=p.light||'';
     document.getElementById('f-soil').value=p.soil||'';
     document.getElementById('f-diff').value=p.difficulty||'';
     document.getElementById('f-growth').value=p.growth||'';
-    document.getElementById('uses-list').innerHTML='';(p.uses||[]).forEach(u=>addRow('uses-list',u));
-    document.getElementById('tips-list').innerHTML='';(p.tips||[]).forEach(t=>addRow('tips-list',t));
+    document.getElementById('uses-list').innerHTML='';
+    (p.uses||[]).forEach(function(u){addRow('uses-list',u);});
+    document.getElementById('tips-list').innerHTML='';
+    (p.tips||[]).forEach(function(tip){addRow('tips-list',tip);});
     toast('AI filled details!','ok');
-  }catch(e){toast('AI fill failed','err');}
-  finally{document.getElementById('ai-loading').classList.remove('show');}
+  }).catch(function(){toast('AI fill failed — check connection','err');})
+  .then(function(){document.getElementById('ai-loading').classList.remove('show');});
 }
-document.getElementById('ai-inp').addEventListener('keydown',e=>{if(e.key==='Enter')aiGenerate();});
+document.getElementById('ai-inp').addEventListener('keydown',function(e){if(e.key==='Enter')aiGenerate();});
 
 // ══ VIP MANAGEMENT ═══════════════════════════════════════
 var _vei=null, _vib=null;
@@ -2040,25 +2087,38 @@ function saveVipPlant(){
   saveVip(arr);closeVipForm();toast(_vei!==null?'Updated!':'VIP plant added!','ok');renderVipView();renderDash();
 }
 function delVip(idx){openConfirm('Delete VIP plant?','',function(){var a=getVip();a.splice(idx,1);saveVip(a);closeConfirm();toast('Deleted.','ok');renderVipView();renderDash();});}
-async function vipAiGen(){
-  var nm=document.getElementById('vai-inp').value.trim();if(!nm){toast('Enter name','err');return;}
+function vipAiGen(){
+  var nm=document.getElementById('vai-inp').value.trim();
+  if(!nm){toast('Enter name','err');return;}
   document.getElementById('vai-load').classList.add('show');
-  try{var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:'Botanist Kadiyam nursery. JSON only for "'+nm+'": {"botanical":"","tagline":"","description":"","category":"ornamental|avenue|palm|flowering|fruit|bamboo|aquatic|desert|ficus|indoor|pots","water":"","light":"","soil":"","difficulty":"Easy|Moderate|Hard|Very Easy|Beginner","growth":"","uses":[],"tips":[]}'}]})});
-    var d=await r.json();var t=(d.content||[]).map(b=>b.text||'').join('');
+  var prompt='Botanist Kadiyam nursery. JSON only for "'+nm+'": {"botanical":"","tagline":"","description":"","category":"ornamental|avenue|palm|flowering|fruit|bamboo|aquatic|desert|ficus|indoor|pots","water":"","light":"","soil":"","difficulty":"Easy|Moderate|Hard|Very Easy|Beginner","growth":"","uses":[],"tips":[]}';
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+  }).then(function(r){return r.json();})
+  .then(function(d){
+    var t=(d.content||[]).map(function(b){return b.text||'';}).join('');
     var p=JSON.parse(t.replace(/```json?/g,'').replace(/```/g,'').trim());
-    document.getElementById('vf-name').value=nm;document.getElementById('vf-bot').value=p.botanical||'';
-    document.getElementById('vf-tagline').value=p.tagline||'';document.getElementById('vf-desc').value=p.description||'';
-    if(p.category)document.getElementById('vf-cat').value=p.category;
-    document.getElementById('vf-water').value=p.water||'';document.getElementById('vf-light').value=p.light||'';
-    document.getElementById('vf-soil').value=p.soil||'';document.getElementById('vf-diff').value=p.difficulty||'';
+    document.getElementById('vf-name').value=nm;
+    document.getElementById('vf-bot').value=p.botanical||'';
+    document.getElementById('vf-tagline').value=p.tagline||'';
+    document.getElementById('vf-desc').value=p.description||'';
+    if(p.category) document.getElementById('vf-cat').value=p.category;
+    document.getElementById('vf-water').value=p.water||'';
+    document.getElementById('vf-light').value=p.light||'';
+    document.getElementById('vf-soil').value=p.soil||'';
+    document.getElementById('vf-diff').value=p.difficulty||'';
     document.getElementById('vf-growth').value=p.growth||'';
-    document.getElementById('vip-uses').innerHTML='';(p.uses||[]).forEach(u=>addVipRow('vip-uses',u));
-    document.getElementById('vip-tips').innerHTML='';(p.tips||[]).forEach(t=>addVipRow('vip-tips',t));
+    document.getElementById('vip-uses').innerHTML='';
+    (p.uses||[]).forEach(function(u){addVipRow('vip-uses',u);});
+    document.getElementById('vip-tips').innerHTML='';
+    (p.tips||[]).forEach(function(tip){addVipRow('vip-tips',tip);});
     toast('AI filled!','ok');
-  }catch(e){toast('AI fill failed','err');}finally{document.getElementById('vai-load').classList.remove('show');}
+  }).catch(function(){toast('AI fill failed','err');})
+  .then(function(){document.getElementById('vai-load').classList.remove('show');});
 }
-document.getElementById('vai-inp').addEventListener('keydown',e=>{if(e.key==='Enter')vipAiGen();});
+document.getElementById('vai-inp').addEventListener('keydown',function(e){if(e.key==='Enter')vipAiGen();});
 
 // ══ IMPORT/EXPORT ════════════════════════════════════════
 function doExport(){var d={custom:getCustom(),overrides:getOv()};var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}));a.download='ssn-plants-'+Date.now()+'.json';a.click();toast('Exported!','ok');}
@@ -2093,9 +2153,6 @@ var _tt;
 function toast(msg,type){var t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type||'');clearTimeout(_tt);_tt=setTimeout(()=>{t.className='toast';},3000);}
 
 // ══ LOGIN ════════════════════════════════════════════════
-var ADMIN_PWD_KEY = 'ssn_admin_pwd';
-var DEFAULT_PWD   = 'nursery2024';
-var SESSION_KEY   = 'ssn_admin_session';
 
 function openWebsite(){
   // Try to open relative to current file location
@@ -2119,19 +2176,26 @@ function isLoggedIn(){
   return sessionStorage.getItem(SESSION_KEY) === '1';
 }
 function doLogin(){
-  var inp = document.getElementById('pwd-inp');
-  var hint = document.getElementById('login-hint');
-  var val = inp ? inp.value : '';
-  if(val === getAdminPwd()){
-    sessionStorage.setItem(SESSION_KEY,'1');
-    document.getElementById('login-screen').classList.add('hidden');
-    renderDash();
-  } else {
-    inp.classList.add('err');
-    hint.style.color = 'var(--red)';
-    hint.textContent = 'Incorrect password — try again.';
-    inp.value = '';
-    setTimeout(function(){ inp.classList.remove('err'); }, 400);
+  try{
+    var inp=document.getElementById('pwd-inp');
+    var hint=document.getElementById('login-hint');
+    var val=inp?inp.value.trim():'';
+    var pwd=getAdminPwd();
+    if(val===pwd){
+      sessionStorage.setItem(SESSION_KEY,'1');
+      var ls=document.getElementById('login-screen');
+      if(ls) ls.classList.add('hidden');
+      try{ renderDash(); }catch(e){ console.error('renderDash error:',e); }
+    } else {
+      if(inp){inp.classList.add('err');inp.value='';}
+      if(hint){hint.style.color='#b84040';hint.textContent='Incorrect password — try again.';}
+      setTimeout(function(){
+        if(inp) inp.classList.remove('err');
+      },500);
+    }
+  }catch(err){
+    console.error('Login error:',err);
+    alert('Login error: '+err.message+'. Please refresh and try again.');
   }
 }
 function doLogout(){
@@ -2414,6 +2478,8 @@ function clearHeroImg(){
   });
 }
 function initSettingsView(){
+  var ks=document.getElementById('api-key-status'),ki=document.getElementById('api-key-inp');
+  if(ks&&ki){var hk=!!getApiKey();ks.textContent=hk?'Key saved. AI Auto-Fill is active.':'No key — enter your Anthropic API key above.';ks.style.color=hk?'#276027':'';ki.placeholder=hk?'Key saved (enter new to replace)':'sk-ant-...';}
   var existing=localStorage.getItem(HERO_KEY2);
   if(existing){
     document.getElementById('hero-img-preview').src=existing;
@@ -2523,29 +2589,45 @@ function handleGalUpload(inp){
   });
   inp.value='';
 }
+function trigGalUpload(){document.getElementById('gal-upload-inp').click();}
+function clearAllGallery(){
+  openConfirm('Remove all gallery photos?','The website will return to showing the 8 built-in nursery photos.',function(){
+    localStorage.removeItem(GAL_KEY);closeConfirm();toast('Gallery cleared — built-in photos restored.','ok');renderGalAdmin();
+  });
+}
 function renderGalAdmin(){
   var arr=getGallery();
   var sub=document.getElementById('gal-sub');
-  if(sub) sub.textContent=arr.length+' photo'+(arr.length!==1?'s':'')+' in gallery';
+  var notice=document.getElementById('gal-static-notice');
+  var clearWrap=document.getElementById('gal-clear-wrap');
+  if(sub) sub.textContent=arr.length>0?arr.length+' custom photo'+(arr.length!==1?'s':'')+' — replacing built-in gallery':'Using 8 built-in gallery photos';
+  if(notice) notice.style.display=arr.length===0?'':'none';
+  if(clearWrap) clearWrap.style.display=arr.length>0?'':'none';
   var grid=document.getElementById('gal-admin-grid');
   if(!grid) return;
   if(!arr.length){
-    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">'
-      +'<div style="font-size:2rem;margin-bottom:10px">&#128247;</div>'
-      +'<p>No gallery photos yet. Upload some above.</p></div>';
+    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--muted);">'
+      +'<p style="font-size:.84rem;">Upload your own photos to replace the built-in gallery images.<br>'
+      +'<strong>Higher resolution photos = sharper gallery on the website.</strong></p></div>';
     return;
   }
   grid.innerHTML=arr.map(function(img,i){
     return '<div class="gal-admin-card">'
-      +(img.src?'<img class="gal-admin-img" src="'+img.src+'" alt="'+img.caption+'">'
+      +(img.src?'<img class="gal-admin-img" src="'+img.src+'" alt="" data-i="'+i+'" style="cursor:pointer;" onclick="openGalleryLightboxAdmin(+this.dataset.i)">'
                :'<div class="gal-admin-ph">&#128247;</div>')
       +'<div class="gal-admin-body">'
-        +'<div class="gal-admin-cap">'+(img.caption||'Untitled')+'</div>'
+        +'<div class="gal-admin-cap" title="'+(img.caption||'No caption')+'">'+(img.caption||'No caption')+'</div>'
         +'<div class="gal-admin-acts">'
-          +'<button class="btn btn-outline btn-sm" data-i="'+i+'" onclick="openGalCap(+this.dataset.i)">Edit Caption</button>'
-          +'<button class="btn btn-danger btn-sm" data-i="'+i+'" onclick="delGalImg(+this.dataset.i)" style="margin-left:4px">&#10005;</button>'
+          +'<button class="btn btn-outline btn-sm" data-i="'+i+'" onclick="openGalCap(+this.dataset.i)">&#9998; Caption</button>'
+          +'<button class="btn btn-danger btn-sm" data-i="'+i+'" onclick="delGalImg(+this.dataset.i)" style="margin-left:4px">&#10005; Remove</button>'
         +'</div></div></div>';
   }).join('');
+}
+function openGalleryLightboxAdmin(i){
+  var arr=getGallery(); var img=arr[i]; if(!img) return;
+  // Show in a simple popup
+  var w=window.open('','_blank','width=900,height=700');
+  if(w) w.document.write('<body style="margin:0;background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh;"><img src="'+img.src+'" style="max-width:100%;max-height:100vh;object-fit:contain;" alt="'+img.caption+'"></body>');
 }
 function openGalCap(i){
   _galCapIdx=i;
