@@ -1,0 +1,2693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Admin Panel — Gangumalla's Sri Satyanarayana Nursery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+ --ink:#1b2a20;--cream:#f8f3e8;--cream2:#efe6d2;--cream3:#faf6ed;
+ --green:#1f3a2d;--green-deep:#142319;--green-mid:#2f6647;
+ --gold:#b9893f;--gold-l:#e3c88a;--muted:#6b6457;--line:rgba(27,42,32,.13);
+ --red:#b84040;--red-l:#fdf0f0;--sidebar:256px;
+}
+body{font-family:'Inter',sans-serif;background:#eae5db;color:var(--ink);display:flex;min-height:100vh;}
+h2,h3{font-family:'Fraunces',serif;}
+button{cursor:pointer;font-family:inherit;border:none;}
+input,select,textarea{font-family:inherit;}
+.sidebar{width:var(--sidebar);flex-shrink:0;background:var(--green-deep);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;overflow-y:auto;}
+.sb-logo{padding:24px 20px 16px;border-bottom:1px solid rgba(255,255,255,.08);}
+.sb-name{font-family:'Fraunces',serif;font-size:.96rem;color:var(--cream);}
+.sb-sub{font-size:.6rem;color:var(--gold-l);letter-spacing:.07em;margin-top:2px;}
+.sb-pill{display:inline-block;background:var(--gold);color:var(--green-deep);font-size:.58rem;font-weight:700;letter-spacing:.08em;padding:2px 9px;border-radius:10px;text-transform:uppercase;margin-top:8px;}
+.sb-nav{padding:10px 12px;flex:1;}
+.sb-lbl{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);padding:14px 8px 6px;}
+.sb-btn{display:flex;align-items:center;gap:9px;width:100%;padding:9px 10px;border-radius:6px;background:transparent;color:rgba(255,255,255,.58);font-size:.83rem;text-align:left;transition:all .18s;margin-bottom:2px;border:none;}
+.sb-btn:hover{background:rgba(255,255,255,.07);color:var(--cream);}
+.sb-btn.active{background:rgba(185,137,63,.2);color:var(--gold-l);}
+.sb-cnt{margin-left:auto;background:rgba(255,255,255,.1);color:var(--gold-l);font-size:.66rem;padding:1px 7px;border-radius:10px;}
+.sb-footer{padding:14px 20px;border-top:1px solid rgba(255,255,255,.08);font-size:.7rem;color:rgba(255,255,255,.28);line-height:1.55;}
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;}
+.topbar{background:var(--cream);border-bottom:1px solid var(--line);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+.topbar-title{font-size:1.02rem;font-weight:500;color:var(--green-deep);}
+.content{padding:28px;flex:1;}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;font-size:.81rem;font-weight:500;letter-spacing:.02em;border-radius:4px;transition:all .18s;cursor:pointer;border:none;}
+.btn-primary{background:var(--green);color:var(--cream);}
+.btn-primary:hover{background:var(--green-deep);}
+.btn-gold{background:var(--gold);color:var(--green-deep);}
+.btn-gold:hover{background:var(--gold-l);}
+.btn-outline{background:transparent;border:1px solid var(--line);color:var(--ink);}
+.btn-outline:hover{border-color:var(--green);color:var(--green);}
+.btn-danger{background:var(--red-l);color:var(--red);border:1px solid rgba(184,64,64,.18);}
+.btn-danger:hover{background:var(--red);color:#fff;}
+.btn-ai{background:linear-gradient(135deg,var(--green-deep),var(--green-mid));color:var(--gold-l);border:1px solid rgba(185,137,63,.3);}
+.btn-sm{padding:5px 11px;font-size:.75rem;}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-card{background:var(--cream);border:1px solid var(--line);border-radius:8px;padding:18px 20px;}
+.stat-num{font-family:'Fraunces',serif;font-size:1.9rem;color:var(--gold);}
+.stat-lbl{font-size:.74rem;color:var(--muted);margin-top:4px;}
+.view{display:none;}
+.view.active{display:block;animation:fadeIn .2s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.tbl-wrap{background:var(--cream);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-top:16px;}
+.ptbl{width:100%;border-collapse:collapse;}
+.ptbl th{background:var(--green-deep);color:var(--gold-l);font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:11px 14px;text-align:left;}
+.ptbl td{padding:10px 14px;font-size:.83rem;border-bottom:1px solid var(--line);vertical-align:middle;}
+.ptbl tr:last-child td{border-bottom:none;}
+.ptbl tr:hover td{background:var(--cream3);}
+.thumb{width:40px;height:40px;border-radius:6px;border:1px solid var(--line);background:var(--cream2);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
+.thumb img{width:100%;height:100%;object-fit:cover;}
+.nm-txt strong{display:block;font-weight:500;font-size:.85rem;}
+.nm-txt small{font-size:.72rem;color:var(--gold);font-style:italic;}
+.cpill{display:inline-block;background:var(--cream2);border:1px solid var(--line);color:var(--green-mid);font-size:.69rem;padding:2px 9px;border-radius:12px;}
+.spill{display:inline-flex;align-items:center;gap:4px;font-size:.7rem;padding:2px 9px;border-radius:12px;}
+.spill.builtin{background:#e6f2e6;color:#276027;}
+.spill.custom{background:rgba(185,137,63,.14);color:var(--gold);}
+.spill.edited{background:rgba(185,137,63,.25);color:#8a5f00;}
+.sdot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.act-cell{display:flex;gap:5px;flex-wrap:wrap;}
+.sec-hd{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
+.sec-hd h2{font-size:1.08rem;font-weight:500;}
+.filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.fsel{border:1px solid var(--line);border-radius:4px;padding:7px 11px;font-size:.8rem;background:var(--cream);color:var(--ink);}
+.fsrch{border:1px solid var(--line);border-radius:4px;padding:7px 11px;font-size:.8rem;background:var(--cream);color:var(--ink);min-width:180px;}
+.fsrch:focus,.fsel:focus{outline:none;border-color:var(--gold);}
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:14px;}
+.cat-card{background:var(--cream);border:1px solid var(--line);border-radius:8px;padding:18px;display:flex;align-items:center;justify-content:space-between;transition:border-color .18s;cursor:pointer;}
+.cat-card:hover{border-color:var(--gold);}
+.cat-info strong{display:block;font-size:.92rem;font-weight:500;color:var(--green-deep);}
+.cat-info small{font-size:.74rem;color:var(--muted);}
+.cat-arr{color:var(--gold);font-size:1.1rem;}
+.bc-nav{font-size:.8rem;color:var(--muted);margin-bottom:14px;cursor:pointer;}
+.bc-nav span{color:var(--green);font-weight:500;}
+.bc-nav:hover span{color:var(--gold);}
+.form-overlay{display:none;position:fixed;inset:0;z-index:100;background:rgba(20,35,25,.52);backdrop-filter:blur(5px);overflow-y:auto;padding:20px;align-items:flex-start;justify-content:center;}
+.form-overlay.open{display:flex;}
+.form-panel{background:var(--cream);border-radius:10px;width:100%;max-width:780px;margin:auto;box-shadow:0 32px 80px rgba(20,35,25,.3);animation:slideUp .3s cubic-bezier(.22,1,.36,1);}
+@keyframes slideUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+.fp-hd{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid var(--line);}
+.fp-hd h2{font-size:1.1rem;font-weight:500;}
+.fp-close{width:30px;height:30px;border-radius:50%;background:var(--cream2);border:none;font-size:1rem;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:all .18s;}
+.fp-close:hover{background:var(--red);color:#fff;}
+.fp-body{padding:24px;}
+.fp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;}
+.fp-full{grid-column:span 2;}
+.fg{display:flex;flex-direction:column;gap:4px;}
+.flbl{font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--green-mid);}
+.flbl .req{color:var(--red);}
+.fi,.fsel2,.fta{border:1px solid var(--line);border-radius:4px;padding:8px 11px;font-size:.88rem;background:var(--cream);color:var(--ink);transition:border-color .18s;width:100%;}
+.fi:focus,.fsel2:focus,.fta:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(185,137,63,.12);}
+.fta{resize:vertical;min-height:85px;line-height:1.55;}
+.fhint{font-size:.71rem;color:var(--muted);margin-top:2px;}
+.ai-box{background:linear-gradient(135deg,var(--green-deep),#1a3828);border-radius:8px;padding:16px 18px;margin-bottom:18px;border:1px solid rgba(185,137,63,.22);}
+.ai-hd{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.ai-hd h3{font-size:.9rem;font-weight:500;color:var(--cream);}
+.ai-badge{background:var(--gold);color:var(--green-deep);font-size:.58rem;font-weight:700;letter-spacing:.07em;padding:2px 8px;border-radius:10px;text-transform:uppercase;}
+.ai-desc{font-size:.78rem;color:rgba(248,243,232,.6);margin-bottom:11px;}
+.ai-row{display:flex;gap:8px;}
+.ai-inp{flex:1;border:1px solid rgba(185,137,63,.32);border-radius:4px;padding:8px 12px;background:rgba(255,255,255,.06);color:var(--cream);font-size:.86rem;}
+.ai-inp::placeholder{color:rgba(255,255,255,.3);}
+.ai-inp:focus{outline:none;border-color:var(--gold);}
+.ai-loading{display:none;align-items:center;gap:7px;margin-top:9px;font-size:.78rem;color:var(--gold-l);}
+.ai-loading.show{display:flex;}
+.spin{width:15px;height:15px;border:2px solid rgba(185,137,63,.3);border-top-color:var(--gold);border-radius:50%;animation:rot .7s linear infinite;}
+@keyframes rot{to{transform:rotate(360deg)}}
+.img-zone{border:2px dashed var(--line);border-radius:6px;padding:20px;text-align:center;cursor:pointer;position:relative;background:var(--cream2);transition:all .18s;}
+.img-zone:hover{border-color:var(--gold);background:#e8dfc8;}
+.img-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.img-prev{display:none;border-radius:6px;overflow:hidden;border:1px solid var(--line);margin-top:9px;position:relative;}
+.img-prev img{width:100%;max-height:160px;object-fit:cover;display:block;}
+.img-rm{position:absolute;top:6px;right:6px;background:rgba(20,35,25,.76);color:#fff;border:none;border-radius:50%;width:24px;height:24px;font-size:.85rem;display:flex;align-items:center;justify-content:center;}
+.dyn-list{display:flex;flex-direction:column;gap:6px;margin-top:3px;}
+.dyn-row{display:flex;gap:6px;}
+.dyn-row input{flex:1;}
+.dyn-rm{background:var(--red-l);color:var(--red);border:none;border-radius:4px;padding:0 9px;font-size:.95rem;transition:all .18s;flex-shrink:0;}
+.dyn-rm:hover{background:var(--red);color:#fff;}
+.dyn-add{display:inline-flex;align-items:center;gap:5px;margin-top:5px;background:transparent;border:1px dashed var(--line);border-radius:4px;padding:5px 11px;font-size:.76rem;color:var(--green-mid);transition:all .18s;}
+.dyn-add:hover{border-color:var(--green);color:var(--green);}
+.fp-ft{display:flex;justify-content:flex-end;gap:8px;padding:14px 24px;border-top:1px solid var(--line);}
+.vip-token-box{background:linear-gradient(135deg,#0e1810,#1a3828);border:1px solid rgba(185,137,63,.35);border-radius:8px;padding:20px 22px;margin-bottom:20px;}
+.vip-token-box h3{font-size:.96rem;font-weight:500;color:var(--gold-l);margin-bottom:4px;}
+.vip-token-box p{font-size:.78rem;color:rgba(248,243,232,.5);margin-bottom:14px;}
+.token-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.token-inp{flex:1;min-width:160px;background:#1a3828 !important;border:1.5px solid var(--gold) !important;border-radius:4px;padding:10px 14px;color:#e3c88a !important;-webkit-text-fill-color:#e3c88a !important;font-family:monospace;font-size:.92rem;}
+.token-inp:focus{outline:none;box-shadow:0 0 0 2px rgba(185,137,63,.3);}
+.link-preview{margin-top:10px;padding:8px 12px;background:rgba(0,0,0,.28);border-radius:4px;font-size:.74rem;color:rgba(248,243,232,.45);font-family:monospace;word-break:break-all;}
+.btn-vip{background:linear-gradient(135deg,var(--green),var(--green-mid));color:var(--gold-l);border:1px solid rgba(185,137,63,.3);}
+.btn-vip:hover{border-color:var(--gold);}
+.vip-plant-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px;}
+.vip-plant-card{background:linear-gradient(135deg,rgba(20,35,25,.85),rgba(14,24,16,.95));border:1px solid rgba(185,137,63,.2);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;}
+.vpc-img{height:130px;background:rgba(31,58,45,.5);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.vpc-img img{width:100%;height:100%;object-fit:cover;}
+.vpc-img .ni{font-size:2rem;opacity:.32;}
+.vpc-body{padding:14px;flex:1;}
+.vpc-name{font-family:'Fraunces',serif;font-size:.95rem;color:var(--gold-l);margin-bottom:2px;}
+.vpc-bot{font-size:.7rem;color:rgba(248,243,232,.35);font-style:italic;margin-bottom:6px;}
+.vpc-desc{font-size:.76rem;color:rgba(248,243,232,.45);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.vpc-footer{display:flex;gap:6px;padding:10px 14px;border-top:1px solid rgba(185,137,63,.1);}
+.io-panel{background:var(--cream);border:1px solid var(--line);border-radius:8px;padding:22px;margin-bottom:18px;}
+.io-panel h3{font-size:.98rem;font-weight:500;margin-bottom:5px;}
+.io-panel p{font-size:.82rem;color:var(--muted);margin-bottom:13px;}
+.io-row{display:flex;gap:8px;flex-wrap:wrap;}
+.import-ta{width:100%;min-height:90px;margin-top:11px;font-family:monospace;font-size:.74rem;border:1px solid var(--line);border-radius:4px;padding:9px;background:var(--cream2);display:none;}
+.import-ta.open{display:block;}
+.confirm-ov{display:none;position:fixed;inset:0;z-index:200;background:rgba(20,35,25,.55);backdrop-filter:blur(3px);align-items:center;justify-content:center;}
+.confirm-ov.open{display:flex;}
+.confirm-box{background:var(--cream);border-radius:10px;padding:26px 28px;max-width:370px;width:90%;box-shadow:0 24px 60px rgba(20,35,25,.3);animation:slideUp .22s ease;}
+.confirm-box h3{font-size:1.08rem;margin-bottom:9px;}
+.confirm-box p{font-size:.86rem;color:var(--muted);margin-bottom:20px;}
+.confirm-acts{display:flex;justify-content:flex-end;gap:8px;}
+.toast{position:fixed;bottom:24px;right:24px;z-index:999;background:var(--green-deep);color:var(--cream);padding:11px 18px;border-radius:6px;font-size:.83rem;box-shadow:0 12px 30px rgba(20,35,25,.25);border-left:3px solid var(--gold);transform:translateY(16px);opacity:0;transition:all .28s cubic-bezier(.22,1,.36,1);pointer-events:none;}
+.toast.show{transform:none;opacity:1;}
+.toast.ok{border-color:#4a9a4a;}
+.toast.err{border-color:var(--red);}
+.empty-st{text-align:center;padding:40px 20px;color:var(--muted);}
+.empty-st .ei{font-size:2.4rem;margin-bottom:10px;}
+@media(max-width:860px){
+ .stats-row{grid-template-columns:repeat(2,1fr);}
+ .cat-grid{grid-template-columns:1fr;}
+ .fp-grid{grid-template-columns:1fr;}
+ .fp-full{grid-column:span 1;}
+ .vip-plant-grid{grid-template-columns:repeat(2,1fr);}
+}
+#login-screen{
+ display:flex;position:fixed;inset:0;z-index:9999;
+ background:var(--green-deep);
+ align-items:center;justify-content:center;flex-direction:column;
+}
+#login-screen.hidden{display:none;}
+.login-card{
+ background:var(--cream);border-radius:12px;
+ padding:44px 40px 36px;width:100%;max-width:380px;
+ box-shadow:0 32px 80px rgba(0,0,0,.4);text-align:center;
+}
+.login-logo{font-size:2rem;margin-bottom:10px;}
+.login-brand{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:500;
+ color:var(--green-deep);line-height:1.25;margin-bottom:4px;}
+.login-sub{font-size:.72rem;color:var(--muted);letter-spacing:.06em;
+ text-transform:uppercase;margin-bottom:28px;}
+.login-label{font-size:.7rem;font-weight:600;letter-spacing:.07em;
+ text-transform:uppercase;color:var(--green-mid);display:block;
+ text-align:left;margin-bottom:5px;}
+.login-inp{width:100%;border:1.5px solid var(--line);border-radius:4px;
+ padding:11px 14px;font-size:.94rem;background:var(--cream);
+ color:var(--ink);transition:border-color .2s;margin-bottom:14px;}
+.login-inp:focus{outline:none;border-color:var(--gold);
+ box-shadow:0 0 0 3px rgba(185,137,63,.12);}
+.login-inp.err{border-color:var(--red);animation:shake .3s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.login-btn{width:100%;background:var(--green-deep);color:var(--cream);
+ border:none;border-radius:4px;padding:13px;font-size:.9rem;font-weight:600;
+ letter-spacing:.04em;cursor:pointer;transition:background .2s;margin-bottom:12px;}
+.login-btn:hover{background:var(--green);}
+.login-hint{font-size:.72rem;color:var(--muted);}
+.login-divider{border:none;border-top:1px solid var(--line);margin:20px 0;}
+.change-pwd-wrap{display:none;margin-top:8px;}
+.change-pwd-wrap.show{display:block;}
+.an-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+.an-card{background:var(--cream);border:1px solid var(--line);border-radius:8px;padding:18px 20px;}
+.an-num{font-family:'Fraunces',serif;font-size:1.9rem;color:var(--gold);}
+.an-lbl{font-size:.74rem;color:var(--muted);margin-top:4px;}
+.an-section{background:var(--cream);border:1px solid var(--line);border-radius:8px;padding:20px 22px;margin-bottom:16px;}
+.an-section h3{font-size:.96rem;font-weight:500;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--line);}
+.an-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+.an-bar-label{font-size:.8rem;width:140px;flex-shrink:0;color:var(--ink);}
+.an-bar-track{flex:1;background:var(--cream2);border-radius:20px;height:10px;overflow:hidden;}
+.an-bar-fill{height:100%;background:linear-gradient(90deg,var(--green-mid),var(--gold));border-radius:20px;transition:width .6s ease;}
+.an-bar-num{font-size:.75rem;color:var(--muted);width:40px;text-align:right;flex-shrink:0;}
+.an-activity{display:flex;flex-direction:column;gap:8px;}
+.an-act-row{display:flex;align-items:center;gap:10px;font-size:.8rem;padding:8px 0;border-bottom:1px solid var(--line);}
+.an-act-row:last-child{border-bottom:none;}
+.an-act-icon{font-size:1rem;width:24px;text-align:center;flex-shrink:0;}
+.an-act-text{flex:1;color:var(--ink);}
+.an-act-time{color:var(--muted);font-size:.74rem;flex-shrink:0;}
+.an-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:.88rem;}
+.an-reset{font-size:.74rem;color:var(--muted);cursor:pointer;text-decoration:underline;float:right;margin-top:-30px;}
+.an-reset:hover{color:var(--red);}
+@media(max-width:860px){.an-grid{grid-template-columns:repeat(2,1fr);}}
+.v-type-badge{display:inline-block;font-size:.62rem;font-weight:600;letter-spacing:.08em;
+ text-transform:uppercase;padding:3px 10px;border-radius:12px;}
+.v-type-badge.government{background:#e6f0e6;color:#1a5c1a;}
+.v-type-badge.hospitality{background:#fff3e6;color:#8a4400;}
+.v-type-badge.corporate{background:#e6eeff;color:#1a3080;}
+.v-type-badge.private{background:rgba(185,137,63,.12);color:var(--green-mid);}
+.v-type-badge.landscape{background:#f0e6ff;color:#4a1a80;}
+.visitor-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px;}
+.vc{background:var(--cream);border:1px solid var(--line);border-radius:8px;padding:16px;}
+.vc-org{font-family:'Fraunces',serif;font-size:.95rem;font-weight:500;color:var(--green-deep);margin:8px 0 4px;}
+.vc-loc{font-size:.75rem;color:var(--muted);margin-bottom:8px;}
+.vc-quote{font-size:.77rem;color:var(--ink);font-style:italic;border-left:2px solid var(--gold);padding-left:8px;
+ display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.vc-footer{display:flex;gap:6px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line);}
+@media(max-width:860px){.visitor-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:768px){
+ :root{--sidebar:0px;}
+ .sidebar{
+ transform:translateX(-100%);
+ transition:transform .28s cubic-bezier(.22,1,.36,1);
+ width:260px;
+ box-shadow:4px 0 24px rgba(0,0,0,.3);
+ }
+ .sidebar.open{transform:translateX(0);}
+ .sb-backdrop{
+ display:none;position:fixed;inset:0;z-index:49;
+ background:rgba(0,0,0,.45);
+ }
+ .sidebar.open ~ .sb-backdrop{display:block;}
+ .main{margin-left:0;}
+ .topbar{padding:12px 16px;gap:10px;}
+ .topbar-title{font-size:.94rem;}
+ .hamburger{
+ display:flex;flex-direction:column;justify-content:center;
+ gap:5px;width:36px;height:36px;cursor:pointer;flex-shrink:0;
+ background:transparent;border:none;padding:4px;
+ }
+ .hamburger span{display:block;height:2px;background:var(--green-deep);
+ border-radius:2px;transition:all .22s;}
+ .hamburger.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px);}
+ .hamburger.open span:nth-child(2){opacity:0;}
+ .hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px);}
+ .topbar-actions .btn{padding:7px 12px;font-size:.75rem;}
+ .topbar-actions .btn span{display:none;}
+ .content{padding:16px;}
+ .stats-row{grid-template-columns:repeat(2,1fr);gap:10px;}
+ .stat-num{font-size:1.5rem;}
+ .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+ .ptbl{min-width:520px;}
+ .ptbl th,.ptbl td{padding:9px 10px;font-size:.78rem;}
+ .thumb{width:34px;height:34px;}
+ .cat-grid{grid-template-columns:1fr 1fr;gap:10px;}
+ .cat-card{padding:13px;}
+ .visitor-grid{grid-template-columns:1fr 1fr;gap:10px;}
+ .vip-plant-grid{grid-template-columns:1fr 1fr;gap:10px;}
+ .form-overlay{padding:0;align-items:flex-end;}
+ .form-panel{border-radius:14px 14px 0 0;max-height:90vh;overflow-y:auto;margin:0;}
+ .fp-grid{grid-template-columns:1fr;}
+ .fp-full{grid-column:span 1;}
+ .fp-hd{padding:14px 16px;}
+ .fp-body{padding:16px;}
+ .fp-ft{padding:12px 16px;flex-wrap:wrap;gap:8px;}
+ .fp-ft .btn{flex:1;justify-content:center;}
+ .login-card{padding:32px 22px 24px;border-radius:12px;}
+ .login-inp{font-size:1rem;}
+ .an-grid{grid-template-columns:repeat(2,1fr);gap:10px;}
+ .an-section{padding:14px 16px;}
+ .an-bar-label{width:100px;font-size:.74rem;}
+ .token-row{flex-direction:column;}
+ .token-inp{width:100%;min-width:unset;}
+ .filters{flex-direction:column;align-items:stretch;}
+ .fsrch,.fsel{width:100%;}
+ .io-row{flex-direction:column;}
+ .io-row .btn{width:100%;justify-content:center;}
+}
+@media(max-width:480px){
+ .stats-row{grid-template-columns:1fr 1fr;}
+ .cat-grid{grid-template-columns:1fr;}
+ .visitor-grid{grid-template-columns:1fr;}
+ .an-grid{grid-template-columns:1fr 1fr;}
+ .vip-plant-grid{grid-template-columns:1fr;}
+ .topbar-actions .btn-gold{padding:8px 10px;font-size:.78rem;}
+}
+@media(min-width:769px){
+ .hamburger{display:none;}
+ .sb-backdrop{display:none!important;}
+}
+.gal-admin-grid{
+ display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+ gap:14px;margin-top:14px;
+}
+.gal-admin-card{
+ background:var(--cream);border:1px solid var(--line);border-radius:8px;
+ overflow:hidden;position:relative;
+}
+.gal-admin-img{width:100%;height:140px;object-fit:cover;display:block;}
+.gal-admin-ph{width:100%;height:140px;background:var(--cream2);display:flex;
+ align-items:center;justify-content:center;font-size:2rem;color:var(--muted);}
+.gal-admin-body{padding:10px 12px;}
+.gal-admin-cap{font-size:.8rem;color:var(--ink);margin-bottom:8px;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gal-admin-acts{display:flex;gap:6px;}
+.gal-upload-zone{
+ border:2px dashed var(--line);border-radius:8px;padding:36px 20px;
+ text-align:center;cursor:pointer;position:relative;
+ background:var(--cream2);transition:all .18s;margin-bottom:16px;
+}
+.gal-upload-zone:hover{border-color:var(--gold);background:#e8dfc8;}
+.gal-upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.gal-upload-zone .up-icon{font-size:2rem;margin-bottom:8px;}
+.gal-upload-zone .up-txt{font-size:.84rem;color:var(--muted);}
+.logo-preview-wrap{
+ display:none;margin-top:12px;padding:16px;
+ background:#f0ede5;border-radius:6px;border:1px solid var(--line);
+ text-align:center;
+}
+.logo-preview-wrap img{max-height:80px;max-width:300px;display:block;margin:0 auto;}
+.pub-card{background:var(--cream);border:1px solid var(--line);border-radius:10px;padding:26px;margin-bottom:16px;}
+.pub-card h3{font-size:.98rem;font-weight:500;margin-bottom:6px;}
+.pub-card p{font-size:.82rem;color:var(--muted);margin-bottom:16px;line-height:1.6;}
+.pub-step{display:flex;gap:14px;align-items:flex-start;margin-bottom:12px;font-size:.84rem;}
+.pub-step-num{width:24px;height:24px;border-radius:50%;background:var(--green-deep);color:var(--gold-l);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;margin-top:1px;}
+.pub-why{background:#fffbf0;border:1px solid rgba(185,137,63,.3);border-radius:8px;padding:18px 20px;margin-bottom:16px;}
+.pub-why h4{font-size:.88rem;font-weight:600;margin-bottom:8px;color:#6b4c00;}
+.pub-why ul{font-size:.81rem;color:#6b4c00;padding-left:18px;line-height:1.7;}
+.pub-stat{display:inline-flex;gap:6px;align-items:center;font-size:.78rem;color:var(--muted);margin-top:8px;background:var(--cream2);padding:5px 12px;border-radius:20px;}
+
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">&#127807;</div>
+    <div class="login-brand">Gangumalla&rsquo;s Sri<br>Satyanarayana Nursery</div>
+    <div class="login-sub">Admin Panel</div>
+    <label class="login-label" for="pwd-inp">Password</label>
+    <input class="login-inp" id="pwd-inp" type="password"
+      placeholder="Enter admin password" autocomplete="current-password">
+    <button class="login-btn" onclick="doLogin()">Sign In &rarr;</button>
+    <p class="login-hint" id="login-hint" style="color:transparent;">&#160;</p>
+  </div>
+</div>
+
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-name">Nursery Admin</div>
+    <div class="sb-sub">Gangumalla's Sri Satyanarayana</div>
+    <div class="sb-pill">&#9679; Admin Panel</div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-lbl">Manage</div>
+    <button class="sb-btn active" onclick="showView('dashboard')" id="nav-dashboard">&#128202; Dashboard</button>
+    <button class="sb-btn" onclick="showView('plants')" id="nav-plants">&#127807; All Plants <span class="sb-cnt" id="sb-cnt">0</span></button>
+    <button class="sb-btn" onclick="showView('categories')" id="nav-categories">&#128194; Categories</button>
+    <div class="sb-lbl">VIP Clients</div>
+    <button class="sb-btn" onclick="showView('vip')" id="nav-vip">&#9670; VIP Collection <span class="sb-cnt" id="sb-vip-cnt">0</span></button>
+    <div class="sb-lbl">Insights</div>
+    <button class="sb-btn" onclick="showView('analytics')" id="nav-analytics">&#128200; Analytics</button>
+    <button class="sb-btn" onclick="showView('visitors')" id="nav-visitors">&#127775; VIP Visitors</button>
+    <button class="sb-btn" onclick="showView('gallery')" id="nav-gallery-admin">&#128247; Gallery</button>
+    <button class="sb-btn" onclick="showView('settings')" id="nav-settings">&#9881; Site Settings</button>
+    <div class="sb-lbl">Tools</div>
+    <button class="sb-btn" onclick="showView('publish')" id="nav-publish">&#128228; Publish &amp; Share</button>
+    <button class="sb-btn" onclick="showView('import-export')" id="nav-import-export">&#128260; Import / Export</button>
+    <button class="sb-btn" onclick="openWebsite()">&#127760; Open Website</button>
+  </div>
+  <div class="sb-footer">Changes save automatically. Edits appear on the website when it is refreshed.<hr style="border:none;border-top:1px solid rgba(255,255,255,.1);margin:12px 0;"><button class="sb-btn" onclick="showChangePwd()" style="padding:7px 10px;font-size:.76rem;color:rgba(255,255,255,.45);">&#128274; Change Password</button><button class="sb-btn" onclick="doLogout()" style="padding:7px 10px;font-size:.76rem;color:rgba(255,255,255,.45);">&#10005; Sign Out</button></div>
+</aside>
+<div class="sb-backdrop" id="sb-backdrop" onclick="closeSidebar()"></div>
+
+<div class="main">
+  <div class="topbar">
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="topbar-title" id="topbar-title">Dashboard</div>
+    <div style="display:flex;gap:9px;" id="topbar-actions">
+      <button class="btn btn-gold" id="topbar-add-plant" onclick="openForm()">&#43; Add New Plant</button>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="view active" id="view-dashboard">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-num" id="s-total">0</div><div class="stat-lbl">Total Varieties</div></div>
+        <div class="stat-card"><div class="stat-num" id="s-edited">0</div><div class="stat-lbl">Plants Edited</div></div>
+        <div class="stat-card"><div class="stat-num" id="s-custom">0</div><div class="stat-lbl">Custom Added</div></div>
+        <div class="stat-card"><div class="stat-num" id="s-vip">0</div><div class="stat-lbl">VIP Plants</div></div>
+      </div>
+      <div style="background:var(--cream);border:1px solid var(--line);border-radius:8px;padding:22px;margin-bottom:18px;">
+        <h2 style="font-size:1rem;margin-bottom:14px;padding-bottom:11px;border-bottom:1px solid var(--line);">Quick Actions</h2>
+        <div style="display:flex;gap:9px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="openForm()">&#43; Add New Plant</button>
+          <button class="btn btn-outline" onclick="showView('plants')">View All Plants</button>
+          <button class="btn btn-outline" onclick="showView('categories')">Browse Categories</button>
+          <button class="btn btn-outline" onclick="showView('vip')">VIP Collection</button>
+        </div>
+      </div>
+      <div style="background:var(--cream);border:1px solid var(--line);border-radius:8px;padding:22px;">
+        <h2 style="font-size:1rem;margin-bottom:4px;">Recently Edited or Added</h2>
+        <p style="font-size:.8rem;color:var(--muted);margin-bottom:14px;">Plants you have modified or added</p>
+        <div id="recent-list"></div>
+      </div>
+    </div>
+
+    <!-- ALL PLANTS -->
+    <div class="view" id="view-plants">
+      <div class="sec-hd">
+        <div><h2>All Plant Varieties</h2><p style="font-size:.8rem;color:var(--muted);margin-top:3px;" id="plants-sub"></p></div>
+        <div class="filters">
+          <input class="fsrch" id="srch" placeholder="&#128269; Search plants..." oninput="renderTable()">
+          <select class="fsel" id="flt-cat" onchange="renderTable()">
+            <option value="">All Categories</option>
+            <option value="ornamental">Ornamental</option><option value="avenue">Avenue &amp; Shade</option>
+            <option value="palm">Palms</option><option value="flowering">Flowering</option>
+            <option value="fruit">Fruit</option><option value="bamboo">Bamboo</option>
+            <option value="aquatic">Aquatic</option><option value="desert">Desert</option>
+            <option value="ficus">Ficus</option><option value="indoor">Indoor</option>
+            <option value="pots">Pots</option>
+          </select>
+          <select class="fsel" id="flt-type" onchange="renderTable()">
+            <option value="">All Types</option>
+            <option value="builtin">Built-in</option>
+            <option value="edited">Edited</option>
+            <option value="custom">Custom Added</option>
+          </select>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table class="ptbl">
+          <thead><tr><th style="width:48px;"></th><th>Plant Name</th><th>Category</th><th>Status</th><th style="width:150px;">Actions</th></tr></thead>
+          <tbody id="ptbl-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CATEGORIES -->
+    <div class="view" id="view-categories">
+      <div class="sec-hd"><h2 id="cv-title">Plant Categories</h2>
+        <button class="btn btn-outline btn-sm" id="cv-back" onclick="showCatList()" style="display:none;">&#8592; All Categories</button>
+      </div>
+      <div id="cv-list">
+        <div class="cat-grid" id="cat-grid"></div>
+        <div style="margin-top:16px;" id="cat-add-btn">
+          <button class="btn btn-primary" onclick="openAddCat()">&#43; Add New Category</button>
+          <p style="font-size:.78rem;color:var(--muted);margin-top:8px;">Built-in categories cannot be deleted. Custom categories you add appear here and in the plant forms.</p>
+        </div>
+      </div>
+      <div id="cv-detail" style="display:none;"></div>
+    </div>
+
+    <!-- VIP -->
+    <div class="view" id="view-vip">
+      <div class="vip-token-box">
+        <h3>&#9670; VIP Access Link</h3>
+        <p>Share this link with VIP clients. Anyone without the exact token sees a blank page.</p>
+        <div class="token-row">
+          <input class="token-inp" id="vip-tok" placeholder="e.g. vip2024ssn" autocomplete="off">
+          <button class="btn btn-vip btn-sm" onclick="saveToken()">&#10003; Save</button>
+          <button class="btn btn-outline btn-sm" onclick="copyVipLink()">&#128279; Copy Link</button>
+          <button class="btn btn-outline btn-sm" onclick="openVipPage()">&#128065; Preview</button>
+        </div>
+        <div class="link-preview" id="vip-link-preview"></div>
+      </div>
+      <div class="sec-hd">
+        <div><h2>VIP Plant Collection</h2><p style="font-size:.8rem;color:var(--muted);margin-top:3px;" id="vip-sub">0 plants</p></div>
+        <button class="btn btn-gold" onclick="openVipForm()">&#43; Add VIP Plant</button>
+      </div>
+      <div class="vip-plant-grid" id="vip-plant-grid"></div>
+    </div>
+
+    <!-- IMPORT/EXPORT -->
+    <div class="view" id="view-import-export">
+      <h2 style="margin-bottom:18px;">Import &amp; Export</h2>
+      <div class="io-panel">
+        <h3>&#8593; Export Custom Plant Data</h3>
+        <p>Download all custom and edited plant data as JSON. Use this to back up or share between devices.</p>
+        <div class="io-row">
+          <button class="btn btn-primary" onclick="doExport()">Download JSON</button>
+          <button class="btn btn-outline" onclick="copyExport()">Copy to Clipboard</button>
+        </div>
+      </div>
+      <div class="io-panel">
+        <h3>&#8595; Import Plant Data</h3>
+        <p>Paste previously exported JSON. New plants will be merged with existing data.</p>
+        <div class="io-row">
+          <button class="btn btn-outline" onclick="toggleImport()">Paste JSON</button>
+          <label class="btn btn-outline" style="cursor:pointer;">Upload File<input type="file" accept=".json" style="display:none;" onchange="importFile(this)"></label>
+        </div>
+        <textarea class="import-ta" id="import-ta" placeholder="Paste exported JSON here..."></textarea>
+        <div id="import-btn" style="display:none;margin-top:8px;"><button class="btn btn-gold" onclick="doImport()">&#10003; Import</button></div>
+      </div>
+      <div class="io-panel" style="border-left:3px solid var(--red);">
+        <h3 style="color:var(--red);">&#9888; Reset Custom Changes</h3>
+        <p>Remove all custom plants and edits. Built-in plant data is not deleted — only your changes.</p>
+        <button class="btn btn-danger" onclick="confirmReset()">Reset All Custom Changes</button>
+      </div>
+    </div>
+
+    <!-- ANALYTICS VIEW -->
+        <div class="view" id="view-analytics">
+          <div style="margin-bottom:22px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:6px;">
+              <h2 style="font-size:1.08rem;font-weight:500;">Website Analytics</h2>
+              <button class="btn btn-danger btn-sm" onclick="clearAnalytics()">Clear Data</button>
+            </div>
+            <p style="font-size:.78rem;color:var(--muted);" id="an-last-updated">Open the main website to start recording analytics data.</p>
+          </div>
+          <div class="an-grid">
+            <div class="an-card"><div class="an-num" id="an-total-visits">0</div><div class="an-lbl">Total Page Views</div></div>
+            <div class="an-card"><div class="an-num" id="an-sessions">0</div><div class="an-lbl">Unique Sessions</div></div>
+            <div class="an-card"><div class="an-num" id="an-plants-viewed">0</div><div class="an-lbl">Plant Detail Views</div></div>
+            <div class="an-card"><div class="an-num" id="an-enquiries">0</div><div class="an-lbl">Enquiry Clicks</div></div>
+          </div>
+          <div class="an-section">
+            <h3>&#128196; Pages Visited</h3>
+            <div id="an-pages-chart"><div class="an-empty">No data yet — open the website to start tracking.</div></div>
+          </div>
+          <div class="an-section">
+            <h3>&#127807; Most Viewed Plants</h3>
+            <div id="an-plants-chart"><div class="an-empty">No plant views recorded yet.</div></div>
+          </div>
+          <div class="an-section">
+            <h3>&#128337; Recent Activity</h3>
+            <div class="an-activity" id="an-activity"><div class="an-empty">No activity yet.</div></div>
+          </div>
+        </div>
+
+    <!-- VIP VISITORS VIEW -->
+        <div class="view" id="view-visitors">
+          <div class="sec-hd">
+            <div><h2>VIP Visitors</h2>
+              <p style="font-size:.8rem;color:var(--muted);margin-top:3px;" id="vis-sub">Clients and visitors shown on the website</p>
+            </div>
+            <button class="btn btn-gold" onclick="openVisitorForm()">&#43; Add Client</button>
+          </div>
+          <div class="visitor-grid" id="visitor-grid"></div>
+        </div>
+
+        <!-- GALLERY VIEW -->
+    <div class="view" id="view-gallery-admin">
+      <div class="sec-hd" style="margin-bottom:16px;">
+        <div>
+          <h2>Gallery Management</h2>
+          <p style="font-size:.8rem;color:var(--muted);margin-top:3px;" id="gal-sub">Photos shown in the website Gallery page</p>
+        </div>
+        <button class="btn btn-gold" onclick="document.getElementById('gal-upload-inp').click()">&#128247; Add Photos</button>
+      </div>
+      <!-- Hidden file input — triggered by button above -->
+      <input type="file" accept="image/*" multiple id="gal-upload-inp"
+        style="display:none;" onchange="handleGalUpload(this)">
+      <div style="background:var(--cream);border:2px dashed var(--line);border-radius:8px;padding:24px;text-align:center;margin-bottom:16px;cursor:pointer;" onclick="document.getElementById('gal-upload-inp').click()">
+        <div style="font-size:2rem;margin-bottom:8px;">&#128247;</div>
+        <div style="font-size:.84rem;color:var(--muted);">Click <strong>Add Photos</strong> above or tap here to upload images</div>
+        <div style="font-size:.74rem;color:var(--muted);margin-top:4px;">JPG, PNG &middot; Multiple files &middot; Max 3MB each</div>
+      </div>
+      <div class="gal-admin-grid" id="gal-admin-grid"></div>
+    </div>
+
+    <!-- GALLERY CAPTION FORM -->
+        <div class="form-overlay" id="gal-cap-overlay">
+          <div class="form-panel" style="max-width:420px;">
+            <div class="fp-hd"><h2>Edit Caption</h2>
+              <button class="fp-close" onclick="document.getElementById('gal-cap-overlay').classList.remove('open')">&#10005;</button>
+            </div>
+            <div class="fp-body">
+              <div class="fg">
+                <label class="flbl">Photo Caption</label>
+                <input class="fi" id="gal-cap-inp" placeholder="e.g. Ficus Topiary — Forest Shape · Kadiyam Nursery">
+              </div>
+            </div>
+            <div class="fp-ft">
+              <button class="btn btn-outline" onclick="document.getElementById('gal-cap-overlay').classList.remove('open')">Cancel</button>
+              <button class="btn btn-primary" onclick="saveGalCap()">&#10003; Save Caption</button>
+            </div>
+          </div>
+        </div>
+
+    <!-- HERO PHOTO VIEW (Site Settings) -->
+        <div class="view" id="view-settings">
+          <h2 style="font-size:1.08rem;font-weight:500;margin-bottom:20px;">Site Settings</h2>
+          <div style="background:var(--cream);border:1px solid var(--line);border-radius:8px;padding:24px;margin-bottom:18px;">
+            <h3 style="font-size:.98rem;font-weight:500;margin-bottom:6px;">&#127756; Main Nursery Hero Photo</h3>
+            <p style="font-size:.82rem;color:var(--muted);margin-bottom:16px;">This photo appears as the background of the main website hero section. Use a wide, high-quality shot of the nursery.</p>
+            <div class="img-zone" id="hero-zone">
+              <input type="file" accept="image/*" id="hero-img-file" onchange="hHeroImg(this)">
+              <div style="font-size:1.8rem;margin-bottom:6px;">&#127756;</div>
+              <div style="font-size:.82rem;color:var(--muted);">Click or drag &middot; JPG / PNG &middot; max 5 MB<br><small>Recommended: landscape orientation, 1920×1080 or wider</small></div>
+            </div>
+            <div class="img-prev" id="hero-img-prev" style="margin-top:12px;">
+              <img id="hero-img-preview" src="" alt="Hero preview">
+              <button class="img-rm" onclick="rmHeroImg()">&#10005;</button>
+            </div>
+            <div style="margin-top:14px;display:flex;gap:9px;">
+              <button class="btn btn-primary" onclick="saveHeroImg()">&#10003; Save Hero Photo</button>
+              <button class="btn btn-danger" onclick="clearHeroImg()">Remove Photo</button>
+            </div>
+            <p style="font-size:.74rem;color:var(--muted);margin-top:10px;" id="hero-status"></p>
+          </div>
+        </div>
+
+    <!-- PUBLISH VIEW -->
+    <div class="view" id="view-publish">
+      <h2 style="font-size:1.08rem;font-weight:500;margin-bottom:6px;">Publish &amp; Share</h2>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:20px;">Bake all your current data into a self-contained HTML file that anyone can open — no setup needed.</p>
+
+      <div class="pub-why">
+        <h4>&#9432; Why others see an empty site</h4>
+        <ul>
+          <li>All plant edits, gallery images, visitors, logo and hero photo are stored in <strong>your browser's localStorage</strong></li>
+          <li>When you share the HTML file, the recipient gets the code — but <strong>not your data</strong></li>
+          <li>Publish solves this by <strong>embedding your current data directly into the HTML file</strong></li>
+        </ul>
+      </div>
+
+      <div class="pub-card">
+        <h3>&#128228; How Publish Works</h3>
+        <p>Publish creates a small <strong>launcher file</strong> (~100KB) that bakes all your current data into it. When anyone opens the launcher file, it automatically seeds the website with your data and opens it. <strong>All three original files + the launcher must be in the same folder.</strong></p>
+        <div class="pub-why" style="margin-bottom:14px;">
+          <h4>What gets baked in</h4>
+          <div id="pub-stats" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;"></div>
+        </div>
+
+        <h3 style="margin-bottom:8px;">&#128228; Website Launcher</h3>
+        <p style="margin-bottom:12px;">Download <strong>SSN-Website-Launcher.html</strong> and put it in the same folder as the website file. Share that folder. Visitors open the launcher → data loads → website opens.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px;">
+          <button class="btn btn-primary" onclick="publishWebsite()">&#11015; Download Website Launcher</button>
+        </div>
+        <div id="pub-dl-wrap" style="display:none;margin-top:8px;padding:12px;background:var(--cream2);border-radius:6px;">
+          <p style="font-size:.8rem;margin-bottom:8px;">Tap the link below to download:</p>
+          <a id="pub-dl-link" href="#" style="font-size:.88rem;color:var(--green);">&#11015; SSN-Website-Launcher.html</a>
+        </div>
+
+        <div style="margin-top:20px;">
+          <h3 style="margin-bottom:8px;">&#128228; VIP Portal Launcher</h3>
+          <p style="margin-bottom:12px;">Download <strong>SSN-VIP-Launcher.html</strong> for private clients. They open the launcher → loads VIP collection → ready to browse.</p>
+          <button class="btn btn-primary" onclick="publishVIP()">&#11015; Download VIP Launcher</button>
+        </div>
+
+        <div id="pub-instructions" style="display:none;margin-top:18px;background:#e8f5e8;border:1px solid #4a9a4a;border-radius:6px;padding:14px;">
+          <p style="font-size:.84rem;color:#1a5c1a;font-weight:600;margin-bottom:6px;">&#10003; Launcher downloaded!</p>
+          <p style="font-size:.8rem;color:#276027;line-height:1.6;">
+            <strong>To share:</strong> Put the launcher file in the same folder as the 3 HTML files → zip the entire folder → share the zip.<br>
+            <strong>Recipients:</strong> Unzip → open <code>SSN-Website-Launcher.html</code> first → website opens automatically with all your content.
+          </p>
+        </div>
+      </div>
+
+      <div class="pub-card" style="border-left:3px solid var(--gold);">
+        <h3>&#128161; Tips for Sharing</h3>
+        <div class="pub-step"><div class="pub-step-num">1</div><div>Always use <strong>Publish</strong> (above) to generate the shareable file — don't share the original admin file directly</div></div>
+        <div class="pub-step"><div class="pub-step-num">2</div><div>The three files (<strong>Website</strong>, <strong>Admin</strong>, <strong>VIP</strong>) must stay in the same folder to link to each other</div></div>
+        <div class="pub-step"><div class="pub-step-num">3</div><div>For fastest loading: host on a web server (GitHub Pages, Netlify — both free). Ask your developer to help upload these files</div></div>
+        <div class="pub-step"><div class="pub-step-num">4</div><div>After making changes in Admin, run Publish again to refresh the shareable copy</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- PLANT FORM -->
+<div class="form-overlay" id="form-overlay">
+  <div class="form-panel">
+    <div class="fp-hd"><h2 id="fp-title">Edit Plant</h2><button class="fp-close" onclick="closeForm()">&#10005;</button></div>
+    <div class="fp-body">
+      <div class="ai-box">
+        <div class="ai-hd"><h3>&#10022; AI Auto-Fill</h3><span class="ai-badge">Claude AI</span></div>
+        <p class="ai-desc">Enter plant name and click Generate to auto-fill all fields.</p>
+        <div class="ai-row">
+          <input class="ai-inp" id="ai-inp" placeholder="e.g. Areca Palm, Monstera...">
+          <button class="btn btn-ai" onclick="aiGenerate()">&#10022; Generate</button>
+        </div>
+        <div class="ai-loading" id="ai-loading"><div class="spin"></div><span>Generating...</span></div>
+      </div>
+      <div class="fp-grid">
+        <div class="fg"><label class="flbl">Name <span class="req">*</span></label><input class="fi" id="f-name"></div>
+        <div class="fg"><label class="flbl">Botanical Name</label><input class="fi" id="f-bot"></div>
+        <div class="fg"><label class="flbl">Category <span class="req">*</span></label>
+          <select class="fsel2" id="f-cat">
+            <option value="">Select...</option>
+            <option value="ornamental">Ornamental Plants</option><option value="avenue">Avenue &amp; Shade</option>
+            <option value="palm">Palm Varieties</option><option value="flowering">Flowering Plants</option>
+            <option value="fruit">Fruit Plants</option><option value="bamboo">Bamboo</option>
+            <option value="aquatic">Aquatic &amp; Pond</option><option value="desert">Desert &amp; Succulent</option>
+            <option value="ficus">Ficus Varieties</option><option value="indoor">Indoor Plants</option>
+            <option value="pots">Pots &amp; Planters</option>
+          </select></div>
+        <div class="fg"><label class="flbl">Tagline</label><input class="fi" id="f-tagline" placeholder="Short italic card summary"></div>
+        <div class="fg fp-full"><label class="flbl">Description <span class="req">*</span></label><textarea class="fta" id="f-desc" rows="3"></textarea></div>
+        <div class="fg"><label class="flbl">&#128167; Water</label><input class="fi" id="f-water"></div>
+        <div class="fg"><label class="flbl">&#9728; Light</label><input class="fi" id="f-light"></div>
+        <div class="fg"><label class="flbl">&#127807; Soil</label><input class="fi" id="f-soil"></div>
+        <div class="fg"><label class="flbl">&#11088; Difficulty</label>
+          <select class="fsel2" id="f-diff"><option value="">Select...</option>
+            <option>Beginner</option><option>Very Easy</option><option>Easy</option><option>Moderate</option><option>Hard</option>
+          </select></div>
+        <div class="fg"><label class="flbl">&#128200; Growth Rate</label><input class="fi" id="f-growth"></div>
+        <div class="fg fp-full"><label class="flbl">&#128247; Plant Photo</label>
+          <div class="img-zone"><input type="file" accept="image/*" id="img-file" onchange="handleImg(this)">
+            <div style="font-size:1.4rem;margin-bottom:4px;">&#128444;</div>
+            <div style="font-size:.78rem;color:var(--muted);">Click or drag &amp; drop &middot; max 5 MB</div>
+          </div>
+          <div class="img-prev" id="img-prev"><img id="img-preview" src="" alt=""><button class="img-rm" onclick="rmImg()">&#10005;</button></div>
+        </div>
+        <div class="fg fp-full"><label class="flbl">&#127807; Uses</label>
+          <div class="dyn-list" id="uses-list"></div><button class="dyn-add" onclick="addRow('uses-list',null)">&#43; Add use</button></div>
+        <div class="fg fp-full"><label class="flbl">&#128161; Care Tips</label>
+          <div class="dyn-list" id="tips-list"></div><button class="dyn-add" onclick="addRow('tips-list',null)">&#43; Add tip</button></div>
+      </div>
+    </div>
+    <div class="fp-ft">
+      <button class="btn btn-danger btn-sm" id="reset-btn" onclick="resetCurrent()" style="display:none;margin-right:auto;">&#8635; Reset to Default</button>
+      <button class="btn btn-outline" onclick="closeForm()">Cancel</button>
+      <button class="btn btn-primary" onclick="savePlant()">&#10003; Save Plant</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- VIP PLANT FORM -->
+<div class="form-overlay" id="vip-form-overlay">
+  <div class="form-panel">
+    <div class="fp-hd"><h2 id="vfp-title">Add VIP Plant</h2><button class="fp-close" onclick="closeVipForm()">&#10005;</button></div>
+    <div class="fp-body">
+      <div class="ai-box">
+        <div class="ai-hd"><h3>&#10022; AI Auto-Fill</h3><span class="ai-badge">Claude AI</span></div>
+        <p class="ai-desc">Enter plant name and click Generate.</p>
+        <div class="ai-row">
+          <input class="ai-inp" id="vai-inp" placeholder="e.g. Bismarck Palm, Baobab...">
+          <button class="btn btn-ai" onclick="vipAiGen()">&#10022; Generate</button>
+        </div>
+        <div class="ai-loading" id="vai-load"><div class="spin"></div><span>Generating...</span></div>
+      </div>
+      <div class="fp-grid">
+        <div class="fg"><label class="flbl">Name <span class="req">*</span></label><input class="fi" id="vf-name"></div>
+        <div class="fg"><label class="flbl">Botanical Name</label><input class="fi" id="vf-bot"></div>
+        <div class="fg"><label class="flbl">Category</label>
+          <select class="fsel2" id="vf-cat"><option value="">Select...</option>
+            <option value="ornamental">Ornamental</option><option value="avenue">Avenue &amp; Shade</option>
+            <option value="palm">Palm</option><option value="flowering">Flowering</option>
+            <option value="fruit">Fruit</option><option value="bamboo">Bamboo</option>
+            <option value="aquatic">Aquatic</option><option value="desert">Desert</option>
+            <option value="ficus">Ficus</option><option value="indoor">Indoor</option>
+            <option value="pots">Pots</option><option value="custom">Special / Custom</option>
+          </select></div>
+        <div class="fg"><label class="flbl">Tagline</label><input class="fi" id="vf-tagline"></div>
+        <div class="fg fp-full"><label class="flbl">Description <span class="req">*</span></label><textarea class="fta" id="vf-desc" rows="3"></textarea></div>
+        <div class="fg"><label class="flbl">&#128167; Water</label><input class="fi" id="vf-water"></div>
+        <div class="fg"><label class="flbl">&#9728; Light</label><input class="fi" id="vf-light"></div>
+        <div class="fg"><label class="flbl">&#127807; Soil</label><input class="fi" id="vf-soil"></div>
+        <div class="fg"><label class="flbl">&#11088; Difficulty</label>
+          <select class="fsel2" id="vf-diff"><option value="">Select...</option>
+            <option>Beginner</option><option>Very Easy</option><option>Easy</option><option>Moderate</option><option>Hard</option>
+          </select></div>
+        <div class="fg"><label class="flbl">&#128200; Growth</label><input class="fi" id="vf-growth"></div>
+        <div class="fg fp-full"><label class="flbl">&#128247; Photo</label>
+          <div class="img-zone"><input type="file" accept="image/*" id="vip-img-file" onchange="hVipImg(this)">
+            <div style="font-size:1.4rem;margin-bottom:4px;">&#128444;</div>
+            <div style="font-size:.78rem;color:var(--muted);">Click or drag &amp; drop &middot; max 5 MB</div>
+          </div>
+          <div class="img-prev" id="vip-img-prev"><img id="vip-img-preview" src="" alt=""><button class="img-rm" onclick="rmVipImg()">&#10005;</button></div>
+        </div>
+        <div class="fg fp-full"><label class="flbl">&#127807; Uses</label>
+          <div class="dyn-list" id="vip-uses"></div><button class="dyn-add" onclick="addVipRow('vip-uses',null)">&#43; Add</button></div>
+        <div class="fg fp-full"><label class="flbl">&#128161; Tips</label>
+          <div class="dyn-list" id="vip-tips"></div><button class="dyn-add" onclick="addVipRow('vip-tips',null)">&#43; Add</button></div>
+      </div>
+    </div>
+    <div class="fp-ft">
+      <button class="btn btn-outline" onclick="closeVipForm()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveVipPlant()">&#10003; Save VIP Plant</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD CATEGORY FORM -->
+<div class="form-overlay" id="cat-form-overlay">
+  <div class="form-panel" style="max-width:420px;">
+    <div class="fp-hd">
+      <h2>Add New Category</h2>
+      <button class="fp-close" onclick="document.getElementById('cat-form-overlay').classList.remove('open')">&#10005;</button>
+    </div>
+    <div class="fp-body">
+      <div class="fg" style="margin-bottom:14px;">
+        <label class="flbl">Category ID <span class="req">*</span></label>
+        <input class="fi" id="new-cat-key" placeholder="e.g. succulent, bamboo, aquatic">
+        <span class="fhint">Lowercase letters only, no spaces. Used internally.</span>
+      </div>
+      <div class="fg" style="margin-bottom:14px;">
+        <label class="flbl">Display Name <span class="req">*</span></label>
+        <input class="fi" id="new-cat-label" placeholder="e.g. Succulent Plants">
+      </div>
+      <div class="fg">
+        <label class="flbl">Icon Emoji</label>
+        <input class="fi" id="new-cat-icon" placeholder="e.g. 🌵  (paste an emoji)">
+        <span class="fhint">Optional — paste any emoji to use as the category icon.</span>
+      </div>
+    </div>
+    <div class="fp-ft">
+      <button class="btn btn-outline" onclick="document.getElementById('cat-form-overlay').classList.remove('open')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveNewCat()">&#10003; Add Category</button>
+    </div>
+  </div>
+</div>
+<!-- VISITOR FORM -->
+<div class="form-overlay" id="visitor-form-overlay">
+  <div class="form-panel" style="max-width:540px;">
+    <div class="fp-hd">
+      <h2 id="vf2-title">Add VIP Client</h2>
+      <button class="fp-close" onclick="closeVisitorForm()">&#10005;</button>
+    </div>
+    <div class="fp-body">
+      <div class="fp-grid">
+        <div class="fg fp-full">
+          <label class="flbl">Organisation / Client Name <span class="req">*</span></label>
+          <input class="fi" id="vi-org" placeholder="e.g. Taj Hotels, AP Horticulture Dept.">
+        </div>
+        <div class="fg">
+          <label class="flbl">Type <span class="req">*</span></label>
+          <select class="fsel2" id="vi-type">
+            <option value="">Select type...</option>
+            <option value="government">Government</option>
+            <option value="hospitality">Hotels &amp; Resorts</option>
+            <option value="corporate">Corporate</option>
+            <option value="landscape">Landscape Firms</option>
+            <option value="private">Private Collector</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="flbl">Location</label>
+          <input class="fi" id="vi-loc" placeholder="e.g. Hyderabad, Andhra Pradesh">
+        </div>
+        <div class="fg fp-full">
+          <label class="flbl">Quote / Testimonial</label>
+          <textarea class="fta" id="vi-quote" rows="3" placeholder="Optional — a short testimonial from the client..."></textarea>
+        </div>
+        <div class="fg">
+          <label class="flbl">Year Visited</label>
+          <input class="fi" id="vi-date" placeholder="e.g. 2024">
+        </div>
+        <div class="fg fp-full">
+          <label class="flbl">&#128247; Visitor / Organisation Photo</label>
+          <div class="img-zone" style="padding:14px;"><input type="file" accept="image/*" id="vi-img-file" onchange="hVisImg(this)">
+            <div style="font-size:1.2rem;margin-bottom:3px;">&#128444;</div>
+            <div style="font-size:.76rem;color:var(--muted);">Click or drag &middot; max 3 MB</div>
+          </div>
+          <div class="img-prev" id="vi-img-prev"><img id="vi-img-preview" src="" alt=""><button class="img-rm" onclick="rmVisImg()">&#10005;</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="fp-ft">
+      <button class="btn btn-outline" onclick="closeVisitorForm()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveVisitor()">&#10003; Save Client</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGE PASSWORD MODAL -->
+<div class="form-overlay" id="chpwd-overlay">
+  <div class="form-panel" style="max-width:420px;">
+    <div class="fp-hd">
+      <h2>Change Admin Password</h2>
+      <button class="fp-close" onclick="document.getElementById('chpwd-overlay').classList.remove('open')">&#10005;</button>
+    </div>
+    <div class="fp-body">
+      <div class="fg" style="margin-bottom:14px;">
+        <label class="flbl">Current Password</label>
+        <input class="fi" id="cp-current" type="password" placeholder="Enter current password">
+      </div>
+      <div class="fg" style="margin-bottom:14px;">
+        <label class="flbl">New Password</label>
+        <input class="fi" id="cp-new" type="password" placeholder="New password (min 6 chars)">
+      </div>
+      <div class="fg">
+        <label class="flbl">Confirm New Password</label>
+        <input class="fi" id="cp-confirm" type="password" placeholder="Re-enter new password">
+      </div>
+      <p style="font-size:.76rem;color:var(--muted);margin-top:14px;">Default password: <strong>nursery2024</strong></p>
+    </div>
+    <div class="fp-ft">
+      <button class="btn btn-outline" onclick="document.getElementById('chpwd-overlay').classList.remove('open')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveNewPwd()">&#10003; Update Password</button>
+    </div>
+  </div>
+</div>
+<div class="confirm-ov" id="confirm-ov">
+  <div class="confirm-box">
+    <h3 id="c-title">Are you sure?</h3><p id="c-msg">This cannot be undone.</p>
+    <div class="confirm-acts"><button class="btn btn-outline" onclick="closeConfirm()">Cancel</button><button class="btn btn-danger" id="c-ok">Confirm</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const PLANT_DATA = {
+  "ornamental__croton": {
+    name: "Croton",
+    botanical: "Codiaeum variegatum",
+    cat: "ornamental",
+    catLabel: "Ornamental Plants",
+    slug: "croton",
+    tagline: "Bold, fiery foliage for tropical accents",
+    description: "Croton is one of the most striking ornamental plants available, celebrated for its brilliant multi-coloured leaves that blend red, orange, yellow and green in dramatic patterns. Native to tropical regions, it brings instant colour and structure to borders, pots and indoor spaces.",
+    uses: ["Border accent", "Container planting", "Indoor focal point", "Poolside d\u00e9cor", "Tropical garden design"],
+    care: {"water": "Moderate \u2014 keep soil consistently moist but not waterlogged", "light": "Full sun to partial shade; more sun = brighter colour", "soil": "Rich, well-draining potting mix", "difficulty": "Easy", "growth": "Medium"},
+    tips: ["Water deeply twice a week; reduce in winter", "Feed with balanced fertiliser every 4 weeks during growing season", "Wipe leaves with damp cloth to maintain their glossy sheen", "Protect from temperatures below 10\u00b0C", "Prune leggy stems to encourage bushy, compact growth"],
+    related: ["ornamental__cordyline", "ornamental__acalypha", "ornamental__aglaonema", "flowering__hibiscus"],
+  },
+  "ornamental__cordyline": {
+    name: "Cordyline (Ti Plant)",
+    botanical: "Cordyline fruticosa",
+    cat: "ornamental",
+    catLabel: "Ornamental Plants",
+    slug: "cordyline",
+    tagline: "Architectural strap leaves in deep burgundy and green",
+    description: "The Ti Plant is a bold architectural specimen prized for its dramatic lance-shaped leaves in shades of deep burgundy, green, pink and cream. It creates instant tropical atmosphere in gardens, containers and interior landscapes.",
+    uses: ["Tropical garden centrepiece", "Container and patio planting", "Indoor statement plant", "Poolside and courtyard", "Contrast planting in borders"],
+    care: {"water": "Regular \u2014 keep moist, never let it fully dry out", "light": "Bright indirect light to full sun", "soil": "Rich, well-draining mix", "difficulty": "Easy", "growth": "Slow\u2013Medium"},
+    tips: ["Water 2\u20133 times per week; reduce in cooler months", "Remove dead or brown leaf tips with clean scissors", "Feed monthly with a slow-release balanced fertiliser", "Repot every 2 years in fresh potting mix", "Excellent in groupings \u2014 combine with Aglaonema for layered texture"],
+    related: ["ornamental__croton", "ornamental__sansevieria", "ornamental__aglaonema", "indoor__money-plant"],
+  },
+  "ornamental__duranta-gold": {
+    name: "Duranta Gold",
+    botanical: "Duranta erecta 'Gold Mound'",
+    cat: "ornamental",
+    catLabel: "Ornamental Plants",
+    slug: "duranta-gold",
+    tagline: "Glowing golden foliage for hedges and topiary",
+    description: "Duranta Gold is a compact, fast-growing shrub prized for its vivid golden-yellow foliage. It takes pruning beautifully, making it an ideal choice for formal hedges, colourful borders, topiary balls and mass planting.",
+    uses: ["Formal hedging", "Topiary and clipped shapes", "Mass border planting", "Contrast with dark-leaved plants", "Roadside and boulevard beautification"],
+    care: {"water": "Moderate \u2014 drought tolerant once established", "light": "Full sun essential for best colour", "soil": "Any well-draining soil", "difficulty": "Very Easy", "growth": "Fast"},
+    tips: ["Prune lightly every 6\u20138 weeks to maintain compact shape", "Fertilise twice a year \u2014 once at start of growing season, once mid-season", "Water deeply but infrequently once established", "Excellent as a low hedge alongside Ficus Panda or dark Cordyline", "Withstands heavy pruning \u2014 a great topiary candidate"],
+    related: ["ornamental__acalypha", "avenue__ashoka", "ficus__ficus-panda", "flowering__tecoma"],
+  },
+  "ornamental__acalypha": {
+    name: "Acalypha",
+    botanical: "Acalypha wilkesiana",
+    cat: "ornamental",
+    catLabel: "Ornamental Plants",
+    slug: "acalypha",
+    tagline: "Copper-red foliage for vibrant border contrast",
+    description: "Acalypha is a fast-growing tropical shrub with spectacular copper, red and bronze foliage. The rich leaf colours intensify in full sun, making it an outstanding contrast plant alongside green or golden specimens.",
+    uses: ["Border contrast planting", "Mixed shrub beds", "Tropical colour gardens", "Informal hedging", "Container specimen"],
+    care: {"water": "Regular \u2014 does not like to dry out completely", "light": "Full sun to partial shade", "soil": "Moist, fertile, well-draining", "difficulty": "Easy", "growth": "Fast"},
+    tips: ["Water every 2 days in hot weather; weekly in cooler months", "Trim back by one-third after each flush of growth", "Feed fortnightly with high-nitrogen fertiliser for richest colour", "Excellent companion to Duranta Gold for a copper-and-gold effect", "Watch for mealybugs \u2014 treat with neem oil spray if spotted"],
+    related: ["ornamental__croton", "ornamental__duranta-gold", "ornamental__cordyline", "flowering__bougainvillea"],
+  },
+  "ornamental__sansevieria": {
+    name: "Sansevieria",
+    botanical: "Dracaena trifasciata",
+    cat: "ornamental",
+    catLabel: "Ornamental Plants",
+    slug: "sansevieria",
+    tagline: "The near-indestructible architectural indoor classic",
+    description: "Sansevieria is one of the world's most forgiving plants \u2014 thriving in low light, tolerating neglect, and actively purifying indoor air. Its upright sword-like leaves in banded green and silver create a strong architectural presence indoors or in shaded outdoor areas.",
+    uses: ["Indoor air purification", "Low-light interiors and lobbies", "Office and commercial spaces", "Shaded courtyard planting", "Minimalist and modern d\u00e9cor"],
+    care: {"water": "Very low \u2014 water only when soil is completely dry (every 3\u20136 weeks)", "light": "Any light from low to bright indirect", "soil": "Cactus or sandy, free-draining mix", "difficulty": "Beginner", "growth": "Slow"},
+    tips: ["Water once every 3\u20134 weeks; overwatering is the main cause of death", "No fertiliser needed in winter; feed once in spring and once in summer", "Wipe leaves with a dry cloth to remove dust and keep them looking sharp", "Tolerates air conditioning \u2014 ideal for offices and hotel lobbies", "Can stay in the same pot for 3\u20134 years \u2014 repot only when roots emerge from base"],
+    related: ["indoor__zz-plant", "indoor__snake-plant", "indoor__peace-lily", "ornamental__aglaonema"],
+  },
+  "ornamental__aglaonema": {
+    name: "Aglaonema",
+    botanical: "Aglaonema commutatum",
+    cat: "ornamental",
+    catLabel: "Ornamental Plants",
+    slug: "aglaonema",
+    tagline: "Patterned tropical foliage for shaded indoor spaces",
+    description: "Aglaonema is a collector's favourite: available in dozens of colour forms from deep green to silver, pink and red, it thrives in the low-light conditions where most plants struggle. Its large, patterned leaves bring colour and life to shaded courtyards, lobbies and living rooms.",
+    uses: ["Shaded courtyard planting", "Hotel lobby and commercial interior", "Bedroom and living room accent", "Low-light office plant", "Tropical shade garden"],
+    care: {"water": "Moderate \u2014 keep slightly moist; allow top 2 cm to dry between waterings", "light": "Low to medium indirect light; avoid direct sun", "soil": "Rich, well-draining potting mix", "difficulty": "Easy", "growth": "Medium"},
+    tips: ["Water once or twice a week \u2014 less in low-light conditions", "Keep away from cold draughts and air-conditioning vents", "Feed monthly from spring to autumn with diluted balanced fertiliser", "Wipe leaves regularly to maintain their beautiful lustre", "Available in many colour varieties \u2014 ask us about our current range"],
+    related: ["ornamental__sansevieria", "indoor__peace-lily", "indoor__money-plant", "ornamental__cordyline"],
+  },
+  "avenue__gulmohar": {
+    name: "Gulmohar",
+    botanical: "Delonix regia",
+    cat: "avenue",
+    catLabel: "Avenue & Shade Trees",
+    slug: "gulmohar",
+    tagline: "The flame tree \u2014 a spectacular flowering avenue classic",
+    description: "Gulmohar is one of India's most beloved avenue trees, famous for its spectacular canopy of flame-red flowers that transform entire roads in summer. It casts generous shade and grows rapidly to create dramatic, umbrella-like canopies over driveways and boulevards.",
+    uses: ["Avenue and boulevard planting", "Large estate shade", "Park and public garden focal tree", "Driveway canopy", "Specimen flowering tree"],
+    care: {"water": "Low to moderate \u2014 very drought tolerant once established", "light": "Full sun essential", "soil": "Any well-draining soil, tolerates poor soil", "difficulty": "Easy", "growth": "Fast"},
+    tips: ["Water weekly for the first 2 years; afterwards relies on rainfall", "Apply mulch around base to retain moisture during establishment", "Do not overwater \u2014 root rot is the main risk", "Prune dead branches after flowering season (June\u2013August)", "Allow adequate space: canopy can spread 8\u201310 metres wide"],
+    related: ["avenue__rain-tree", "avenue__cassia", "avenue__tabebuia", "avenue__peltophorum"],
+  },
+  "avenue__rain-tree": {
+    name: "Rain Tree",
+    botanical: "Samanea saman",
+    cat: "avenue",
+    catLabel: "Avenue & Shade Trees",
+    slug: "rain-tree",
+    tagline: "Broad umbrella canopy for ultimate estate shade",
+    description: "The Rain Tree is one of the largest and most majestic shade trees available \u2014 its broad, spreading canopy can cover hundreds of square metres. Named for its habit of folding leaves before rain, it is a defining feature of grand avenues, parks and estate landscapes.",
+    uses: ["Grand estate shade", "Wide avenue planting", "Park centrepiece", "Outdoor event shade", "Landmark specimen tree"],
+    care: {"water": "Moderate \u2014 water regularly when young, drought tolerant when mature", "light": "Full sun", "soil": "Deep, well-draining soil; tolerates poor soils", "difficulty": "Easy", "growth": "Very Fast"},
+    tips: ["Stake young trees to protect from wind for the first 2\u20133 years", "Prune to a single leader trunk for the first 5 years for best form", "Give at least 15 metres clearance from buildings \u2014 canopy is very wide", "Roots are surface-spreading \u2014 avoid planting near pavements or pipes", "Leaves close at night and before rain \u2014 completely normal behaviour"],
+    related: ["avenue__gulmohar", "avenue__peltophorum", "avenue__ashoka", "palm__royal-palm"],
+  },
+  "avenue__peltophorum": {
+    name: "Peltophorum",
+    botanical: "Peltophorum pterocarpum",
+    cat: "avenue",
+    catLabel: "Avenue & Shade Trees",
+    slug: "peltophorum",
+    tagline: "Golden-yellow boulevard blooms on a majestic canopy",
+    description: "Peltophorum produces large clusters of bright yellow flowers against a fine, ferny canopy, making it one of the most attractive boulevard trees. It is relatively fast-growing, moderately drought tolerant and withstands urban conditions remarkably well.",
+    uses: ["Boulevard and road planting", "Urban park landscapes", "Estate driveways", "Seasonal flowering focal tree", "Roadside beautification"],
+    care: {"water": "Moderate \u2014 water well for first 2 years, then drought tolerant", "light": "Full sun", "soil": "Well-draining; adapts to most soil types", "difficulty": "Easy", "growth": "Medium\u2013Fast"},
+    tips: ["Water every 5\u20137 days in the first growing season", "Fertilise with slow-release granules in March and September", "Flowers appear May\u2013September \u2014 spectacular when mass planted along avenues", "Very tolerant of urban pollution \u2014 excellent for road plantings", "Prune for a clean main trunk in early years for a strong silhouette"],
+    related: ["avenue__gulmohar", "avenue__tabebuia", "avenue__cassia", "avenue__rain-tree"],
+  },
+  "avenue__tabebuia": {
+    name: "Tabebuia",
+    botanical: "Tabebuia rosea",
+    cat: "avenue",
+    catLabel: "Avenue & Shade Trees",
+    slug: "tabebuia",
+    tagline: "Seasonal clouds of pink blossom on bare branches",
+    description: "Tabebuia rosea produces one of the most dramatic flowering displays of any avenue tree \u2014 entire branches are smothered in vivid pink trumpet flowers before the leaves emerge. For a brief, breathtaking period each year it transforms any road or garden into a show.",
+    uses: ["Flowering avenue tree", "Seasonal specimen", "Park and garden highlight", "Formal driveway planting", "Contrast planting with dark-foliaged trees"],
+    care: {"water": "Moderate \u2014 established trees are drought tolerant", "light": "Full sun", "soil": "Well-draining; tolerates a range of soils", "difficulty": "Easy", "growth": "Medium"},
+    tips: ["Flowering occurs when the tree is briefly deciduous \u2014 typically February\u2013April", "Water deeply once a week during establishment (first 2 years)", "Prune lightly after flowering to shape the canopy", "Avoid heavy pruning \u2014 this can reduce next season's flowering", "Pair with Cassia fistula for a pink-and-gold avenue combination"],
+    related: ["avenue__cassia", "avenue__gulmohar", "avenue__peltophorum", "flowering__plumeria"],
+  },
+  "avenue__ashoka": {
+    name: "Ashoka",
+    botanical: "Polyalthia longifolia",
+    cat: "avenue",
+    catLabel: "Avenue & Shade Trees",
+    slug: "ashoka",
+    tagline: "Tall columnar form for elegant boundaries and screening",
+    description: "The Ashoka tree is instantly recognisable for its tall, narrow, columnar silhouette and dense, weeping foliage. It is the premier choice for boundary screening, formal avenues where width is limited, and creating tall green walls without occupying much ground space.",
+    uses: ["Tall privacy screening", "Narrow avenue planting", "Boundary and perimeter planting", "Formal garden vertical accent", "Temple and sacred garden planting"],
+    care: {"water": "Regular \u2014 does not like prolonged drought", "light": "Full sun to partial shade", "soil": "Moist, fertile, well-draining", "difficulty": "Easy", "growth": "Medium\u2013Fast"},
+    tips: ["Water twice weekly; never allow to dry out completely for prolonged periods", "Responds well to light trimming to maintain its natural columnar form", "Ideal spacing for privacy screening: 2\u20133 metres between trees", "Grows to 10\u201315 metres \u2014 excellent as a tall green boundary", "Associated with temples and sacred spaces in Indian tradition"],
+    related: ["avenue__rain-tree", "ornamental__duranta-gold", "ficus__ficus-benjamina", "bamboo__bambusa-vulgaris"],
+  },
+  "avenue__cassia": {
+    name: "Cassia",
+    botanical: "Cassia fistula",
+    cat: "avenue",
+    catLabel: "Avenue & Shade Trees",
+    slug: "cassia",
+    tagline: "India's national flower tree \u2014 golden shower cascades",
+    description: "Cassia fistula, India's national flower, produces extraordinary hanging clusters of bright yellow flowers \u2014 long golden chains that give it the name 'Golden Shower Tree'. For 4\u20136 weeks each year it is one of the most breathtaking trees in any landscape.",
+    uses: ["Flowering avenue tree", "Park and boulevard specimen", "Garden focal tree", "Seasonal colour display", "Cultural and ceremonial planting"],
+    care: {"water": "Low to moderate \u2014 very drought tolerant when established", "light": "Full sun essential for flowering", "soil": "Any well-draining soil", "difficulty": "Easy", "growth": "Medium"},
+    tips: ["Prune dead wood after flowering season to encourage next year's bloom", "Water weekly during establishment; once mature needs very little water", "Flowering typically peaks April\u2013June", "Fallen flowers make effective natural mulch \u2014 leave around the base", "Plant in open positions \u2014 needs full sun to flower well"],
+    related: ["avenue__tabebuia", "avenue__gulmohar", "avenue__peltophorum", "flowering__tecoma"],
+  },
+  "palm__areca-palm": {
+    name: "Areca Palm",
+    botanical: "Dypsis lutescens",
+    cat: "palm",
+    catLabel: "Palm Varieties",
+    slug: "areca-palm",
+    tagline: "The most popular indoor and garden screening palm",
+    description: "The Areca Palm is the world's best-selling houseplant for good reason: it is elegant, fast-growing, excellent at purifying air, and thrives both indoors and outdoors. Its slender golden-green canes and feathery fronds create a lush, tropical screen with ease.",
+    uses: ["Indoor air purification", "Outdoor privacy screen", "Poolside and patio planting", "Hotel and resort lobby", "Tropical garden accent"],
+    care: {"water": "Moderate \u2014 keep soil moist but not waterlogged", "light": "Bright indirect light indoors; full sun to partial shade outdoors", "soil": "Well-draining, slightly acidic potting mix", "difficulty": "Easy", "growth": "Fast"},
+    tips: ["Water 2\u20133 times per week; ensure pots have drainage holes", "Feed with slow-release palm fertiliser every 3 months", "Remove yellowing fronds at the base \u2014 never cut green fronds", "Indoor plants benefit from occasional misting of the fronds", "Repot every 2 years or when roots begin emerging from drainage holes"],
+    related: ["palm__foxtail-palm", "palm__bottle-palm", "indoor__peace-lily", "ornamental__aglaonema"],
+  },
+  "palm__foxtail-palm": {
+    name: "Foxtail Palm",
+    botanical: "Wodyetia bifurcata",
+    cat: "palm",
+    catLabel: "Palm Varieties",
+    slug: "foxtail-palm",
+    tagline: "Dense feathery plumes on a self-cleaning elegant trunk",
+    description: "The Foxtail Palm is celebrated for its extraordinary self-cleaning property \u2014 old fronds drop away naturally leaving a smooth, ringed trunk. The dense, bottle-brush fronds create a lush, dramatic silhouette ideal for gardens, avenues and statement landscape design.",
+    uses: ["Statement garden palm", "Resort and hotel landscaping", "Avenue planting", "Poolside focal point", "Tropical themed gardens"],
+    care: {"water": "Regular \u2014 water deeply 2\u20133 times per week when young", "light": "Full sun", "soil": "Sandy, well-draining soil", "difficulty": "Easy", "growth": "Medium"},
+    tips: ["Young trees need regular deep watering \u2014 once established, moderate water is sufficient", "Feed with slow-release palm fertiliser in March and September", "Do NOT prune green fronds \u2014 allow natural self-cleaning", "Tolerates coastal salt spray \u2014 excellent near the sea", "One of the fastest-growing tall palms \u2014 expect 60\u201390 cm per year"],
+    related: ["palm__royal-palm", "palm__areca-palm", "palm__bismarck-palm", "avenue__rain-tree"],
+  },
+  "palm__bismarck-palm": {
+    name: "Bismarck Palm",
+    botanical: "Bismarckia nobilis",
+    cat: "palm",
+    catLabel: "Palm Varieties",
+    slug: "bismarck-palm",
+    tagline: "Dramatic silver-blue fan palm for grand estate entrances",
+    description: "The Bismarck Palm is arguably the most dramatic palm in existence \u2014 its massive silver-blue fan leaves can span 3 metres across and glow with an extraordinary metallic sheen. A single specimen immediately elevates any entrance, estate or large garden to world-class status.",
+    uses: ["Grand estate entrance focal point", "Luxury resort landscaping", "Architectural garden specimen", "Statement driveway planting", "Trophy landscape centrepiece"],
+    care: {"water": "Low to moderate \u2014 drought tolerant once established", "light": "Full sun essential", "soil": "Well-draining; tolerates sandy and rocky soils", "difficulty": "Moderate", "growth": "Slow\u2013Medium"},
+    tips: ["Establish with regular water for first 2 years \u2014 then highly drought tolerant", "Do not overwater \u2014 one of the most common mistakes with this palm", "Needs full sun for its distinctive silver-blue colour to develop", "Give at least 4\u20135 metres space from other plants \u2014 leaves are enormous", "A single specimen can be the entire focal point of a large garden"],
+    related: ["palm__travellers-palm", "palm__royal-palm", "palm__foxtail-palm", "avenue__rain-tree"],
+  },
+  "palm__travellers-palm": {
+    name: "Traveller's Palm",
+    botanical: "Ravenala madagascariensis",
+    cat: "palm",
+    catLabel: "Palm Varieties",
+    slug: "travellers-palm",
+    tagline: "Iconic fan of giant leaves \u2014 nature's architectural sculpture",
+    description: "The Traveller's Palm is not a true palm but one of the most architecturally striking tropical plants in existence. Its enormous banana-like leaves arrange themselves in a perfect flat fan, creating a living sculpture of extraordinary geometry.",
+    uses: ["Tropical landscape focal point", "Resort and hotel statement plant", "Large garden architectural accent", "Poolside dramatic planting", "Tropical themed courtyard"],
+    care: {"water": "Moderate to regular \u2014 keep moist in dry weather", "light": "Full sun to partial shade", "soil": "Rich, deep, well-draining soil", "difficulty": "Moderate", "growth": "Medium"},
+    tips: ["Water deeply twice weekly; more in hot, dry weather", "Protect from strong, persistent winds \u2014 leaves can shred", "Feed with slow-release tropical plant fertiliser quarterly", "Remove dead lower leaves regularly to maintain the dramatic silhouette", "The fan typically orients itself roughly east\u2013west \u2014 a natural compass"],
+    related: ["palm__bismarck-palm", "palm__royal-palm", "palm__foxtail-palm", "ornamental__cordyline"],
+  },
+  "palm__royal-palm": {
+    name: "Royal Palm",
+    botanical: "Roystonea regia",
+    cat: "palm",
+    catLabel: "Palm Varieties",
+    slug: "royal-palm",
+    tagline: "Tall, stately smooth-trunked palm for grand avenues",
+    description: "The Royal Palm is the quintessential avenue palm \u2014 tall, perfectly straight, with a smooth grey trunk and a full crown of arching fronds at the top. Planted in lines, it creates one of the most impressive landscape effects possible.",
+    uses: ["Grand avenue planting", "Resort and hotel entrance", "Formal garden design", "Large estate boundary", "Tropical boulevard"],
+    care: {"water": "Regular when young; moderate once established", "light": "Full sun", "soil": "Deep, rich, well-draining", "difficulty": "Easy", "growth": "Fast"},
+    tips: ["Water deeply twice weekly for the first 3 years \u2014 this is critical", "Feed with palm-specific slow-release fertiliser every 3 months", "Do not prune green fronds \u2014 only remove completely dead, brown fronds", "Plant 6\u20138 metres apart for a formal avenue effect", "Tolerates brief waterlogging better than most palms"],
+    related: ["palm__foxtail-palm", "palm__bismarck-palm", "avenue__rain-tree", "avenue__ashoka"],
+  },
+  "palm__bottle-palm": {
+    name: "Bottle Palm",
+    botanical: "Hyophorbe lagenicaulis",
+    cat: "palm",
+    catLabel: "Palm Varieties",
+    slug: "bottle-palm",
+    tagline: "Compact, sculptural bottle-shaped trunk for courtyards",
+    description: "The Bottle Palm earns its name from its dramatically swollen base \u2014 a smooth, rounded bottle-shaped trunk that tapers into a slender stem supporting 4\u20136 arching fronds. Its compact size makes it ideal for containers, courtyards and spaces where most palms would be too large.",
+    uses: ["Container and patio palm", "Small courtyard focal point", "Indoor specimen (large pots)", "Pool surround planting", "Small garden feature palm"],
+    care: {"water": "Low to moderate \u2014 drought tolerant", "light": "Full sun to bright light", "soil": "Sandy, well-draining; excellent in pots with palm mix", "difficulty": "Easy", "growth": "Slow"},
+    tips: ["Water once a week in summer; every 10\u201314 days in winter", "Fertilise with palm granules twice a year \u2014 spring and autumn", "Excellent in large decorative pots \u2014 use quality palm potting mix", "One of the most salt-tolerant palms \u2014 ideal for coastal gardens", "Slow growth means it stays container-appropriate for many years"],
+    related: ["palm__areca-palm", "pots__terracotta-pots", "pots__frp-planters", "ornamental__sansevieria"],
+  },
+  "flowering__hibiscus": {
+    name: "Hibiscus",
+    botanical: "Hibiscus rosa-sinensis",
+    cat: "flowering",
+    catLabel: "Flowering Plants",
+    slug: "hibiscus",
+    tagline: "Year-round tropical blooms in vivid red, pink and yellow",
+    description: "Hibiscus is one of the world's best-known flowering shrubs \u2014 its large, showy flowers in brilliant reds, pinks, oranges and yellows bloom almost continuously throughout the year in tropical climates. It is equally at home as a border plant, a hedge or a container specimen.",
+    uses: ["Border and bed planting", "Informal hedge", "Container feature plant", "Tropical garden colour", "Entrance and gateway planting"],
+    care: {"water": "Regular \u2014 water daily in hot weather", "light": "Full sun essential for best flowering", "soil": "Rich, well-draining, slightly acidic", "difficulty": "Easy", "growth": "Fast"},
+    tips: ["Water deeply every day during summer; reduce in cooler months", "Feed weekly with a high-potassium (flower) fertiliser during growing season", "Prune by one-third after main flush of flowers to encourage branching", "Pick spent blooms to encourage continuous flowering", "Available in hundreds of varieties \u2014 single and double-flowered forms"],
+    related: ["flowering__ixora", "flowering__bougainvillea", "flowering__tecoma", "flowering__jasmine"],
+  },
+  "flowering__bougainvillea": {
+    name: "Bougainvillea",
+    botanical: "Bougainvillea spectabilis",
+    cat: "flowering",
+    catLabel: "Flowering Plants",
+    slug: "bougainvillea",
+    tagline: "Vivid papery bracts for walls, arches and pergolas",
+    description: "Bougainvillea is unrivalled for covering large structures with spectacular colour. What appear to be flowers are actually coloured bracts surrounding tiny white flowers \u2014 these persist for months, clothing walls, pergolas and fences in vivid purples, pinks, oranges and reds.",
+    uses: ["Wall and fence coverage", "Pergola and archway", "Slope and bank planting", "Container (with support)", "Roadside beautification"],
+    care: {"water": "Low \u2014 thrives on neglect; overwatering reduces flowering", "light": "Full sun essential \u2014 needs 6+ hours daily", "soil": "Any well-draining soil; avoid clay", "difficulty": "Very Easy", "growth": "Very Fast"},
+    tips: ["Water deeply but infrequently \u2014 allow soil to dry between waterings", "Drought stress actually INCREASES flowering \u2014 do not over-water", "Prune hard after each flowering flush to encourage repeat blooming", "Provide a strong structure \u2014 mature plants are very heavy", "Thorns are sharp \u2014 wear gloves when pruning"],
+    related: ["flowering__hibiscus", "flowering__tecoma", "flowering__jasmine", "avenue__tabebuia"],
+  },
+  "flowering__ixora": {
+    name: "Ixora",
+    botanical: "Ixora coccinea",
+    cat: "flowering",
+    catLabel: "Flowering Plants",
+    slug: "ixora",
+    tagline: "Dense, cheerful flower clusters for tropical borders",
+    description: "Ixora is a compact, evergreen shrub that produces continuous clusters of small, bright flowers in red, orange, yellow and pink throughout the year. Its neat, tidy habit and constant colour make it one of the most popular choices for tropical borders, hedges and mass planting.",
+    uses: ["Low border planting", "Formal tropical hedge", "Mass colour planting", "Container planting", "Garden path edging"],
+    care: {"water": "Regular \u2014 keep consistently moist", "light": "Full sun to partial shade", "soil": "Acidic, rich, well-draining", "difficulty": "Easy", "growth": "Medium"},
+    tips: ["Water every 2 days \u2014 does not tolerate prolonged drought", "Ixora prefers slightly acidic soil; add organic compost at planting", "Feed monthly with an acid fertiliser (sulfate of ammonia works well)", "Trim lightly after each flowering flush to encourage branching", "Excellent companion to Duranta Gold for contrasting colour"],
+    related: ["flowering__hibiscus", "flowering__tecoma", "ornamental__duranta-gold", "flowering__jasmine"],
+  },
+  "flowering__plumeria": {
+    name: "Plumeria",
+    botanical: "Plumeria rubra",
+    cat: "flowering",
+    catLabel: "Flowering Plants",
+    slug: "plumeria",
+    tagline: "Fragrant frangipani blooms on a sculptural branching form",
+    description: "Plumeria is as much a sculpture as a plant \u2014 its architectural branching structure creates a bold silhouette even without flowers. When in bloom, clusters of waxy, intensely fragrant flowers in white, yellow, pink and red transform it into one of the most beautiful plants in any garden.",
+    uses: ["Tropical garden specimen", "Fragrance garden", "Container plant", "Temple and sacred garden", "Pool and patio surrounds"],
+    care: {"water": "Low to moderate \u2014 extremely drought tolerant when established", "light": "Full sun \u2014 loves heat", "soil": "Well-draining, sandy or gravelly soil", "difficulty": "Easy", "growth": "Slow\u2013Medium"},
+    tips: ["Water once a week; allow soil to dry completely between waterings", "Plumeria thrives on drought \u2014 overwatering is the primary cause of death", "Fertilise monthly with high-phosphorus fertiliser to encourage blooming", "Goes briefly dormant in cooler months \u2014 reduce water to once per fortnight", "Excellent in large pots \u2014 the restricted root space encourages more flowering"],
+    related: ["flowering__jasmine", "flowering__hibiscus", "palm__bottle-palm", "ornamental__croton"],
+  },
+  "flowering__tecoma": {
+    name: "Tecoma",
+    botanical: "Tecoma stans",
+    cat: "flowering",
+    catLabel: "Flowering Plants",
+    slug: "tecoma",
+    tagline: "Cheerful yellow bell flowers on a tough, drought-hardy shrub",
+    description: "Tecoma stans is a vigorous, free-flowering shrub that produces long racemes of bright yellow bell-shaped flowers throughout the year. It is exceptionally tough \u2014 tolerating heat, drought, poor soil and neglect while continuing to bloom generously.",
+    uses: ["Informal border and hedge", "Slope and bank stabilisation", "Low-maintenance colour planting", "Roadside planting", "Dry garden design"],
+    care: {"water": "Low \u2014 very drought tolerant", "light": "Full sun", "soil": "Any well-draining soil \u2014 very adaptable", "difficulty": "Very Easy", "growth": "Fast"},
+    tips: ["Water once a week; needs almost no water once established", "Prune by half after each main flush of flowering \u2014 this promotes branching", "No need for rich soil \u2014 thrives in average to poor conditions", "Excellent for difficult, dry slopes where other plants fail", "Fast-growing enough to fill a gap or screen within one season"],
+    related: ["flowering__bougainvillea", "ornamental__duranta-gold", "avenue__cassia", "flowering__hibiscus"],
+  },
+  "flowering__jasmine": {
+    name: "Jasmine",
+    botanical: "Jasminum sambac",
+    cat: "flowering",
+    catLabel: "Flowering Plants",
+    slug: "jasmine",
+    tagline: "Intensely fragrant white flowers \u2014 the scent of India",
+    description: "Jasminum sambac, known in India as Mogra or Mallige, is perhaps the most fragrant of all garden plants. Its small white flowers carry an extraordinary perfume that intensifies in the evening, making it the quintessential plant for fragrance gardens, trellises and window boxes.",
+    uses: ["Fragrance garden", "Trellis and fence cover", "Window box and container", "Temple flower production", "Evening garden planting"],
+    care: {"water": "Regular \u2014 keep moist but well-drained", "light": "Full sun to partial shade", "soil": "Rich, well-draining garden soil", "difficulty": "Easy", "growth": "Medium"},
+    tips: ["Water every 2 days; never let soil dry out completely", "Feed monthly with a balanced fertiliser during growing season", "Train onto a trellis or wire support as it develops", "Pinch growing tips regularly to encourage a bushy, floriferous habit", "Harvest flowers in the morning when fragrance is strongest"],
+    related: ["flowering__plumeria", "flowering__hibiscus", "flowering__bougainvillea", "flowering__ixora"],
+  },
+  "fruit__mango": {
+    name: "Mango",
+    botanical: "Mangifera indica",
+    cat: "fruit",
+    catLabel: "Fruit Plants (Grafted)",
+    slug: "mango",
+    tagline: "India's king of fruits \u2014 grafted for early, reliable yields",
+    description: "The Mango tree is one of India's most important fruit trees \u2014 prized equally for its sweet, aromatic fruit and its dense, spreading shade. Our grafted varieties are selected for early fruiting (often within 2\u20133 years), regular yield and superior fruit quality.",
+    uses: ["Home and farm orchard", "Estate shade tree", "Agroforestry planting", "Large garden food production", "Market and commercial fruiting"],
+    care: {"water": "Moderate \u2014 water well when young; drought tolerant when mature", "light": "Full sun essential", "soil": "Deep, well-draining loamy soil", "difficulty": "Easy", "growth": "Medium\u2013Fast"},
+    tips: ["Water weekly for the first 2\u20133 years; reduce once established", "Fertilise with fruit tree fertiliser in March (before flowering) and after harvest", "Prune dead wood and crossing branches after harvest each year", "Grafted trees typically fruit within 2\u20133 years of planting", "Allow adequate spacing \u2014 mango canopies can spread 6\u20138 metres"],
+    related: ["fruit__coconut", "fruit__guava", "fruit__sapota", "avenue__rain-tree"],
+  },
+  "fruit__sapota": {
+    name: "Sapota (Chikoo)",
+    botanical: "Manilkara zapota",
+    cat: "fruit",
+    catLabel: "Fruit Plants (Grafted)",
+    slug: "sapota",
+    tagline: "Hardy, sweet-fleshed fruit tree for coastal and humid gardens",
+    description: "Sapota (Chikoo) is a reliable fruiting tree with remarkable tolerance for coastal conditions, salt spray and humidity. Its small, brown-skinned fruit has an exceptionally sweet, caramel-like flavour. Grafted trees begin producing within 3\u20134 years.",
+    uses: ["Coastal home orchard", "Humid-climate fruit garden", "Estate shade and fruit tree", "Low-maintenance home fruit", "Commercial fruiting"],
+    care: {"water": "Regular \u2014 water twice weekly; tolerates some drought when mature", "light": "Full sun", "soil": "Sandy to loamy, well-draining; tolerates coastal soils", "difficulty": "Easy", "growth": "Medium"},
+    tips: ["Water twice a week when young; once a week when established", "Feed with a balanced NPK fertiliser every 3 months", "Grafted varieties fruit reliably within 3\u20134 years of planting", "Very tolerant of salt spray \u2014 one of the best coastal fruit trees", "Thin fruit clusters to 2\u20133 per branch for larger, better-quality fruit"],
+    related: ["fruit__mango", "fruit__guava", "fruit__custard-apple", "fruit__coconut"],
+  },
+  "fruit__guava": {
+    name: "Guava",
+    botanical: "Psidium guajava",
+    cat: "fruit",
+    catLabel: "Fruit Plants (Grafted)",
+    slug: "guava",
+    tagline: "Prolific, fast-fruiting tree perfect for home gardens",
+    description: "Guava is one of the most productive and reliable fruit trees for home gardens \u2014 fruiting heavily within 1\u20132 years of planting, requiring minimal care, and providing fruit rich in Vitamin C and flavour. Our grafted varieties produce superior fruit with fewer seeds.",
+    uses: ["Home fruit garden", "Kitchen garden", "Small orchard", "School and community garden", "Container fruiting (dwarf varieties)"],
+    care: {"water": "Moderate \u2014 established trees are drought tolerant", "light": "Full sun to partial shade", "soil": "Wide adaptability \u2014 grows in most soil types", "difficulty": "Very Easy", "growth": "Fast"},
+    tips: ["Water twice a week initially; reduce to weekly once established", "Fruiting begins within 1\u20132 years of planting grafted specimens", "Prune to an open, airy canopy to improve air circulation and fruiting", "Harvest when fruit softens slightly and fragrance intensifies", "Feed with a fruit tree fertiliser 3 times a year \u2014 March, July and October"],
+    related: ["fruit__pomegranate", "fruit__sapota", "fruit__mango", "fruit__custard-apple"],
+  },
+  "fruit__pomegranate": {
+    name: "Pomegranate",
+    botanical: "Punica granatum",
+    cat: "fruit",
+    catLabel: "Fruit Plants (Grafted)",
+    slug: "pomegranate",
+    tagline: "Ornamental flowers followed by jewel-like, antioxidant-rich fruit",
+    description: "Pomegranate is unique among fruit trees \u2014 its brilliant orange-red flowers are ornamental in their own right, followed by large, jewel-red fruit packed with antioxidants. It is also one of the most drought-tolerant fruit trees available.",
+    uses: ["Ornamental and productive garden", "Home orchard", "Dry garden design", "Hedge with fruit", "Medicinal and sacred garden"],
+    care: {"water": "Low to moderate \u2014 very drought tolerant once established", "light": "Full sun \u2014 heat-loving", "soil": "Any well-draining soil; tolerates clay and poor soils", "difficulty": "Easy", "growth": "Medium"},
+    tips: ["Water once a week when young; every 2 weeks when mature", "Flowers appear on new growth \u2014 prune lightly each spring to stimulate new shoots", "Grafted varieties produce fruit within 2\u20133 years", "Fruit is ready when it sounds hollow when tapped", "Excellent choice for water-scarce gardens \u2014 one of the most drought-hardy fruit trees"],
+    related: ["fruit__guava", "fruit__mango", "flowering__hibiscus", "desert__agave"],
+  },
+  "fruit__custard-apple": {
+    name: "Custard Apple",
+    botanical: "Annona squamosa",
+    cat: "fruit",
+    catLabel: "Fruit Plants (Grafted)",
+    slug: "custard-apple",
+    tagline: "Creamy, fragrant fruit on a compact, manageable tree",
+    description: "The Custard Apple is a compact, deciduous fruit tree producing fruit with uniquely sweet, creamy flesh and a wonderful floral fragrance. Its manageable size makes it ideal for home gardens where larger fruit trees would be impractical.",
+    uses: ["Home fruit garden", "Small-space fruit growing", "Tropical garden planting", "Kitchen garden", "Community orchard"],
+    care: {"water": "Regular during growing season; reduce when dormant", "light": "Full sun", "soil": "Rich, well-draining soil", "difficulty": "Moderate", "growth": "Medium"},
+    tips: ["Water every 2\u20133 days during fruiting season; reduce when leaves drop", "Feed with a balanced fertiliser monthly during the growing season", "Hand-pollinate flowers in the morning for better fruit set", "Fruit is ready when it feels slightly soft and segments separate easily", "Brief dormancy (leaf-drop) in cooler months \u2014 reduce water; normal and natural"],
+    related: ["fruit__sapota", "fruit__guava", "fruit__mango", "fruit__pomegranate"],
+  },
+  "fruit__coconut": {
+    name: "Coconut",
+    botanical: "Cocos nucifera",
+    cat: "fruit",
+    catLabel: "Fruit Plants (Grafted)",
+    slug: "coconut",
+    tagline: "The complete palm \u2014 fruit, shade, and avenue presence",
+    description: "The Coconut Palm is one of the most versatile plants known to humanity \u2014 providing food, water, shade, timber and cultural significance. Our selected varieties are chosen for early fruiting, high yield and adaptability to local conditions.",
+    uses: ["Coastal and tropical garden", "Avenue and boulevard planting", "Estate feature palm", "Productive home garden", "Commercial coconut farming"],
+    care: {"water": "Regular \u2014 water deeply twice weekly", "light": "Full sun \u2014 loves coastal conditions", "soil": "Sandy, well-draining \u2014 loves coastal soils", "difficulty": "Easy", "growth": "Medium"},
+    tips: ["Water twice a week; coconuts love humidity and coastal conditions", "Feed with potassium-rich fertiliser (potassium is critical for nut development)", "Fruiting typically begins 5\u20138 years from planting", "Remove dead fronds only \u2014 never cut green fronds", "Tolerates salt spray better than almost any other tree \u2014 ideal for beachfront properties"],
+    related: ["palm__royal-palm", "palm__foxtail-palm", "fruit__mango", "avenue__rain-tree"],
+  },
+  "bamboo__golden-bamboo": {
+    name: "Golden Bamboo",
+    botanical: "Bambusa vulgaris 'Vittata'",
+    cat: "bamboo",
+    catLabel: "Bamboo Varieties",
+    slug: "golden-bamboo",
+    tagline: "Brilliant gold and green striped culms \u2014 a dramatic living screen",
+    description: "Golden Bamboo is one of the most visually striking bamboo varieties \u2014 its thick culms are brilliant golden-yellow with irregular green stripes, creating a luminous, warm effect. It forms dense, clumping stands ideal for privacy screens, tropical gardens and architectural planting.",
+    uses: ["Tall privacy screening", "Tropical garden accent", "Architectural garden planting", "Windbreak", "Japanese and Zen garden design"],
+    care: {"water": "Regular \u2014 keep consistently moist", "light": "Full sun to partial shade", "soil": "Rich, moist, well-draining", "difficulty": "Easy", "growth": "Very Fast"},
+    tips: ["Water daily during establishment; twice weekly once mature", "Bamboo is a heavy feeder \u2014 fertilise monthly with nitrogen-rich fertiliser", "Clumping variety \u2014 does NOT spread invasively like running bamboo", "Remove old culms at ground level each year to keep the clump vigorous", "New shoots (culms) appear in monsoon season \u2014 do not cut these"],
+    related: ["bamboo__buddha-belly", "bamboo__bambusa-vulgaris", "bamboo__black-bamboo", "avenue__ashoka"],
+  },
+  "bamboo__buddha-belly": {
+    name: "Buddha Belly Bamboo",
+    botanical: "Bambusa ventricosa",
+    cat: "bamboo",
+    catLabel: "Bamboo Varieties",
+    slug: "buddha-belly",
+    tagline: "Distinctive swollen internodes \u2014 a collector's ornamental bamboo",
+    description: "Buddha Belly Bamboo earns its charming name from the swollen, belly-like internodes that develop on culms grown in containers or under stress. A favourite of collectors and designers, it creates a uniquely sculptural effect in gardens, courtyards and Zen spaces.",
+    uses: ["Ornamental garden specimen", "Container planting", "Zen and meditation garden", "Courtyard focal point", "Bonsai material"],
+    care: {"water": "Moderate \u2014 the swollen internodes develop best when slightly water-stressed", "light": "Full sun to partial shade", "soil": "Well-draining; restrict water and soil to develop the distinctive belly shape", "difficulty": "Moderate", "growth": "Medium"},
+    tips: ["For the best belly effect, grow in containers with restricted water and nutrients", "In open ground it grows more normally \u2014 still beautiful but less swollen", "Fertilise lightly \u2014 too much nitrogen produces straight, uninteresting culms", "Excellent as a container plant in a decorative ceramic or terracotta pot", "Remove old culms when they turn yellow to keep clump looking fresh"],
+    related: ["bamboo__golden-bamboo", "bamboo__black-bamboo", "pots__ceramic-pots", "pots__terracotta-pots"],
+  },
+  "bamboo__black-bamboo": {
+    name: "Black Bamboo",
+    botanical: "Phyllostachys nigra",
+    cat: "bamboo",
+    catLabel: "Bamboo Varieties",
+    slug: "black-bamboo",
+    tagline: "Near-black dramatic culms for modern garden design",
+    description: "Black Bamboo is a designer's favourite \u2014 its culms begin green and age over one to two seasons to a dramatic near-black, creating an extraordinary contrast against pale walls, gravel or light-coloured paving. It is considered one of the most beautiful bamboos in the world.",
+    uses: ["Modern and minimalist garden design", "Striking accent planting", "Privacy screen", "Architectural backdrop", "Japanese and Zen garden"],
+    care: {"water": "Regular \u2014 keep consistently moist", "light": "Full sun to partial shade", "soil": "Rich, moist, well-draining", "difficulty": "Moderate", "growth": "Medium"},
+    tips: ["Culms darken from green to black over 1\u20132 seasons \u2014 this is normal", "Water regularly \u2014 black bamboo dislikes prolonged drought", "Control spread with a root barrier if growing in open ground", "Thin old green culms to reveal and showcase the newer black culms", "Spectacular in containers against a white or pale rendered wall"],
+    related: ["bamboo__golden-bamboo", "bamboo__bambusa-vulgaris", "bamboo__buddha-belly", "ornamental__sansevieria"],
+  },
+  "bamboo__bambusa-vulgaris": {
+    name: "Bambusa vulgaris",
+    botanical: "Bambusa vulgaris",
+    cat: "bamboo",
+    catLabel: "Bamboo Varieties",
+    slug: "bambusa-vulgaris",
+    tagline: "Fast, dense clumping bamboo for boundary screens",
+    description: "Bambusa vulgaris is the workhorse of the bamboo world \u2014 vigorous, tolerant of a wide range of conditions, and one of the fastest growing screens available. Within 2\u20133 seasons it creates an impenetrable green wall for boundaries, roadsides and windbreaks.",
+    uses: ["Boundary and perimeter screening", "Windbreak planting", "Slope stabilisation", "Large estate privacy", "Rural boundary planting"],
+    care: {"water": "Regular \u2014 moderate to heavy watering", "light": "Full sun to partial shade", "soil": "Adapts to most soils including clay", "difficulty": "Very Easy", "growth": "Very Fast"},
+    tips: ["Water daily during establishment \u2014 bamboo is thirsty", "Once established, very tolerant of drought and neglect", "Fertilise twice a year with nitrogen-rich fertiliser for fastest growth", "Clumping habit \u2014 safe to plant without root barriers", "One of the fastest ways to create a complete privacy screen"],
+    related: ["bamboo__golden-bamboo", "avenue__ashoka", "ficus__ficus-benjamina", "ornamental__duranta-gold"],
+  },
+  "aquatic__water-lily": {
+    name: "Water Lily",
+    botanical: "Nymphaea spp.",
+    cat: "aquatic",
+    catLabel: "Aquatic & Pond Plants",
+    slug: "water-lily",
+    tagline: "Floating jewels \u2014 timeless beauty for ponds and water features",
+    description: "Water Lilies are the quintessential pond plants \u2014 their broad floating leaves shade the water to reduce algae, while their flowers create one of the most beautiful displays in any garden. Available in white, pink, red, yellow and peach.",
+    uses: ["Ornamental pond planting", "Water feature centrepiece", "Algae control in ponds", "Koi pond companion", "Luxury garden water design"],
+    care: {"water": "Aquatic \u2014 requires 30\u201360 cm water depth", "light": "Full sun \u2014 minimum 6 hours daily for flowering", "soil": "Heavy clay loam in aquatic baskets", "difficulty": "Moderate", "growth": "Medium"},
+    tips: ["Plant in submerged baskets weighted with aquatic soil \u2014 never use regular potting mix", "Minimum water depth of 30 cm; ideal 45\u201360 cm for most varieties", "Feed with aquatic fertiliser tablets pushed into the basket soil monthly", "Deadhead spent flowers at the base of the stem for continuous blooming", "Divide rootstock every 2\u20133 years when the pot becomes overcrowded"],
+    related: ["aquatic__lotus", "aquatic__water-lettuce", "aquatic__papyrus", "flowering__jasmine"],
+  },
+  "aquatic__lotus": {
+    name: "Lotus",
+    botanical: "Nelumbo nucifera",
+    cat: "aquatic",
+    catLabel: "Aquatic & Pond Plants",
+    slug: "lotus",
+    tagline: "Sacred bloom of extraordinary beauty \u2014 the jewel of water gardens",
+    description: "The Lotus holds deep spiritual significance across Asia, but its horticultural value is equally remarkable. Rising magnificently from muddy water on tall stems, its enormous pink or white flowers are among the most beautiful in the plant kingdom.",
+    uses: ["Sacred and spiritual garden", "Ornamental pond centrepiece", "Meditation and temple garden", "Premium water feature", "Cultural ceremony garden"],
+    care: {"water": "Aquatic \u2014 prefers 30\u201345 cm water depth", "light": "Full sun essential \u2014 8+ hours daily", "soil": "Rich, heavy clay or aquatic soil", "difficulty": "Moderate", "growth": "Medium\u2013Fast"},
+    tips: ["Plant rhizomes horizontally in heavy soil \u2014 do not use potting mix", "Full sun is absolutely essential \u2014 no flowering in shade", "Feed with aquatic tablets monthly during growing season", "Lotus goes dormant in cooler months \u2014 this is completely normal", "Do not disturb the rhizome once planted \u2014 it takes time to establish"],
+    related: ["aquatic__water-lily", "aquatic__papyrus", "aquatic__water-lettuce", "flowering__plumeria"],
+  },
+  "aquatic__water-lettuce": {
+    name: "Water Lettuce",
+    botanical: "Pistia stratiotes",
+    cat: "aquatic",
+    catLabel: "Aquatic & Pond Plants",
+    slug: "water-lettuce",
+    tagline: "Soft floating rosettes that soften pond edges naturally",
+    description: "Water Lettuce is a beautiful, velvety floating plant with rosettes of pale green, ribbed leaves. It floats freely on the surface, providing valuable shade that suppresses algae while its dangling roots create shelter and feeding habitat for fish.",
+    uses: ["Pond edge softening", "Algae control", "Fish pond habitat", "Natural water filtration", "Ornamental water feature"],
+    care: {"water": "Aquatic floating plant \u2014 no planting required", "light": "Full sun to partial shade", "soil": "Not required \u2014 floats freely", "difficulty": "Very Easy", "growth": "Fast"},
+    tips: ["Simply place on the water surface \u2014 no soil or basket required", "Provides excellent shade to reduce algae \u2014 space 30\u201340 cm apart", "Thin regularly as it multiplies quickly in warm weather", "Remove surplus plants \u2014 excellent as organic mulch or compost material", "Fish love to shelter and breed under the floating canopy"],
+    related: ["aquatic__water-lily", "aquatic__papyrus", "aquatic__lotus", "bamboo__bambusa-vulgaris"],
+  },
+  "aquatic__papyrus": {
+    name: "Papyrus",
+    botanical: "Cyperus papyrus",
+    cat: "aquatic",
+    catLabel: "Aquatic & Pond Plants",
+    slug: "papyrus",
+    tagline: "Tall, dramatic reed form for pond margins and water gardens",
+    description: "Papyrus is the ancient Egyptian paper plant \u2014 an elegant, architectural sedge with tall triangular stems topped by feathery, exploding crowns. Growing in shallow water or boggy margins, it creates height, movement and texture that no other aquatic plant can match.",
+    uses: ["Pond margin and edge planting", "Water feature height accent", "Boggy area planting", "Architectural garden accent", "Large container water garden"],
+    care: {"water": "Aquatic/marginal \u2014 grows in shallow water 10\u201330 cm deep, or boggy soil", "light": "Full sun", "soil": "Heavy aquatic soil or boggy garden soil", "difficulty": "Easy", "growth": "Fast"},
+    tips: ["Plant in aquatic baskets at pond margins in 10\u201330 cm of water", "Also thrives in large pots with permanently wet soil", "Feed monthly with aquatic fertiliser tablets during growing season", "Cut old stems at the base as they age \u2014 new shoots appear continuously", "Extraordinary movement in any breeze \u2014 add near reflective water for best effect"],
+    related: ["aquatic__water-lily", "aquatic__lotus", "aquatic__water-lettuce", "ornamental__sansevieria"],
+  },
+  "desert__assorted-cactus": {
+    name: "Assorted Cactus",
+    botanical: "Cactaceae spp.",
+    cat: "desert",
+    catLabel: "Desert & Succulent Plants",
+    slug: "assorted-cactus",
+    tagline: "Sculptural, water-wise forms for rockeries and modern gardens",
+    description: "Cacti are the ultimate low-maintenance, water-wise plants \u2014 their extraordinary sculptural forms add architectural drama to any garden, patio or interior. Our assorted range includes columnar, globular, paddle and branching varieties in an exciting mix of sizes.",
+    uses: ["Rockery and dry garden design", "Modern minimalist garden", "Container and patio collection", "Indoor and balcony planting", "Water-wise and sustainable garden"],
+    care: {"water": "Very low \u2014 water every 2\u20133 weeks in summer; monthly in winter", "light": "Full sun", "soil": "Cactus mix or 50% grit / 50% compost", "difficulty": "Very Easy", "growth": "Slow"},
+    tips: ["Water only when soil is completely dry \u2014 more cacti die from overwatering than drought", "Use a cactus-specific potting mix or add 50% perlite to regular soil", "Pots MUST have drainage holes \u2014 standing water is fatal", "Feed once in spring with a cactus fertiliser \u2014 no other feeding needed", "Handle with leather gloves \u2014 always pot up in folded newspaper to protect hands"],
+    related: ["desert__agave", "desert__aloe-vera", "desert__euphorbia", "pots__terracotta-pots"],
+  },
+  "desert__agave": {
+    name: "Agave",
+    botanical: "Agave americana",
+    cat: "desert",
+    catLabel: "Desert & Succulent Plants",
+    slug: "agave",
+    tagline: "Bold architectural rosette \u2014 the most dramatic dry-garden anchor",
+    description: "Agave is the statement plant of dry gardens \u2014 its massive rosette of rigid, blue-green, spine-tipped leaves creates one of the most powerful architectural forms in horticulture. A single specimen instantly transforms a space.",
+    uses: ["Dry garden focal point", "Architectural garden centrepiece", "Rockery anchor plant", "Container specimen", "Mediterranean and succulent garden"],
+    care: {"water": "Very low \u2014 established plants survive on rainfall alone", "light": "Full sun essential", "soil": "Any excellent-draining soil \u2014 sandy or gravelly preferred", "difficulty": "Very Easy", "growth": "Slow"},
+    tips: ["Water only every 3\u20134 weeks; established plants need almost no watering", "Never allow water to pool in the centre rosette \u2014 causes rot", "Excellent drainage is the single most important requirement", "The plant flowers once (after 10\u201330 years) then produces offshoots and dies", "Pups (small offsets around the base) can be removed and grown as new plants"],
+    related: ["desert__assorted-cactus", "desert__euphorbia", "desert__aloe-vera", "ornamental__aglaonema"],
+  },
+  "desert__aloe-vera": {
+    name: "Aloe Vera",
+    botanical: "Aloe barbadensis miller",
+    cat: "desert",
+    catLabel: "Desert & Succulent Plants",
+    slug: "aloe-vera",
+    tagline: "The garden pharmacy \u2014 practical, beautiful and indestructible",
+    description: "Aloe Vera is one of the most useful plants in the world \u2014 its thick, fleshy leaves contain a gel with remarkable soothing properties for burns and skin irritations. It is also an attractive, low-water garden plant that suits rockeries, containers and indoor spaces.",
+    uses: ["Medicinal plant garden", "Rockery and dry garden", "Kitchen garden", "Indoor and patio plant", "Children's garden (educational)"],
+    care: {"water": "Low \u2014 water every 2\u20133 weeks", "light": "Full sun to bright indirect light", "soil": "Sandy, well-draining cactus mix", "difficulty": "Very Easy", "growth": "Medium"},
+    tips: ["Water when soil is completely dry \u2014 typically every 2\u20133 weeks", "For gel: cut outer leaves at the base with a clean knife", "The gel is most concentrated in the large outer leaves", "Repot every 2\u20133 years \u2014 the plant produces many offsets that can be separated", "Never let it sit in waterlogged soil \u2014 a single well-draining watering is sufficient"],
+    related: ["desert__agave", "desert__assorted-cactus", "indoor__snake-plant", "pots__terracotta-pots"],
+  },
+  "desert__euphorbia": {
+    name: "Euphorbia",
+    botanical: "Euphorbia trigona",
+    cat: "desert",
+    catLabel: "Desert & Succulent Plants",
+    slug: "euphorbia",
+    tagline: "Cactus-like form with easy care and striking architectural effect",
+    description: "Euphorbia trigona, known as the African Milk Tree, resembles a cactus in appearance but is botanically distinct. Its upright, three-winged stems create a dramatic vertical accent in succulent gardens, containers and modern interior spaces.",
+    uses: ["Modern indoor statement plant", "Succulent and dry garden", "Rockery vertical accent", "Office plant", "Architectural container display"],
+    care: {"water": "Very low \u2014 water every 3\u20134 weeks", "light": "Bright light to full sun", "soil": "Cactus and succulent mix", "difficulty": "Very Easy", "growth": "Medium"},
+    tips: ["WARNING: the white milky sap is toxic and an irritant \u2014 wear gloves when handling", "Water sparingly \u2014 every 3\u20134 weeks in summer, monthly in winter", "Excellent drainage is essential \u2014 pot in cactus mix only", "Grows upright to 1\u20132 metres \u2014 an impressive indoor specimen", "Avoid getting sap in eyes or mouth \u2014 keep out of reach of children"],
+    related: ["desert__assorted-cactus", "desert__agave", "indoor__snake-plant", "pots__frp-planters"],
+  },
+  "ficus__ficus-benjamina": {
+    name: "Ficus Benjamina",
+    botanical: "Ficus benjamina",
+    cat: "ficus",
+    catLabel: "Ficus Varieties",
+    slug: "ficus-benjamina",
+    tagline: "The classic weeping fig \u2014 hedge, topiary and indoor standard",
+    description: "Ficus Benjamina is one of the most versatile plants in horticulture \u2014 equally effective as a dense formal hedge, a clipped topiary standard, or a large indoor tree in a hotel lobby or office atrium. Its small, glossy leaves and graceful weeping branches are unmistakable.",
+    uses: ["Formal hedge and screen", "Topiary standard and shapes", "Large indoor tree", "Office and commercial interior", "Formal garden structure"],
+    care: {"water": "Moderate \u2014 keep consistently moist but not waterlogged", "light": "Bright indirect to full sun", "soil": "Rich, well-draining potting mix", "difficulty": "Moderate", "growth": "Medium\u2013Fast"},
+    tips: ["Do NOT move once placed \u2014 Ficus Benjamina drops leaves when relocated (this is normal and temporary)", "Water when the top 2 cm of soil dries; reduce in winter", "Feed monthly with balanced fertiliser during growing season", "Excellent for topiary \u2014 tolerates heavy, repeated clipping", "For hedging: plant 60\u201380 cm apart and clip twice a year to maintain shape"],
+    related: ["ficus__ficus-panda", "ficus__peepal", "ornamental__duranta-gold", "ornamental__aglaonema"],
+  },
+  "ficus__ficus-panda": {
+    name: "Ficus Panda",
+    botanical: "Ficus microcarpa 'Panda'",
+    cat: "ficus",
+    catLabel: "Ficus Varieties",
+    slug: "ficus-panda",
+    tagline: "Compact, rounded leaves ideal for bonsai and trained forms",
+    description: "Ficus Panda is the premier bonsai ficus \u2014 its small, round, rubbery leaves and excellent tolerance for pruning and root manipulation make it the first choice for bonsai enthusiasts and those wanting shaped, trained specimens as garden art.",
+    uses: ["Bonsai creation and training", "Tabletop and indoor specimen", "Shaped garden accent", "Gift plant", "Office art plant"],
+    care: {"water": "Moderate \u2014 keep moist; allow top 1\u20132 cm to dry", "light": "Bright indirect light to full sun", "soil": "Bonsai mix or well-draining potting mix", "difficulty": "Moderate", "growth": "Medium"},
+    tips: ["Water when the top 1\u20132 cm of soil is dry \u2014 consistent moisture is key", "For bonsai: repot every 2 years in fresh bonsai mix", "Wire branches while young and flexible for directional training", "Feed with diluted balanced fertiliser every 2 weeks during growing season", "Regular pruning maintains the shape and encourages fine, ramified branch structure"],
+    related: ["ficus__ficus-bonsai", "ficus__ficus-benjamina", "ornamental__aglaonema", "indoor__zz-plant"],
+  },
+  "ficus__ficus-bonsai": {
+    name: "Ficus Bonsai",
+    botanical: "Ficus retusa",
+    cat: "ficus",
+    catLabel: "Ficus Varieties",
+    slug: "ficus-bonsai",
+    tagline: "Trained miniature specimens \u2014 living garden art for display and gifting",
+    description: "Ficus retusa bonsai are pre-trained specimens with character, age and artistic form built into them. They make exceptional gifts and display pieces \u2014 combining horticulture with sculpture in a living artwork that continues to evolve.",
+    uses: ["Premium gift plant", "Living art display", "Office and hotel lobby feature", "Collector specimen", "Meditation and Zen garden"],
+    care: {"water": "Moderate \u2014 never let it dry completely", "light": "Bright indirect light is ideal", "soil": "Bonsai-specific mix only", "difficulty": "Moderate", "growth": "Slow (by design)"},
+    tips: ["Water when soil surface just begins to dry \u2014 consistency is essential", "Mist leaves daily in dry or air-conditioned environments", "Feed every 2 weeks in growing season with half-strength bonsai fertiliser", "Repot every 2\u20133 years in fresh bonsai soil to maintain health", "Rotate quarterly so all sides receive even light exposure"],
+    related: ["ficus__ficus-panda", "ficus__ficus-benjamina", "ornamental__sansevieria", "pots__ceramic-pots"],
+  },
+  "ficus__peepal": {
+    name: "Peepal",
+    botanical: "Ficus religiosa",
+    cat: "ficus",
+    catLabel: "Ficus Varieties",
+    slug: "peepal",
+    tagline: "The sacred Bo Tree \u2014 heart-shaped leaves, deep cultural roots",
+    description: "The Peepal tree holds immense spiritual significance in Hindu and Buddhist traditions. Botanically it is remarkable for its distinctive heart-shaped leaves with long drip-tips, and its extraordinary longevity \u2014 some specimens are thousands of years old.",
+    uses: ["Sacred and cultural garden", "Temple and ashram planting", "Large shade tree", "Avenue and park planting", "Heritage garden"],
+    care: {"water": "Moderate when young; drought tolerant when mature", "light": "Full sun", "soil": "Any well-draining soil \u2014 very adaptable", "difficulty": "Easy", "growth": "Fast"},
+    tips: ["Water weekly for first 2 years; established trees are extremely drought tolerant", "The distinctive trembling leaves (from their long stalks) are characteristic", "Roots are aggressive \u2014 plant well away from buildings, pipes and pavements", "A sacred tree in Indian tradition \u2014 often planted near temples", "Leaves rustle constantly in any breeze, creating a meditative ambient sound"],
+    related: ["ficus__ficus-benjamina", "avenue__rain-tree", "avenue__ashoka", "avenue__gulmohar"],
+  },
+  "indoor__money-plant": {
+    name: "Money Plant",
+    botanical: "Epipremnum aureum",
+    cat: "indoor",
+    catLabel: "Indoor Plants",
+    slug: "money-plant",
+    tagline: "The most forgiving trailing plant for any indoor space",
+    description: "Money Plant is India's most popular houseplant for very good reason \u2014 it thrives in almost any condition, grows rapidly, needs minimal care, and is said to bring good fortune. It trails beautifully from shelves, hangs from baskets, or climbs a moss pole.",
+    uses: ["Indoor trailing or climbing display", "Shelf and bookcase decoration", "Hanging basket", "Office and desk plant", "Bathroom and low-light planting"],
+    care: {"water": "Low to moderate \u2014 water when top 3\u20134 cm of soil is dry", "light": "Low to bright indirect light \u2014 one of the most adaptable", "soil": "Any well-draining potting mix", "difficulty": "Beginner", "growth": "Fast"},
+    tips: ["Water when top 3\u20134 cm of soil feels dry \u2014 every 7\u201310 days", "Can be grown in water alone \u2014 simply place in a glass jar and change water weekly", "Trim regularly to encourage full, bushy growth rather than long bare vines", "Excellent in hanging baskets or trained up a moss pole", "Nearly impossible to kill \u2014 the ideal starter plant for beginners"],
+    related: ["indoor__snake-plant", "indoor__zz-plant", "indoor__spider-plant", "ornamental__aglaonema"],
+  },
+  "indoor__snake-plant": {
+    name: "Snake Plant",
+    botanical: "Dracaena trifasciata",
+    cat: "indoor",
+    catLabel: "Indoor Plants",
+    slug: "snake-plant",
+    tagline: "The architectural air-purifier that thrives on neglect",
+    description: "The Snake Plant is arguably the world's most tolerant houseplant. NASA research identified it as one of the most effective plants for removing indoor air pollutants including formaldehyde and benzene. Its tall, striking leaves work in virtually any interior.",
+    uses: ["Air purification in bedrooms and offices", "Low-light corners", "Modern minimalist interior", "Hotel and commercial lobby", "Bathroom plant (tolerates humidity)"],
+    care: {"water": "Very low \u2014 water only when soil is completely dry (every 3\u20136 weeks)", "light": "Any \u2014 from low light to bright indirect (avoid direct sun)", "soil": "Cactus mix or very free-draining potting mix", "difficulty": "Beginner", "growth": "Slow"},
+    tips: ["Water once every 3\u20136 weeks \u2014 this is the plant most often killed by kindness (overwatering)", "Can tolerate months of neglect \u2014 truly near-indestructible", "Produces oxygen at night \u2014 the ideal bedroom plant", "Clean leaves with a damp cloth once a month to maintain appearance", "Repot only when roots fill the pot completely \u2014 prefers to be root-bound"],
+    related: ["indoor__zz-plant", "ornamental__sansevieria", "indoor__money-plant", "indoor__peace-lily"],
+  },
+  "indoor__zz-plant": {
+    name: "ZZ Plant",
+    botanical: "Zamioculcas zamiifolia",
+    cat: "indoor",
+    catLabel: "Indoor Plants",
+    slug: "zz-plant",
+    tagline: "Glossy, architectural indoor plant for the most challenging spaces",
+    description: "The ZZ Plant has become a design icon for good reason \u2014 its glossy, waxy, deep green leaves on gracefully arching stems look almost sculptural. It survives with minimal water, handles low light, and needs almost no fertilising. Perfect for offices and challenging interior conditions.",
+    uses: ["Office and commercial space", "Low-light corner", "Modern interior accent", "Mall and hotel lobby", "Reception area plant"],
+    care: {"water": "Low \u2014 water every 2\u20133 weeks; monthly in low light", "light": "Low to medium indirect light (handles very low light)", "soil": "Well-draining potting mix", "difficulty": "Beginner", "growth": "Slow"},
+    tips: ["Water every 2\u20133 weeks in normal conditions; monthly in low-light environments", "The thick, water-storing rhizomes make it extremely drought tolerant", "Avoid direct sunlight \u2014 leaves will yellow and scorch", "WARNING: all parts are mildly toxic \u2014 wash hands after handling", "One of the best plants for offices with no natural light"],
+    related: ["indoor__snake-plant", "ornamental__sansevieria", "indoor__money-plant", "ornamental__aglaonema"],
+  },
+  "indoor__peace-lily": {
+    name: "Peace Lily",
+    botanical: "Spathiphyllum spp.",
+    cat: "indoor",
+    catLabel: "Indoor Plants",
+    slug: "peace-lily",
+    tagline: "Elegant white flowers in shaded indoor spaces \u2014 a rare combination",
+    description: "Peace Lily is one of very few plants that will flower in low light \u2014 its elegant white spathe flowers rise above glossy, deep green leaves creating a sophisticated indoor display. It is also a highly effective air purifier and thrives in bathrooms.",
+    uses: ["Shaded indoor flowering display", "Bathroom and humid room plant", "Office and low-light space", "Bedroom air purification", "Gift plant"],
+    care: {"water": "Moderate \u2014 water when leaves just begin to slightly droop", "light": "Low to medium indirect light \u2014 one of the best for shade", "soil": "Rich, well-draining potting mix", "difficulty": "Easy", "growth": "Medium"},
+    tips: ["Water when leaves JUST begin to droop slightly \u2014 Peace Lily will tell you when it needs water", "Excellent bathroom plant \u2014 loves humidity and indirect light", "Feed monthly with balanced fertiliser from spring to autumn", "Remove spent flowers at the base to encourage new blooms", "Leaves will droop dramatically when thirsty but recover quickly after watering"],
+    related: ["indoor__money-plant", "ornamental__aglaonema", "indoor__spider-plant", "aquatic__water-lily"],
+  },
+  "indoor__spider-plant": {
+    name: "Spider Plant",
+    botanical: "Chlorophytum comosum",
+    cat: "indoor",
+    catLabel: "Indoor Plants",
+    slug: "spider-plant",
+    tagline: "Cheerful, arching variegated plant that propagates itself",
+    description: "Spider Plant is a classic for good reason \u2014 its arching green-and-white striped leaves are attractive year-round, and it produces cascading 'spiderettes' (baby plantlets on long stems) that can be snipped off and rooted to create new plants for free.",
+    uses: ["Hanging basket display", "Shelf trailing plant", "Children's room (safe, non-toxic)", "Office plant", "Propagation project (educational)"],
+    care: {"water": "Moderate \u2014 water when top 3\u20134 cm is dry", "light": "Bright indirect light for best variegation; adapts to moderate light", "soil": "Any well-draining potting mix", "difficulty": "Beginner", "growth": "Fast"},
+    tips: ["Water every 7\u201310 days; reduce to every 2 weeks in winter", "Excellent in hanging baskets where the spiderettes can cascade freely", "Feed monthly in growing season with balanced fertiliser", "Propagate: simply remove a spiderette and place in water or moist soil", "One of the safest houseplants \u2014 non-toxic to children and pets"],
+    related: ["indoor__money-plant", "indoor__peace-lily", "indoor__zz-plant", "ornamental__aglaonema"],
+  },
+  "pots__terracotta-pots": {
+    name: "Terracotta Pots",
+    botanical: "\u2014",
+    cat: "pots",
+    catLabel: "Pots & Planters",
+    slug: "terracotta-pots",
+    tagline: "Classic fired-clay planters \u2014 breathable, beautiful, timeless",
+    description: "Terracotta pots are a garden classic for a reason \u2014 their natural red-clay material is breathable, which regulates soil moisture and prevents overwatering. Their earthy tones complement almost any planting style from traditional to contemporary.",
+    uses: ["Herb and kitchen garden", "Mediterranean and Moroccan garden", "Succulent and cactus display", "Traditional courtyard planting", "Entrance and step decoration"],
+    care: {"water": "Terracotta is porous \u2014 soil dries faster; water more frequently than in plastic", "light": "Suitable for all light conditions", "soil": "Any quality potting mix appropriate to the plant", "difficulty": "Any level", "growth": "N/A"},
+    tips: ["Water more frequently than in plastic pots \u2014 terracotta wicks moisture away", "Soak new terracotta pots in water for 30 minutes before first use", "Seal inside with sealant if you want to retain moisture for water-loving plants", "Ideal for succulents and cacti \u2014 the porosity prevents root rot", "Protect from frost \u2014 terracotta can crack if water inside freezes"],
+    related: ["pots__ceramic-pots", "pots__frp-planters", "desert__aloe-vera", "desert__assorted-cactus"],
+  },
+  "pots__ceramic-pots": {
+    name: "Ceramic Pots",
+    botanical: "\u2014",
+    cat: "pots",
+    catLabel: "Pots & Planters",
+    slug: "ceramic-pots",
+    tagline: "Glazed decorative planters for elevated interior and outdoor display",
+    description: "Glazed ceramic pots combine the beauty of traditional craftsmanship with the practical advantage of reduced water evaporation. Available in our range of colours from imported collections (China, Bangkok, Spain), they elevate any planting into a design statement.",
+    uses: ["Interior d\u00e9cor and display", "Formal garden entrance", "Living room and dining feature", "Balcony and terrace planting", "Gift planting"],
+    care: {"water": "Glazed ceramic retains moisture longer \u2014 water less frequently", "light": "Suitable for all light conditions", "soil": "Quality potting mix appropriate to the plant", "difficulty": "Any level", "growth": "N/A"},
+    tips: ["Glazed pots retain moisture much longer than terracotta \u2014 check soil before watering", "Always ensure adequate drainage holes \u2014 add a layer of gravel at the base", "Heavy when filled \u2014 plan placement carefully before planting", "Excellent for peace lilies, aglaonemas and other moisture-loving plants", "Our imported range from China, Bangkok and Spain offers premium decorative options"],
+    related: ["pots__terracotta-pots", "pots__imported-pots", "ornamental__aglaonema", "indoor__peace-lily"],
+  },
+  "pots__frp-planters": {
+    name: "FRP Planters",
+    botanical: "\u2014",
+    cat: "pots",
+    catLabel: "Pots & Planters",
+    slug: "frp-planters",
+    tagline: "Lightweight, durable and weatherproof planters for estates and rooftops",
+    description: "FRP (Fibre Reinforced Plastic) planters combine the visual appeal of stone or concrete with a fraction of the weight \u2014 making them ideal for rooftop gardens, balconies, large estate installations and commercial projects where weight loading is a concern.",
+    uses: ["Rooftop and terrace garden", "Large estate and hotel landscape", "Commercial and retail display", "Weight-sensitive installation", "Large specimen planting"],
+    care: {"water": "Retains moisture well \u2014 slightly less watering required than terracotta", "light": "Suitable for all conditions \u2014 highly weatherproof", "soil": "Quality potting or landscape mix", "difficulty": "Any level", "growth": "N/A"},
+    tips: ["Available in very large sizes impossible to achieve in terracotta or ceramic", "Extremely weatherproof \u2014 UV resistant, frost resistant, salt spray resistant", "Ideal for large palms, trees and specimen plants that need deep root volume", "Lightweight \u2014 10 to 20 times lighter than equivalent stone or concrete", "Can be customised in size, colour and finish for commercial projects"],
+    related: ["pots__terracotta-pots", "pots__imported-pots", "palm__royal-palm", "palm__foxtail-palm"],
+  },
+  "pots__imported-pots": {
+    name: "Imported Pots",
+    botanical: "China \u00b7 Bangkok \u00b7 Spain",
+    cat: "pots",
+    catLabel: "Pots & Planters",
+    slug: "imported-pots",
+    tagline: "Curated premium decorative planters from our overseas partners",
+    description: "Our imported planter collection brings design excellence from three distinct traditions: the refined artisanship of Chinese ceramic ware, the vibrant tropical aesthetics of Bangkok, and the Mediterranean elegance of Spanish terracotta and glazed ceramics.",
+    uses: ["Luxury interior decoration", "Premium estate entrance", "High-end hotel and resort", "Collector display", "Premium gift planting"],
+    care: {"water": "Varies by material \u2014 ask our team for specific care guidance", "light": "Suitable for indoor and outdoor use depending on finish", "soil": "High-quality potting mix appropriate to plant selection", "difficulty": "Any level", "growth": "N/A"},
+    tips: ["Imported stock is seasonal and subject to availability \u2014 enquire early for project quantities", "Chinese porcelain: stunning decorative quality, suited to indoor use or sheltered outdoor", "Bangkok collections: tropical, bold colours and hand-painted designs", "Spanish terracotta: premium large-format traditional pots, ideal for olive trees and palms", "Ask our team to assist with selection for your specific project requirements"],
+    related: ["pots__ceramic-pots", "pots__frp-planters", "pots__terracotta-pots", "palm__bottle-palm"],
+  },
+}
+
+// ══ CONSTANTS ════════════════════════════════════════════
+const LS_CUSTOM    = 'ssn_custom_plants';
+const LS_OVERRIDES = 'ssn_overrides';
+const VIP_KEY      = 'ssn_vip_plants';
+const TOKEN_KEY    = 'ssn_vip_token';
+const DEF_TOKEN    = 'vip2024ssn';
+const CAT_META = {
+  ornamental:{label:'Ornamental Plants',icon:'🌿'},
+  avenue:{label:'Avenue & Shade Trees',icon:'🌳'},
+  palm:{label:'Palm Varieties',icon:'🌴'},
+  flowering:{label:'Flowering Plants',icon:'🌸'},
+  fruit:{label:'Fruit Plants',icon:'🍎'},
+  bamboo:{label:'Bamboo Varieties',icon:'🎋'},
+  aquatic:{label:'Aquatic & Pond Plants',icon:'🌊'},
+  desert:{label:'Desert & Succulent',icon:'🌵'},
+  ficus:{label:'Ficus Varieties',icon:'🌲'},
+  indoor:{label:'Indoor Plants',icon:'🪴'},
+  pots:{label:'Pots & Planters',icon:'🏺'},
+  custom:{label:'Special / Custom',icon:'✨'},
+};
+
+// ══ STORAGE ══════════════════════════════════════════════
+function getCustom(){try{return JSON.parse(localStorage.getItem(LS_CUSTOM)||'{}');}catch{return {};}}
+function saveCustom(d){localStorage.setItem(LS_CUSTOM,JSON.stringify(d));}
+function getOv(){try{return JSON.parse(localStorage.getItem(LS_OVERRIDES)||'{}');}catch{return {};}}
+function saveOv(d){localStorage.setItem(LS_OVERRIDES,JSON.stringify(d));}
+function getVip(){try{return JSON.parse(localStorage.getItem(VIP_KEY)||'[]');}catch{return [];}}
+function saveVip(a){localStorage.setItem(VIP_KEY,JSON.stringify(a));}
+function getTok(){return localStorage.getItem(TOKEN_KEY)||DEF_TOKEN;}
+
+// ══ MERGED PLANT LIST ════════════════════════════════════
+function getAllPlants(){
+  var ov=getOv(), cu=getCustom(), all={};
+  // Built-in from PLANT_DATA
+  Object.keys(PLANT_DATA).forEach(function(k){
+    var p=PLANT_DATA[k];
+    all[k]=Object.assign({},p,ov[k]||{},{_key:k,_type:ov[k]?'edited':'builtin'});
+  });
+  // Custom
+  Object.entries(cu).forEach(function([k,p]){
+    all[k]=Object.assign({},p,{_key:k,_type:'custom'});
+  });
+  return all;
+}
+
+// ══ VIEW ROUTER ══════════════════════════════════════════
+function showView(id){
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
+  document.querySelectorAll('.sb-btn').forEach(function(b){b.classList.remove('active');});
+  var v=document.getElementById('view-'+id);
+  if(v) v.classList.add('active');
+  var n=document.getElementById('nav-'+id); if(n) n.classList.add('active');
+  var titles={
+    'dashboard':'Dashboard','plants':'All Plant Varieties','categories':'Plant Categories',
+    'vip':'VIP Collection','import-export':'Import & Export','visitors':'VIP Visitors',
+    'analytics':'Analytics & Insights','settings':'Site Settings','gallery-admin':'Gallery','publish':'Publish & Share'
+  };
+  document.getElementById('topbar-title').textContent=titles[id]||id;
+  // Show/hide Add Plant button
+  var addBtn=document.getElementById('topbar-add-plant');
+  if(addBtn) addBtn.style.display=(id==='plants'||id==='categories'||id==='dashboard')?'':'none';
+  // Render correct view
+  if(id==='dashboard')     renderDash();
+  if(id==='plants')        renderTable();
+  if(id==='categories')    renderCatGrid();
+  if(id==='vip')           renderVipView();
+  if(id==='visitors')      renderVisitorsView();
+  if(id==='analytics')     setTimeout(renderAnalytics,80);
+  if(id==='settings')      initSettingsView();
+  if(id==='gallery-admin') renderGalAdmin();
+  if(id==='publish') initPublish();
+}
+
+// ══ DASHBOARD ════════════════════════════════════════════
+function renderDash(){
+  var all=getAllPlants(), ov=getOv(), cu=getCustom(), vp=getVip();
+  var total=Object.keys(all).length;
+  var edited=Object.keys(ov).length;
+  var custom=Object.keys(cu).length;
+  document.getElementById('s-total').textContent=total;
+  document.getElementById('s-edited').textContent=edited;
+  document.getElementById('s-custom').textContent=custom;
+  document.getElementById('s-vip').textContent=vp.length;
+  document.getElementById('sb-cnt').textContent=total;
+  document.getElementById('sb-vip-cnt').textContent=vp.length;
+
+  var recents=[];
+  Object.entries(ov).slice(-3).forEach(([k,p])=>recents.push({k,p:Object.assign({},PLANT_DATA[k]||{},p),tag:'Edited'}));
+  Object.entries(cu).slice(-3).forEach(([k,p])=>recents.push({k,p,tag:'Custom'}));
+  var el=document.getElementById('recent-list');
+  if(!recents.length){el.innerHTML='<div class="empty-st" style="padding:24px 0"><div class="ei">🌱</div><p>No edits yet — click a plant to edit it.</p></div>';return;}
+  el.innerHTML='<table class="ptbl"><tbody>'+recents.map(r=>`<tr>
+    <td><div class="thumb">${r.p.image?`<img src="${r.p.image}">`:'<span style="font-size:1rem">🌿</span>'}</div></td>
+    <td><div class="nm-txt"><strong>${r.p.name||r.k}</strong><small>${r.p.botanical||''}</small></div></td>
+    <td><span class="cpill">${(CAT_META[r.p.cat]||{}).label||r.p.cat||''}</span></td>
+    <td><span class="spill ${r.tag==='Edited'?'edited':'custom'}"><span class="sdot"></span>${r.tag}</span></td>
+    <td><button class="btn btn-outline btn-sm" data-key="${r.k}" onclick="openEdit(this.dataset.key)">Edit</button></td>
+  </tr>`).join('')+'</tbody></table>';
+}
+
+// ══ ALL PLANTS TABLE ═════════════════════════════════════
+function renderTable(){
+  var all=getAllPlants();
+  var cf=document.getElementById('flt-cat').value;
+  var tf=document.getElementById('flt-type').value;
+  var srch=(document.getElementById('srch').value||'').toLowerCase();
+  var rows=Object.values(all).filter(function(p){
+    if(cf&&p.cat!==cf) return false;
+    if(tf&&p._type!==tf) return false;
+    if(srch&&!(p.name||'').toLowerCase().includes(srch)&&!(p.botanical||'').toLowerCase().includes(srch)) return false;
+    return true;
+  });
+  document.getElementById('plants-sub').textContent=rows.length+' of '+Object.keys(all).length+' varieties';
+  var tbody=document.getElementById('ptbl-body');
+  tbody.innerHTML=rows.map(function(r){
+    var statusHtml=r._type==='edited'
+      ?'<span class="spill edited"><span class="sdot"></span>Edited</span>'
+      :r._type==='custom'
+        ?'<span class="spill custom"><span class="sdot"></span>Custom</span>'
+        :'<span class="spill builtin"><span class="sdot"></span>Built-in</span>';
+    return '<tr>'
+      +'<td><div class="thumb">'+(r.image?'<img src="'+r.image+'">'
+        :'<span style="font-size:1.1rem">'+(CAT_META[r.cat]||{}).icon+'</span>')+'</div></td>'
+      +'<td><div class="nm-txt"><strong>'+(r.name||r._key)+'</strong><small>'+(r.botanical||'')+'</small></div></td>'
+      +'<td><span class="cpill">'+(CAT_META[r.cat]||{}).label+'</span></td>'
+      +'<td>'+statusHtml+'</td>'
+      +'<td class="act-cell">'
+        +'<button class="btn btn-outline btn-sm" data-key="'+r._key+'" onclick="openEdit(this.dataset.key)">Edit</button>'
+        +(r._type==='edited'?'<button class="btn btn-danger btn-sm" data-key="'+r._key+'" onclick="doReset(this.dataset.key)" style="margin-left:4px">Reset</button>':'')
+        +(r._type==='custom'?'<button class="btn btn-danger btn-sm" data-key="'+r._key+'" onclick="delPlant(this.dataset.key)" style="margin-left:4px">Delete</button>':'')
+      +'</td></tr>';
+  }).join('');
+  if(!rows.length) tbody.innerHTML='<tr><td colspan="5"><div class="empty-st" style="padding:28px 0"><div class="ei">🔍</div><p>No plants match.</p></div></td></tr>';
+}
+
+// ══ CATEGORIES ═══════════════════════════════════════════
+function renderCatGrid(){
+  var all=getAllPlants();
+  var extra=getExtraCats();
+  var allCats=Object.assign({},CAT_META);
+  Object.entries(extra).forEach(function([k,v]){allCats[k]=v;});
+  var grid=document.getElementById('cat-grid');
+  grid.innerHTML=Object.entries(allCats).filter(function([k]){return k!=='custom';}).map(function([cat,m]){
+    var count=Object.values(all).filter(function(p){return p.cat===cat;}).length;
+    var isBuiltin=!!CAT_META[cat];
+    return '<div class="cat-card">'
+      +'<div class="cat-info" style="flex:1;">'
+        +'<strong>'+m.icon+' '+m.label+'</strong>'
+        +'<small>'+count+' plant'+(count!==1?'s':'')+' · '+(isBuiltin?'Built-in':'Custom')+'</small>'
+      +'</div>'
+      +(!isBuiltin
+        ?'<button class="btn btn-danger btn-sm" data-cat="'+cat+'" onclick="delCat(this.dataset.cat)" style="margin-left:8px">&#10005;</button>'
+        :'<span style="font-size:.7rem;color:var(--muted);margin-left:8px;">Core</span>')
+      +'</div>';
+  }).join('');
+  var ab=document.getElementById('cat-add-btn');
+  if(ab) ab.style.display='';
+}
+// Extra categories stored in localStorage
+var CAT_EXTRA_KEY='ssn_custom_cats';
+function getExtraCats(){try{return JSON.parse(localStorage.getItem(CAT_EXTRA_KEY)||'{}');}catch{return {};}}
+function saveExtraCats(d){localStorage.setItem(CAT_EXTRA_KEY,JSON.stringify(d));}
+function openAddCat(){
+  ['new-cat-key','new-cat-label','new-cat-icon'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value='';
+  });
+  var fo=document.getElementById('cat-form-overlay'); if(fo) fo.classList.add('open');
+}
+function saveNewCat(){
+  var key=document.getElementById('new-cat-key').value.trim().toLowerCase().replace(/[^a-z0-9]/g,'');
+  var label=document.getElementById('new-cat-label').value.trim();
+  var icon=document.getElementById('new-cat-icon').value.trim()||'🌿';
+  if(!key){toast('Category ID required','err');return;}
+  if(!label){toast('Category name required','err');return;}
+  if(CAT_META[key]){toast('This ID is already a built-in category','err');return;}
+  var extra=getExtraCats(); extra[key]={label:label,icon:icon};
+  saveExtraCats(extra); CAT_META[key]={label:label,icon:icon};
+  var fo=document.getElementById('cat-form-overlay'); if(fo) fo.classList.remove('open');
+  toast('Category added!','ok'); renderCatGrid();
+  // Also add to the category dropdowns in plant forms
+  addCatToDropdowns(key,label);
+}
+function addCatToDropdowns(key,label){
+  ['f-cat','vf-cat','vf2-cat'].forEach(function(id){
+    var sel=document.getElementById(id);
+    if(!sel) return;
+    if(sel.querySelector('option[value="'+key+'"]')) return;
+    var opt=document.createElement('option'); opt.value=key; opt.textContent=label;
+    sel.appendChild(opt);
+  });
+}
+function delCat(key){
+  openConfirm('Delete category?','Plants remain but the category label is removed.',function(){
+    var extra=getExtraCats(); delete extra[key]; saveExtraCats(extra);
+    delete CAT_META[key]; closeConfirm(); toast('Category removed.','ok'); renderCatGrid();
+  });
+}
+function showCatDetail(cat){}
+
+// ══ EDIT & FORM ══════════════════════════════════════════
+var _curKey=null, _curType=null, _imgB64=null;
+
+function openEdit(key){
+  var all=getAllPlants(); var p=all[key]; if(!p) return;
+  _curKey=key; _curType=p._type; _imgB64=p.image||null;
+  document.getElementById('fp-title').textContent='Edit — '+p.name;
+  document.getElementById('reset-btn').style.display=(p._type==='edited'?'':'none');
+  fillForm(p);
+  document.getElementById('form-overlay').classList.add('open');
+}
+function openForm(catPreset){
+  _curKey=null; _curType='custom'; _imgB64=null;
+  document.getElementById('fp-title').textContent='Add New Plant';
+  document.getElementById('reset-btn').style.display='none';
+  fillForm({cat:catPreset||''});
+  document.getElementById('form-overlay').classList.add('open');
+}
+function fillForm(p){
+  document.getElementById('ai-inp').value='';
+  document.getElementById('ai-loading').classList.remove('show');
+  ['f-name','f-bot','f-tagline','f-desc','f-water','f-light','f-soil','f-growth'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-cat').value=p.cat||'';
+  document.getElementById('f-diff').value=(p.care||{}).difficulty||'';
+  document.getElementById('uses-list').innerHTML='';
+  document.getElementById('tips-list').innerHTML='';
+  document.getElementById('img-prev').style.display='none';
+  document.getElementById('img-preview').src='';
+  document.getElementById('img-file').value='';
+  document.getElementById('f-name').value=p.name||'';
+  document.getElementById('f-bot').value=p.botanical||'';
+  document.getElementById('f-tagline').value=p.tagline||'';
+  document.getElementById('f-desc').value=p.description||'';
+  document.getElementById('f-water').value=(p.care||{}).water||'';
+  document.getElementById('f-light').value=(p.care||{}).light||'';
+  document.getElementById('f-soil').value=(p.care||{}).soil||'';
+  document.getElementById('f-growth').value=(p.care||{}).growth||'';
+  (p.uses||[]).forEach(u=>addRow('uses-list',u));
+  (p.tips||[]).forEach(t=>addRow('tips-list',t));
+  if(p.image){_imgB64=p.image;document.getElementById('img-preview').src=p.image;document.getElementById('img-prev').style.display='block';}
+}
+function closeForm(){document.getElementById('form-overlay').classList.remove('open');}
+function addRow(lid,val){
+  var d=document.getElementById(lid), row=document.createElement('div');
+  row.className='dyn-row';
+  row.innerHTML='<input class="fi" value="'+(val||'').replace(/"/g,'&quot;')+'" placeholder="Enter text...">'
+    +'<button class="dyn-rm" onclick="this.parentNode.remove()">&#10005;</button>';
+  d.appendChild(row);
+}
+function getRows(lid){return Array.from(document.querySelectorAll('#'+lid+' input')).map(i=>i.value.trim()).filter(Boolean);}
+function handleImg(inp){
+  var f=inp.files[0]; if(!f) return;
+  if(f.size>5*1024*1024){toast('Max 5 MB','err');return;}
+  new FileReader().readAsDataURL(f);
+  var r=new FileReader(); r.onload=e=>{_imgB64=e.target.result;document.getElementById('img-preview').src=_imgB64;document.getElementById('img-prev').style.display='block';}; r.readAsDataURL(f);
+}
+function rmImg(){_imgB64=null;document.getElementById('img-preview').src='';document.getElementById('img-prev').style.display='none';document.getElementById('img-file').value='';}
+function savePlant(){
+  var name=document.getElementById('f-name').value.trim();
+  var cat=document.getElementById('f-cat').value;
+  var desc=document.getElementById('f-desc').value.trim();
+  if(!name){toast('Name required','err');return;}
+  if(!cat){toast('Category required','err');return;}
+  if(!desc){toast('Description required','err');return;}
+  var catLabel=(CAT_META[cat]||{}).label||cat;
+  var plant={name,botanical:document.getElementById('f-bot').value.trim(),cat,catLabel,
+    tagline:document.getElementById('f-tagline').value.trim(),description:desc,
+    care:{water:document.getElementById('f-water').value.trim(),light:document.getElementById('f-light').value.trim(),
+      soil:document.getElementById('f-soil').value.trim(),difficulty:document.getElementById('f-diff').value,
+      growth:document.getElementById('f-growth').value.trim()},
+    uses:getRows('uses-list'),tips:getRows('tips-list'),image:_imgB64||null};
+  if(_curType==='builtin'||_curType==='edited'){
+    // Save as override — website will pick it up
+    var ov=getOv(); ov[_curKey]=plant; saveOv(ov);
+  } else {
+    var cu=getCustom();
+    var key=_curKey||(cat+'__custom__'+name.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'__'+Date.now());
+    cu[key]=plant; saveCustom(cu);
+  }
+  closeForm();
+  toast(_curKey?'Plant updated!':'Plant added!','ok');
+  renderDash(); renderTable();
+}
+function doReset(key){
+  openConfirm('Reset to default?','Your edits to this plant will be removed.',function(){
+    var ov=getOv(); delete ov[key]; saveOv(ov);
+    closeConfirm(); toast('Reset to default.','ok'); renderTable(); renderDash();
+  });
+}
+function resetCurrent(){doReset(_curKey);closeForm();}
+function delPlant(key){
+  openConfirm('Delete this plant?','This custom plant will be permanently removed.',function(){
+    var cu=getCustom(); delete cu[key]; saveCustom(cu);
+    closeConfirm(); toast('Plant deleted.','ok'); renderTable(); renderDash();
+  });
+}
+
+// ══ AI AUTOFILL ══════════════════════════════════════════
+async function aiGenerate(){
+  var nm=document.getElementById('ai-inp').value.trim();
+  if(!nm){toast('Enter a plant name first','err');return;}
+  document.getElementById('ai-loading').classList.add('show');
+  try{
+    var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,
+        messages:[{role:'user',content:'Botanist for Gangumalla nursery Kadiyam. JSON only for "'+nm+'": {"botanical":"","tagline":"","description":"","category":"ornamental|avenue|palm|flowering|fruit|bamboo|aquatic|desert|ficus|indoor|pots","water":"","light":"","soil":"","difficulty":"Easy|Moderate|Hard|Very Easy|Beginner","growth":"","uses":[],"tips":[]}'}]})});
+    var d=await r.json();
+    var t=(d.content||[]).map(b=>b.text||'').join('');
+    var p=JSON.parse(t.replace(/```json?/g,'').replace(/```/g,'').trim());
+    document.getElementById('f-name').value=nm;
+    document.getElementById('f-bot').value=p.botanical||'';
+    document.getElementById('f-tagline').value=p.tagline||'';
+    document.getElementById('f-desc').value=p.description||'';
+    if(p.category)document.getElementById('f-cat').value=p.category;
+    document.getElementById('f-water').value=p.water||'';
+    document.getElementById('f-light').value=p.light||'';
+    document.getElementById('f-soil').value=p.soil||'';
+    document.getElementById('f-diff').value=p.difficulty||'';
+    document.getElementById('f-growth').value=p.growth||'';
+    document.getElementById('uses-list').innerHTML='';(p.uses||[]).forEach(u=>addRow('uses-list',u));
+    document.getElementById('tips-list').innerHTML='';(p.tips||[]).forEach(t=>addRow('tips-list',t));
+    toast('AI filled details!','ok');
+  }catch(e){toast('AI fill failed','err');}
+  finally{document.getElementById('ai-loading').classList.remove('show');}
+}
+document.getElementById('ai-inp').addEventListener('keydown',e=>{if(e.key==='Enter')aiGenerate();});
+
+// ══ VIP MANAGEMENT ═══════════════════════════════════════
+var _vei=null, _vib=null;
+function updateLP(){
+  var t=document.getElementById('vip-tok').value.trim()||DEF_TOKEN;
+  var base=window.location.href.replace(/[^\/\\]*$/,'');
+  document.getElementById('vip-link-preview').textContent=base+'vip.html?key='+t;
+}
+function saveToken(){var t=document.getElementById('vip-tok').value.trim();if(!t){toast('Enter token','err');return;}localStorage.setItem(TOKEN_KEY,t);updateLP();toast('Token saved!','ok');}
+function copyVipLink(){navigator.clipboard.writeText(document.getElementById('vip-link-preview').textContent).then(()=>toast('Copied!','ok'));}
+function openVipPage(){window.open('vip.html?key='+(document.getElementById('vip-tok').value.trim()||getTok()),'_blank');}
+function renderVipView(){
+  document.getElementById('vip-tok').value=getTok(); updateLP();
+  var arr=getVip();
+  document.getElementById('sb-vip-cnt').textContent=arr.length;
+  document.getElementById('vip-sub').textContent=arr.length+' exclusive plant'+(arr.length!==1?'s':'')+' in VIP collection';
+  var g=document.getElementById('vip-plant-grid');
+  if(!arr.length){g.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:44px 0;color:var(--muted);"><div style="font-size:2rem;margin-bottom:10px;">&#9670;</div><p>No VIP plants yet. Click "+ Add VIP Plant" to begin.</p></div>';return;}
+  g.innerHTML=arr.map((p,i)=>'<div class="vip-plant-card">'
+    +'<div class="vpc-img">'+(p.image?'<img src="'+p.image+'">'  :'<span class="ni">&#127807;</span>')+'</div>'
+    +'<div class="vpc-body"><div class="vpc-name">'+(p.name||'')+'</div><div class="vpc-bot">'+(p.botanical||'')+'</div><div class="vpc-desc">'+(p.description||'')+'</div></div>'
+    +'<div class="vpc-footer"><button class="btn btn-outline btn-sm" onclick="openVipForm('+i+')">Edit</button><button class="btn btn-danger btn-sm" onclick="delVip('+i+')" style="margin-left:4px">Delete</button></div>'
+    +'</div>').join('');
+}
+function openVipForm(idx){
+  _vei=(idx!==undefined)?idx:null; _vib=null;
+  document.getElementById('vfp-title').textContent=(_vei!==null)?'Edit VIP Plant':'Add VIP Plant';
+  document.getElementById('vai-inp').value='';
+  document.getElementById('vai-load').classList.remove('show');
+  ['vf-name','vf-bot','vf-tagline','vf-desc','vf-water','vf-light','vf-soil','vf-growth'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('vf-cat').value='';document.getElementById('vf-diff').value='';
+  document.getElementById('vip-uses').innerHTML='';document.getElementById('vip-tips').innerHTML='';
+  document.getElementById('vip-img-prev').style.display='none';document.getElementById('vip-img-preview').src='';document.getElementById('vip-img-file').value='';
+  if(_vei!==null){var p=getVip()[_vei];if(p){
+    document.getElementById('vf-name').value=p.name||'';document.getElementById('vf-bot').value=p.botanical||'';
+    document.getElementById('vf-tagline').value=p.tagline||'';document.getElementById('vf-desc').value=p.description||'';
+    document.getElementById('vf-cat').value=p.cat||'';
+    document.getElementById('vf-water').value=(p.care||{}).water||'';document.getElementById('vf-light').value=(p.care||{}).light||'';
+    document.getElementById('vf-soil').value=(p.care||{}).soil||'';document.getElementById('vf-diff').value=(p.care||{}).difficulty||'';
+    document.getElementById('vf-growth').value=(p.care||{}).growth||'';
+    (p.uses||[]).forEach(u=>addVipRow('vip-uses',u));(p.tips||[]).forEach(t=>addVipRow('vip-tips',t));
+    if(p.image){_vib=p.image;document.getElementById('vip-img-preview').src=p.image;document.getElementById('vip-img-prev').style.display='block';}
+  }}else{for(var i=0;i<3;i++){addVipRow('vip-uses',null);addVipRow('vip-tips',null);}}
+  document.getElementById('vip-form-overlay').classList.add('open');
+}
+function closeVipForm(){document.getElementById('vip-form-overlay').classList.remove('open');}
+function addVipRow(lid,val){
+  var d=document.getElementById(lid),row=document.createElement('div');
+  row.className='dyn-row';
+  row.innerHTML='<input class="fi" value="'+(val||'').replace(/"/g,'&quot;')+'" placeholder="Enter text...">'
+    +'<button class="dyn-rm" onclick="this.parentNode.remove()">&#10005;</button>';
+  d.appendChild(row);
+}
+function hVipImg(inp){var f=inp.files[0];if(!f)return;if(f.size>5*1024*1024){toast('Max 5MB','err');return;}var r=new FileReader();r.onload=e=>{_vib=e.target.result;document.getElementById('vip-img-preview').src=_vib;document.getElementById('vip-img-prev').style.display='block';};r.readAsDataURL(f);}
+function rmVipImg(){_vib=null;document.getElementById('vip-img-preview').src='';document.getElementById('vip-img-prev').style.display='none';document.getElementById('vip-img-file').value='';}
+function saveVipPlant(){
+  var nm=document.getElementById('vf-name').value.trim(); var ds=document.getElementById('vf-desc').value.trim();
+  if(!nm){toast('Name required','err');return;}if(!ds){toast('Description required','err');return;}
+  var p={name:nm,botanical:document.getElementById('vf-bot').value.trim(),cat:document.getElementById('vf-cat').value,
+    tagline:document.getElementById('vf-tagline').value.trim(),description:ds,
+    care:{water:document.getElementById('vf-water').value.trim(),light:document.getElementById('vf-light').value.trim(),
+      soil:document.getElementById('vf-soil').value.trim(),difficulty:document.getElementById('vf-diff').value,
+      growth:document.getElementById('vf-growth').value.trim()},
+    uses:Array.from(document.querySelectorAll('#vip-uses input')).map(i=>i.value.trim()).filter(Boolean),
+    tips:Array.from(document.querySelectorAll('#vip-tips input')).map(i=>i.value.trim()).filter(Boolean),
+    image:_vib||null};
+  var arr=getVip();if(_vei!==null)arr[_vei]=p;else arr.push(p);
+  saveVip(arr);closeVipForm();toast(_vei!==null?'Updated!':'VIP plant added!','ok');renderVipView();renderDash();
+}
+function delVip(idx){openConfirm('Delete VIP plant?','',function(){var a=getVip();a.splice(idx,1);saveVip(a);closeConfirm();toast('Deleted.','ok');renderVipView();renderDash();});}
+async function vipAiGen(){
+  var nm=document.getElementById('vai-inp').value.trim();if(!nm){toast('Enter name','err');return;}
+  document.getElementById('vai-load').classList.add('show');
+  try{var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:'Botanist Kadiyam nursery. JSON only for "'+nm+'": {"botanical":"","tagline":"","description":"","category":"ornamental|avenue|palm|flowering|fruit|bamboo|aquatic|desert|ficus|indoor|pots","water":"","light":"","soil":"","difficulty":"Easy|Moderate|Hard|Very Easy|Beginner","growth":"","uses":[],"tips":[]}'}]})});
+    var d=await r.json();var t=(d.content||[]).map(b=>b.text||'').join('');
+    var p=JSON.parse(t.replace(/```json?/g,'').replace(/```/g,'').trim());
+    document.getElementById('vf-name').value=nm;document.getElementById('vf-bot').value=p.botanical||'';
+    document.getElementById('vf-tagline').value=p.tagline||'';document.getElementById('vf-desc').value=p.description||'';
+    if(p.category)document.getElementById('vf-cat').value=p.category;
+    document.getElementById('vf-water').value=p.water||'';document.getElementById('vf-light').value=p.light||'';
+    document.getElementById('vf-soil').value=p.soil||'';document.getElementById('vf-diff').value=p.difficulty||'';
+    document.getElementById('vf-growth').value=p.growth||'';
+    document.getElementById('vip-uses').innerHTML='';(p.uses||[]).forEach(u=>addVipRow('vip-uses',u));
+    document.getElementById('vip-tips').innerHTML='';(p.tips||[]).forEach(t=>addVipRow('vip-tips',t));
+    toast('AI filled!','ok');
+  }catch(e){toast('AI fill failed','err');}finally{document.getElementById('vai-load').classList.remove('show');}
+}
+document.getElementById('vai-inp').addEventListener('keydown',e=>{if(e.key==='Enter')vipAiGen();});
+
+// ══ IMPORT/EXPORT ════════════════════════════════════════
+function doExport(){var d={custom:getCustom(),overrides:getOv()};var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}));a.download='ssn-plants-'+Date.now()+'.json';a.click();toast('Exported!','ok');}
+function copyExport(){navigator.clipboard.writeText(JSON.stringify({custom:getCustom(),overrides:getOv()},null,2)).then(()=>toast('Copied!','ok'));}
+function toggleImport(){var ta=document.getElementById('import-ta'),btn=document.getElementById('import-btn');var o=ta.classList.toggle('open');btn.style.display=o?'':'';}
+function importFile(inp){var r=new FileReader();r.onload=e=>{document.getElementById('import-ta').value=e.target.result;document.getElementById('import-ta').classList.add('open');document.getElementById('import-btn').style.display='';};r.readAsText(inp.files[0]);}
+function doImport(){try{var d=JSON.parse(document.getElementById('import-ta').value.trim());if(d.custom)saveCustom(Object.assign(getCustom(),d.custom));if(d.overrides)saveOv(Object.assign(getOv(),d.overrides));toast('Imported!','ok');renderDash();}catch{toast('Invalid JSON','err');}}
+function confirmReset(){openConfirm('Reset all changes?','All edits and custom plants will be deleted. Built-in data is unchanged.',function(){localStorage.removeItem(LS_CUSTOM);localStorage.removeItem(LS_OVERRIDES);closeConfirm();toast('Reset done.','ok');renderDash();});}
+
+function showChangePwd(){
+  document.getElementById('cp-current').value='';
+  document.getElementById('cp-new').value='';
+  document.getElementById('cp-confirm').value='';
+  document.getElementById('chpwd-overlay').classList.add('open');
+}
+function saveNewPwd(){
+  var cur=document.getElementById('cp-current').value;
+  var nw=document.getElementById('cp-new').value;
+  var cf=document.getElementById('cp-confirm').value;
+  if(cur!==getAdminPwd()){toast('Current password is incorrect','err');return;}
+  if(nw.length<6){toast('New password must be at least 6 characters','err');return;}
+  if(nw!==cf){toast('Passwords do not match','err');return;}
+  localStorage.setItem(ADMIN_PWD_KEY,nw);
+  document.getElementById('chpwd-overlay').classList.remove('open');
+  toast('Password updated successfully!','ok');
+}
+
+// ══ CONFIRM & TOAST ══════════════════════════════════════
+function openConfirm(t,m,cb){document.getElementById('c-title').textContent=t;document.getElementById('c-msg').textContent=m;document.getElementById('c-ok').onclick=cb;document.getElementById('confirm-ov').classList.add('open');}
+function closeConfirm(){document.getElementById('confirm-ov').classList.remove('open');}
+var _tt;
+function toast(msg,type){var t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type||'');clearTimeout(_tt);_tt=setTimeout(()=>{t.className='toast';},3000);}
+
+// ══ LOGIN ════════════════════════════════════════════════
+var ADMIN_PWD_KEY = 'ssn_admin_pwd';
+var DEFAULT_PWD   = 'nursery2024';
+var SESSION_KEY   = 'ssn_admin_session';
+
+function openWebsite(){
+  // Try to open relative to current file location
+  var base = window.location.href;
+  var isFile = base.startsWith('file://') || base.includes('/outputs/') || base.includes('localhost');
+  var wUrl = 'index.html';
+  if(base.includes('/')){
+    // Construct absolute path in same folder
+    wUrl = base.substring(0, base.lastIndexOf('/') + 1) + 'index.html';
+  }
+  var win = window.open(wUrl, '_blank');
+  if(!win || win.closed){
+    // Popup blocked — show the URL
+    toast('Copy this filename and open it: index.html', 'ok');
+  }
+}
+function getAdminPwd(){
+  return localStorage.getItem(ADMIN_PWD_KEY) || DEFAULT_PWD;
+}
+function isLoggedIn(){
+  return sessionStorage.getItem(SESSION_KEY) === '1';
+}
+function doLogin(){
+  var inp = document.getElementById('pwd-inp');
+  var hint = document.getElementById('login-hint');
+  var val = inp ? inp.value : '';
+  if(val === getAdminPwd()){
+    sessionStorage.setItem(SESSION_KEY,'1');
+    document.getElementById('login-screen').classList.add('hidden');
+    renderDash();
+  } else {
+    inp.classList.add('err');
+    hint.style.color = 'var(--red)';
+    hint.textContent = 'Incorrect password — try again.';
+    inp.value = '';
+    setTimeout(function(){ inp.classList.remove('err'); }, 400);
+  }
+}
+function doLogout(){
+  sessionStorage.removeItem(SESSION_KEY);
+  document.getElementById('pwd-inp').value = '';
+  document.getElementById('login-hint').style.color = 'transparent';
+  document.getElementById('login-hint').textContent = String.fromCharCode(160);
+  document.getElementById('login-screen').classList.remove('hidden');
+}
+// Enter key on password field
+document.addEventListener('DOMContentLoaded', function(){
+  var inp = document.getElementById('pwd-inp');
+  if(inp) inp.addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+  // Check session
+  if(isLoggedIn()){
+    document.getElementById('login-screen').classList.add('hidden');
+  }
+});
+
+// ══ ANALYTICS ════════════════════════════════════════════
+var AN_KEY = 'ssn_analytics';
+
+function getAnalytics(){
+  try{ return JSON.parse(localStorage.getItem(AN_KEY)||'{"sessions":0,"pages":{},"plants":{},"enquiries":0,"log":[],"updated":null}'); }
+  catch(e){ return {sessions:0,pages:{},plants:{},enquiries:0,log:[],updated:null}; }
+}
+
+function renderAnalytics(){
+  var d = getAnalytics();
+  var totalViews = Object.values(d.pages||{}).reduce(function(a,b){return a+b;},0);
+  var plantViews = Object.values(d.plants||{}).reduce(function(a,b){return a+b;},0);
+  
+  document.getElementById('an-total-visits').textContent   = totalViews;
+  document.getElementById('an-sessions').textContent       = d.sessions||0;
+  document.getElementById('an-plants-viewed').textContent  = plantViews;
+  document.getElementById('an-enquiries').textContent      = d.enquiries||0;
+  
+  var lu = document.getElementById('an-last-updated');
+  lu.textContent = d.updated ? ('Last visit: '+new Date(d.updated).toLocaleString()) : 'No visits recorded yet';
+
+  // Pages chart
+  var pages = d.pages||{};
+  var pageNames = {'home':'Home','about':'Our Heritage','catalog':'Full Catalog',
+    'gallery':'Gallery','contact':'Visit & Enquire','plant':'Plant Detail'};
+  var maxP = Math.max.apply(null, Object.values(pages).concat([1]));
+  var pChart = document.getElementById('an-pages-chart');
+  if(!Object.keys(pages).length){
+    pChart.innerHTML='<div class="an-empty">No page visit data yet. Open the website to start tracking.</div>';
+  } else {
+    pChart.innerHTML = Object.entries(pages).sort(function(a,b){return b[1]-a[1];}).map(function(e){
+      var pct = Math.round(e[1]/maxP*100);
+      return '<div class="an-bar-row">'
+        +'<div class="an-bar-label">'+(pageNames[e[0]]||e[0])+'</div>'
+        +'<div class="an-bar-track"><div class="an-bar-fill" style="width:'+pct+'%"></div></div>'
+        +'<div class="an-bar-num">'+e[1]+'</div></div>';
+    }).join('');
+  }
+
+  // Plants chart
+  var plants = d.plants||{};
+  var maxPl = Math.max.apply(null, Object.values(plants).concat([1]));
+  var plChart = document.getElementById('an-plants-chart');
+  if(!Object.keys(plants).length){
+    plChart.innerHTML='<div class="an-empty">No plant views recorded yet.</div>';
+  } else {
+    plChart.innerHTML = Object.entries(plants).sort(function(a,b){return b[1]-a[1];})
+      .slice(0,10).map(function(e){
+        var pct = Math.round(e[1]/maxPl*100);
+        // Try to get plant name from PLANT_DATA
+        var pName = (PLANT_DATA[e[0]]&&PLANT_DATA[e[0]].name)||e[0];
+        return '<div class="an-bar-row">'
+          +'<div class="an-bar-label">'+pName+'</div>'
+          +'<div class="an-bar-track"><div class="an-bar-fill" style="width:'+pct+'%"></div></div>'
+          +'<div class="an-bar-num">'+e[1]+'</div></div>';
+      }).join('');
+  }
+
+  // Recent activity log
+  var log = (d.log||[]).slice(-20).reverse();
+  var actEl = document.getElementById('an-activity');
+  var icons = {page:'📄',plant:'🌿',enquiry:'📩',session:'👤'};
+  if(!log.length){
+    actEl.innerHTML='<div class="an-empty">No activity recorded yet.</div>';
+  } else {
+    actEl.innerHTML = log.map(function(e){
+      return '<div class="an-act-row">'
+        +'<span class="an-act-icon">'+(icons[e.type]||'📌')+'</span>'
+        +'<span class="an-act-text">'+e.msg+'</span>'
+        +'<span class="an-act-time">'+new Date(e.ts).toLocaleTimeString()+'</span>'
+        +'</div>';
+    }).join('');
+  }
+}
+
+function clearAnalytics(){
+  openConfirm('Clear all analytics data?','All visit and activity data will be deleted.',function(){
+    localStorage.removeItem(AN_KEY);
+    closeConfirm();
+    toast('Analytics cleared.','ok');
+    renderAnalytics();
+  });
+}
+
+// Hook analytics into showView
+
+// ══ VIP VISITORS ═════════════════════════════════════════
+var VV_KEY2 = 'ssn_vip_visitors';
+var VV_DEFAULT = [
+  {org:'AP State Horticulture Dept.',type:'government',location:'Andhra Pradesh',quote:'Outstanding quality ficus topiaries for our state-maintained gardens.',date:'2023'},
+  {org:'Taj Hotels & Resorts',type:'hospitality',location:'Multiple Locations',quote:'Supplied premium palms and ornamentals for three of our properties.',date:'2023'},
+  {org:'Green World Landscape',type:'landscape',location:'Hyderabad',quote:'Our preferred nursery for all large-scale landscape projects.',date:'2024'},
+  {org:'Indian Railways',type:'government',location:'East Godavari',quote:'Supplied avenue trees for station beautification.',date:'2022'},
+  {org:'Novotel Hotels',type:'hospitality',location:'Vijayawada',quote:'Magnificent Bismarckia palms — exceptional quality.',date:'2023'},
+  {org:'ITC Kakatiya',type:'hospitality',location:'Hyderabad',quote:'Beautiful bougainvillea standards for our garden.',date:'2024'},
+  {org:'AP Tourism Authority',type:'government',location:'Andhra Pradesh',quote:'Landscape supply partner for tourism development projects.',date:'2023'},
+  {org:'Ramky Group',type:'corporate',location:'Hyderabad',quote:'Premium ficus topiaries for our corporate campus.',date:'2024'},
+  {org:'JLL Landscape Division',type:'landscape',location:'Bangalore',quote:'Reliable wholesale supplier for premium imported specimens.',date:'2023'},
+  {org:'Heritage Private Collector',type:'private',location:'East Godavari',quote:'Rare specimens including Baobab — truly unique.',date:'2024'},
+];
+var VV_TYPE_LABELS = {government:'Government',hospitality:'Hotels & Resorts',
+  corporate:'Corporate',landscape:'Landscape Firms',private:'Private Collector'};
+
+function getVisitors2(){
+  try{var s=JSON.parse(localStorage.getItem(VV_KEY2)||'null');return s||VV_DEFAULT;}
+  catch(e){return VV_DEFAULT;}
+}
+function saveVisitors2(arr){localStorage.setItem(VV_KEY2,JSON.stringify(arr));}
+
+function renderVisitorsView(){
+  var arr=getVisitors2();
+  document.getElementById('vis-sub').textContent=arr.length+' client'+(arr.length!==1?'s':'')+' listed on the website';
+  var g=document.getElementById('visitor-grid');
+  if(!arr.length){
+    g.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted)"><div style="font-size:2rem;margin-bottom:10px">&#127775;</div><p>No clients yet. Click Add Client to begin.</p></div>';
+    return;
+  }
+  g.innerHTML=arr.map(function(v,i){
+    return '<div class="vc">'
+      +'<span class="v-type-badge '+(v.type||'private')+'">'+(VV_TYPE_LABELS[v.type]||v.type||'Client')+'</span>'
+      +'<div class="vc-org">'+v.org+'</div>'
+      +(v.location?'<div class="vc-loc">&#128205; '+v.location+'</div>':'')
+      +(v.quote?'<div class="vc-quote">&ldquo;'+v.quote+'&rdquo;</div>':'')
+      +'<div class="vc-footer">'
+        +'<button class="btn btn-outline btn-sm" onclick="editVisitor('+i+')">Edit</button>'
+        +'<button class="btn btn-danger btn-sm" onclick="delVisitor('+i+')">Delete</button>'
+        +(v.date?'<span style="margin-left:auto;font-size:.72rem;color:var(--muted);line-height:2;">'+v.date+'</span>':'')
+      +'</div>'
+      +'</div>';
+  }).join('');
+}
+
+var _vi=-1;
+function openVisitorForm(idx){
+  _vi=(idx!==undefined)?idx:-1;
+  document.getElementById('vf2-title').textContent=_vi>=0?'Edit Client':'Add VIP Client';
+  ['vi-org','vi-loc','vi-quote','vi-date'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('vi-type').value='';
+  if(_vi>=0){var v=getVisitors2()[_vi];if(v){
+    document.getElementById('vi-org').value=v.org||'';
+    document.getElementById('vi-type').value=v.type||'';
+    document.getElementById('vi-loc').value=v.location||'';
+    document.getElementById('vi-quote').value=v.quote||'';
+    document.getElementById('vi-date').value=v.date||'';
+  }}
+  document.getElementById('visitor-form-overlay').classList.add('open');
+}
+function editVisitor(i){openVisitorForm(i);}
+function closeVisitorForm(){document.getElementById('visitor-form-overlay').classList.remove('open');}
+function saveVisitor(){
+  var org=document.getElementById('vi-org').value.trim();
+  var type=document.getElementById('vi-type').value;
+  if(!org){toast('Organisation name required','err');return;}
+  if(!type){toast('Please select a type','err');return;}
+  var v={org:org,type:type,
+    location:document.getElementById('vi-loc').value.trim(),
+    quote:document.getElementById('vi-quote').value.trim(),
+    date:document.getElementById('vi-date').value.trim()};
+  var arr=getVisitors2();
+  if(_vi>=0) arr[_vi]=v; else arr.push(v);
+  saveVisitors2(arr);
+  closeVisitorForm();
+  toast(_vi>=0?'Client updated!':'Client added!','ok');
+  renderVisitorsView();
+}
+function delVisitor(i){
+  openConfirm('Remove this client?','They will no longer appear on the website.',function(){
+    var arr=getVisitors2();arr.splice(i,1);saveVisitors2(arr);
+    closeConfirm();toast('Client removed.','ok');renderVisitorsView();
+  });
+}
+
+// Hook into showView for visitors
+var _sv_vis=window.showView;
+window.showView=function(id){
+  _sv_vis(id);
+  if(id==='visitors') renderVisitorsView();
+};
+
+// ── Visitor photo ──────────────────────────────────────────────
+var _vi_photo = null;
+function hVisImg(inp){
+  var f=inp.files[0]; if(!f) return;
+  if(f.size>3*1024*1024){toast('Max 3 MB','err');return;}
+  var r=new FileReader(); r.onload=function(e){
+    _vi_photo=e.target.result;
+    document.getElementById('vi-img-preview').src=_vi_photo;
+    document.getElementById('vi-img-prev').style.display='block';
+  }; r.readAsDataURL(f);
+}
+function rmVisImg(){
+  _vi_photo=null;
+  document.getElementById('vi-img-preview').src='';
+  document.getElementById('vi-img-prev').style.display='none';
+  document.getElementById('vi-img-file').value='';
+}
+
+// ── Logo management ──────────────────────────────────────────────
+var LOGO_KEY = 'ssn_logo';
+var _logoB64 = null;
+
+function hLogoImg(inp){
+  var f=inp.files[0]; if(!f) return;
+  if(f.size>2*1024*1024){toast('Max 2MB for logo','err');return;}
+  var r=new FileReader(); r.onload=function(e){
+    _logoB64=e.target.result;
+    document.getElementById('logo-preview-img').src=_logoB64;
+    document.getElementById('logo-preview-wrap').style.display='block';
+    document.getElementById('logo-status').textContent='Logo ready — click Save to apply.';
+  }; r.readAsDataURL(f);
+}
+function saveLogo(){
+  if(!_logoB64){toast('Select a logo image first','err');return;}
+  try{
+    localStorage.setItem(LOGO_KEY,_logoB64);
+    toast('Logo saved! Refresh the website to see it.','ok');
+    document.getElementById('logo-status').textContent='Saved. Open or refresh the website to apply.';
+  }catch(e){toast('File too large — try a smaller image','err');}
+}
+function clearLogo(){
+  openConfirm('Remove logo?','The website will return to the default leaf icon.',function(){
+    localStorage.removeItem(LOGO_KEY); _logoB64=null;
+    document.getElementById('logo-preview-wrap').style.display='none';
+    document.getElementById('logo-preview-img').src='';
+    document.getElementById('logo-status').textContent='Logo removed.';
+    document.getElementById('logo-img-file').value='';
+    closeConfirm(); toast('Logo removed.','ok');
+  });
+}
+
+// ── Hero photo ─────────────────────────────────────────────────
+var HERO_KEY2 = 'ssn_hero_photo';
+var _heroPhotoB64 = null;
+function hHeroImg(inp){
+  var f=inp.files[0]; if(!f) return;
+  if(f.size>5*1024*1024){toast('Max 5 MB','err');return;}
+  var r=new FileReader(); r.onload=function(e){
+    _heroPhotoB64=e.target.result;
+    document.getElementById('hero-img-preview').src=_heroPhotoB64;
+    document.getElementById('hero-img-prev').style.display='block';
+    document.getElementById('hero-status').textContent='Photo ready — click Save to apply.';
+  }; r.readAsDataURL(f);
+}
+function rmHeroImg(){
+  _heroPhotoB64=null;
+  document.getElementById('hero-img-preview').src='';
+  document.getElementById('hero-img-prev').style.display='none';
+  document.getElementById('hero-img-file').value='';
+  document.getElementById('hero-status').textContent='';
+}
+function saveHeroImg(){
+  if(!_heroPhotoB64){toast('Please select a photo first','err');return;}
+  try{localStorage.setItem(HERO_KEY2,_heroPhotoB64);toast('Hero photo saved! Refresh the website to see it.','ok');
+    document.getElementById('hero-status').textContent='Saved. Open the website to see the photo.';}
+  catch(e){toast('Image too large for storage — try a smaller file','err');}
+}
+function clearHeroImg(){
+  openConfirm('Remove hero photo?','The website will return to the default background.',function(){
+    localStorage.removeItem(HERO_KEY2); closeConfirm();
+    rmHeroImg(); toast('Hero photo removed.','ok');
+  });
+}
+function initSettingsView(){
+  var existing=localStorage.getItem(HERO_KEY2);
+  if(existing){
+    document.getElementById('hero-img-preview').src=existing;
+    document.getElementById('hero-img-prev').style.display='block';
+    _heroPhotoB64=existing;
+    document.getElementById('hero-status').textContent='A hero photo is currently active on the website.';
+  }
+  // Load logo if saved
+  var logo=localStorage.getItem(LOGO_KEY);
+  if(logo){
+    _logoB64=logo;
+    document.getElementById('logo-preview-img').src=logo;
+    document.getElementById('logo-preview-wrap').style.display='block';
+    document.getElementById('logo-status').textContent='A custom logo is currently active on the website.';
+  }
+}
+
+// ── Patch openVisitorForm to handle photo ──────────────────────
+var _origOVF = window.openVisitorForm;
+window.openVisitorForm = function(idx){
+  _origOVF && _origOVF(idx);
+  _vi_photo = null;
+  document.getElementById('vi-img-preview').src='';
+  document.getElementById('vi-img-prev').style.display='none';
+  document.getElementById('vi-img-file').value='';
+  if(idx>=0){
+    var arr=getVisitors2(); var v=arr[idx];
+    if(v&&v.photo){
+      _vi_photo=v.photo;
+      document.getElementById('vi-img-preview').src=v.photo;
+      document.getElementById('vi-img-prev').style.display='block';
+    }
+  }
+};
+
+// ── Patch saveVisitor to include photo ────────────────────────
+var _origSV2 = window.saveVisitor;
+window.saveVisitor = function(){
+  var org=document.getElementById('vi-org').value.trim();
+  var type=document.getElementById('vi-type').value;
+  if(!org){toast('Organisation name required','err');return;}
+  if(!type){toast('Please select a type','err');return;}
+  var v={org:org,type:type,
+    location:document.getElementById('vi-loc').value.trim(),
+    quote:document.getElementById('vi-quote').value.trim(),
+    date:document.getElementById('vi-date').value.trim(),
+    photo:_vi_photo||null};
+  var arr=getVisitors2();
+  if(_vi>=0) arr[_vi]=v; else arr.push(v);
+  saveVisitors2(arr);
+  closeVisitorForm(); _vi_photo=null;
+  toast(_vi>=0?'Client updated!':'Client added!','ok');
+  renderVisitorsView();
+};
+
+// ── Hook showView for settings ────────────────────────────────
+
+// ── Show/hide Add Plant button based on view
+
+// ── Mobile sidebar toggle ─────────────────────────────────────
+function toggleSidebar(){
+  var sb=document.querySelector('.sidebar');
+  var hb=document.getElementById('hamburger');
+  var bd=document.getElementById('sb-backdrop');
+  var open=sb.classList.toggle('open');
+  if(hb) hb.classList.toggle('open',open);
+  if(bd) bd.style.display=open?'block':'none';
+}
+function closeSidebar(){
+  var sb=document.querySelector('.sidebar');
+  var hb=document.getElementById('hamburger');
+  var bd=document.getElementById('sb-backdrop');
+  sb.classList.remove('open');
+  if(hb) hb.classList.remove('open');
+  if(bd) bd.style.display='none';
+}
+// Close sidebar when a nav item is clicked on mobile
+document.querySelectorAll('.sb-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    if(window.innerWidth<=768) closeSidebar();
+  });
+});
+
+// ══ GALLERY MANAGEMENT ═══════════════════════════════════
+var GAL_KEY = 'ssn_gallery';
+var _galCapIdx = -1;
+
+function getGallery(){
+  try{return JSON.parse(localStorage.getItem(GAL_KEY)||'[]');}catch{return [];}
+}
+function saveGallery(arr){localStorage.setItem(GAL_KEY,JSON.stringify(arr));}
+
+function handleGalUpload(inp){
+  var files=Array.from(inp.files);
+  if(!files.length) return;
+  var arr=getGallery();
+  var processed=0;
+  files.forEach(function(f){
+    if(f.size>3*1024*1024){toast('Skipped '+f.name+' — max 3MB','err');processed++;if(processed===files.length)renderGalAdmin();return;}
+    var r=new FileReader();
+    r.onload=function(e){
+      arr.push({src:e.target.result,caption:f.name.replace(/\.[^.]+$/,'').replace(/[-_]/g,' ')});
+      processed++;
+      if(processed===files.length){saveGallery(arr);renderGalAdmin();toast(files.length+' photo(s) added!','ok');}
+    };
+    r.readAsDataURL(f);
+  });
+  inp.value='';
+}
+function renderGalAdmin(){
+  var arr=getGallery();
+  var sub=document.getElementById('gal-sub');
+  if(sub) sub.textContent=arr.length+' photo'+(arr.length!==1?'s':'')+' in gallery';
+  var grid=document.getElementById('gal-admin-grid');
+  if(!grid) return;
+  if(!arr.length){
+    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">'
+      +'<div style="font-size:2rem;margin-bottom:10px">&#128247;</div>'
+      +'<p>No gallery photos yet. Upload some above.</p></div>';
+    return;
+  }
+  grid.innerHTML=arr.map(function(img,i){
+    return '<div class="gal-admin-card">'
+      +(img.src?'<img class="gal-admin-img" src="'+img.src+'" alt="'+img.caption+'">'
+               :'<div class="gal-admin-ph">&#128247;</div>')
+      +'<div class="gal-admin-body">'
+        +'<div class="gal-admin-cap">'+(img.caption||'Untitled')+'</div>'
+        +'<div class="gal-admin-acts">'
+          +'<button class="btn btn-outline btn-sm" data-i="'+i+'" onclick="openGalCap(+this.dataset.i)">Edit Caption</button>'
+          +'<button class="btn btn-danger btn-sm" data-i="'+i+'" onclick="delGalImg(+this.dataset.i)" style="margin-left:4px">&#10005;</button>'
+        +'</div></div></div>';
+  }).join('');
+}
+function openGalCap(i){
+  _galCapIdx=i;
+  var arr=getGallery();
+  document.getElementById('gal-cap-inp').value=arr[i]?arr[i].caption||'':'';
+  document.getElementById('gal-cap-overlay').classList.add('open');
+}
+function saveGalCap(){
+  if(_galCapIdx<0) return;
+  var arr=getGallery();
+  if(arr[_galCapIdx]) arr[_galCapIdx].caption=document.getElementById('gal-cap-inp').value.trim();
+  saveGallery(arr); document.getElementById('gal-cap-overlay').classList.remove('open');
+  toast('Caption saved!','ok'); renderGalAdmin();
+}
+function delGalImg(i){
+  openConfirm('Delete this photo?','It will be removed from the gallery on the website.',function(){
+    var arr=getGallery(); arr.splice(i,1); saveGallery(arr);
+    closeConfirm(); toast('Photo removed.','ok'); renderGalAdmin();
+  });
+}
+// Hook showView for gallery
+
+
+// ══ PUBLISH ══════════════════════════════════════════════
+var PUB_WEB_URL = 'index.html';
+var PUB_VIP_URL = 'vip.html';
+
+function initPublish(){
+  var cu=getCustom(), ov=getOv(), vp=getVip(), vv;
+  try{vv=JSON.parse(localStorage.getItem('ssn_vip_visitors')||'[]');}catch{vv=[];}
+  var hero=localStorage.getItem('ssn_hero_photo')||'';
+  var logo=localStorage.getItem('ssn_logo')||'';
+  var gal=[];try{gal=JSON.parse(localStorage.getItem('ssn_gallery')||'[]');}catch{}
+  var el=document.getElementById('pub-stats');
+  if(!el) return;
+  el.innerHTML=[
+    ['Plants edited', Object.keys(ov).length],
+    ['Custom plants', Object.keys(cu).length],
+    ['VIP plants', vp.length],
+    ['VIP visitors', vv.length],
+    ['Gallery photos', gal.length],
+    ['Hero photo', hero?'Yes':'No'],
+    ['Logo', logo?'Yes':'No'],
+  ].map(function(s){
+    return '<span class="pub-stat">'+s[0]+': <strong>'+s[1]+'</strong></span>';
+  }).join('');
+}
+
+// ── Publish: generate launcher HTML ──────────────────────
+function getAllData(){
+  var keys=['ssn_custom_plants','ssn_overrides','ssn_vip_plants',
+    'ssn_vip_visitors','ssn_gallery','ssn_hero_photo','ssn_logo',
+    'ssn_vip_token','ssn_custom_cats','ssn_builtin_plants'];
+  var d={};
+  keys.forEach(function(k){
+    var v=localStorage.getItem(k);
+    if(v&&v.length>2) d[k]=v;
+  });
+  return d;
+}
+
+function downloadHTML(content, filename){
+  try{
+    var blob=new Blob([content],{type:'text/html;charset=utf-8'});
+    var url=URL.createObjectURL(blob);
+    var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
+    if(isIOS){
+      // iOS: open in new tab, user taps Share → Save to Files
+      var w=window.open(url,'_blank');
+      if(w){
+        toast('Tap Share ▷ Save to Files in the new tab','ok');
+      } else {
+        // Popup blocked - show fallback
+        document.getElementById('pub-dl-link').href=url;
+        document.getElementById('pub-dl-link').download=filename;
+        document.getElementById('pub-dl-wrap').style.display='';
+        toast('Tap the download link below','ok');
+      }
+    } else {
+      var a=document.createElement('a');
+      a.href=url; a.download=filename;
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(url);},3000);
+      toast(filename+' downloaded!','ok');
+    }
+  }catch(e){
+    toast('Download failed: '+e.message,'err');
+  }
+}
+
+function buildLauncher(targetFile, label){
+  var data=getAllData();
+  var keys=Object.keys(data);
+  var seedParts=[];
+  keys.forEach(function(k){
+    seedParts.push('try{localStorage.setItem('+JSON.stringify(k)+','+JSON.stringify(data[k])+');}catch(e){}');
+  });
+  var seedCode=seedParts.join('\n');
+  var spinner='<div style="width:48px;height:48px;border:3px solid rgba(185,137,63,.3);border-top-color:#b9893f;border-radius:50%;animation:sp 1s linear infinite;margin:0 auto"></div>';
+  var style='*{margin:0;padding:0}body{font-family:sans-serif;background:#142319;color:#f8f3e8;display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:18px;text-align:center;padding:24px}@keyframes sp{to{transform:rotate(360deg)}}p{font-size:.9rem;color:rgba(248,243,232,.55)}a{color:#b9893f}';
+  var redirect='window.location.replace('+JSON.stringify(targetFile)+');';
+  var parts=[
+    '<!DOCTYPE html><html lang="en"><head>',
+    '<meta charset="UTF-8">',
+    '<meta name="viewport" content="width=device-width,initial-scale=1">',
+    '<title>Loading '+label+'...</title>',
+    '<style>'+style+'</style>',
+    '</head><body>',
+    '<script>'+seedCode+'<\/script>',
+    '<script>'+redirect+'<\/script>',
+    spinner,
+    '<p>Setting up your nursery website&hellip;<\/p>',
+    '<p>If not redirected: <a href="'+targetFile+'">Open '+label+'<\/a><\/p>',
+    '<\/body><\/html>'
+  ];
+  return parts.join('\n');
+}
+
+function publishWebsite(){
+  var d=getAllData();
+  var count=Object.keys(d).length;
+  if(!count){
+    toast('No custom data found. Make changes in Admin first.','err');
+    return;
+  }
+  toast('Generating website launcher...','ok');
+  var html=buildLauncher('index.html','Nursery Website');
+  downloadHTML(html,'SSN-Website-Launcher.html');
+  document.getElementById('pub-instructions').style.display='';
+}
+function publishVIP(){
+  toast('Generating VIP launcher...','ok');
+  var html=buildLauncher('vip.html?key='+(localStorage.getItem('ssn_vip_token')||'vip2024ssn'),'VIP Portal');
+  downloadHTML(html,'SSN-VIP-Launcher.html');
+  document.getElementById('pub-instructions').style.display='';
+}
+
+// ══ INIT ═════════════════════════════════════════════════
+// renderDash called by login check above
+if(isLoggedIn()){ renderDash(); }
+
+</script>
+</body>
+</html>
