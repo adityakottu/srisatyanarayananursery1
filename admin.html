@@ -354,9 +354,23 @@ input,select,textarea{font-family:inherit;}
 .pub-why ul{font-size:.81rem;color:#6b4c00;padding-left:18px;line-height:1.7;}
 .pub-stat{display:inline-flex;gap:6px;align-items:center;font-size:.78rem;color:var(--muted);margin-top:8px;background:var(--cream2);padding:5px 12px;border-radius:20px;}
 
+
+.vid-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-top:16px;}
+.vid-card{background:var(--cream);border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+.vid-thumb{position:relative;width:100%;height:130px;background:#000;}
+.vid-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.vid-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:38px;height:38px;background:rgba(255,0,0,.85);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;}
+.vid-body{padding:11px 13px;}
+.vid-year{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
+.vid-title{font-size:.83rem;font-weight:500;color:var(--ink);line-height:1.35;margin-bottom:4px;}
+.vid-desc{font-size:.74rem;color:var(--muted);line-height:1.45;margin-bottom:9px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.vid-acts{display:flex;gap:5px;flex-wrap:wrap;}
+
 </style>
 </head>
 <body>
+<script>(function(){try{if(!localStorage.getItem("ssn_videos")){localStorage.setItem("ssn_videos",JSON.stringify([{"ytId": "rCQaEpac3YU", "title": "Kadiyam Nursery — Sri Satyanarayana Nursery", "desc": "కడియం నర్సరీ · శ్రీ సత్యనారాయణ నర్సరీ — East Godavari, Andhra Pradesh", "year": "2023"}, {"ytId": "fQVkLTxNhTo", "title": "Kadiyam 2025 — Latest Plants", "desc": "Satyanarayana Nursery latest plant collection featured on iDream Andhra", "year": "2025"}, {"ytId": "g4_FH2t8RSA", "title": "Kadiyam January 2021 — Gangumalla Sri Satyanarayana Nursery", "desc": "A walk through the nursery gardens in full seasonal bloom", "year": "2021"}, {"ytId": "GspvSwI0Rno", "title": "Kadiyam January 2020 — Gangumalla Sri Satyanarayana Nursery", "desc": "Rajahmundry, East Godavari District, Andhra Pradesh", "year": "2020"}, {"ytId": "1QJ15g5bIXk", "title": "Best of the Best — Kadiyam Nurseries", "desc": "Graded super fine variety plants from Kadiyam", "year": "2019"}]));}}catch(e){}})();</script>
+
 <script>
 (function(){
   try{
@@ -397,8 +411,10 @@ input,select,textarea{font-family:inherit;}
     <button class="sb-btn" onclick="showView('vip')" id="nav-vip">&#9670; VIP Collection <span class="sb-cnt" id="sb-vip-cnt">0</span></button>
     <div class="sb-lbl">Insights</div>
     <button class="sb-btn" onclick="showView('analytics')" id="nav-analytics">&#128200; Analytics</button>
+    <button class="sb-btn" onclick="showView('stats')" id="nav-stats">&#128202; Plant Counts</button>
     <button class="sb-btn" onclick="showView('visitors')" id="nav-visitors">&#127775; VIP Visitors</button>
     <button class="sb-btn" onclick="showView('gallery-admin')" id="nav-gallery-admin">&#128247; Gallery</button>
+    <button class="sb-btn" onclick="showView('videos')" id="nav-videos">&#9654; Videos</button>
     <button class="sb-btn" onclick="showView('settings')" id="nav-settings">&#9881; Site Settings</button>
     <div class="sb-lbl">Tools</div>
     <button class="sb-btn" onclick="showView('publish')" id="nav-publish">&#128228; Publish &amp; Share</button>
@@ -579,7 +595,115 @@ input,select,textarea{font-family:inherit;}
           <div class="visitor-grid" id="visitor-grid"></div>
         </div>
 
-        <!-- GALLERY VIEW -->
+    
+
+
+    <!-- BULK VISITOR ADD -->
+    <div class="form-overlay" id="bulk-vi-overlay">
+      <div class="form-panel" style="max-width:520px;">
+        <div class="fp-hd"><h2>Add Several Guests</h2>
+          <button class="fp-close" onclick="document.getElementById('bulk-vi-overlay').classList.remove('open')">&#10005;</button></div>
+        <div class="fp-body">
+          <div class="fg">
+            <label class="flbl">One guest per line</label>
+            <textarea class="fta" id="bulk-vi-text" rows="9" placeholder="Name or Organisation | Type | Location | Year&#10;&#10;Example:&#10;AP Horticulture Dept | government | Andhra Pradesh | 2024&#10;Taj Hotels | hospitality | Hyderabad | 2023&#10;Ramky Group | corporate | Hyderabad&#10;&#10;Only the name is required — the rest are optional."></textarea>
+            <p style="font-size:.72rem;color:var(--muted);margin-top:6px;">Types: government &middot; hospitality &middot; corporate &middot; landscape &middot; private. You can add photos to each guest afterwards by tapping Edit.</p>
+          </div>
+        </div>
+        <div class="fp-ft">
+          <button class="btn btn-outline" onclick="document.getElementById('bulk-vi-overlay').classList.remove('open')">Cancel</button>
+          <button class="btn btn-primary" onclick="saveBulkVisitors()">&#10003; Add Guests</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS VIEW -->
+    <div class="view" id="view-stats">
+      <div style="margin-bottom:18px;">
+        <h2 style="font-size:1.08rem;font-weight:500;margin-bottom:4px;">Plant Counts</h2>
+        <p style="font-size:.8rem;color:var(--muted);margin-bottom:14px;">The four figures shown on the home page. Edit the number, label and icon for each.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button type="button" class="btn btn-gold" onclick="openStatForm(-1)">&#43; Add Count</button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="restoreDefaultStats()">&#8635; Restore Defaults</button>
+        </div>
+      </div>
+      <div id="stats-admin-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:13px;"></div>
+    </div>
+
+    <!-- STAT FORM -->
+    <div class="form-overlay" id="stf-overlay">
+      <div class="form-panel" style="max-width:420px;">
+        <div class="fp-hd"><h2 id="stf-hd">Add Count</h2>
+          <button class="fp-close" onclick="closeStatForm()">&#10005;</button></div>
+        <div class="fp-body">
+          <div class="fg"><label class="flbl">Number <span class="req">*</span></label>
+            <input class="fi" id="stf-num" placeholder="e.g. 500" inputmode="numeric"></div>
+          <div class="fg"><label class="flbl">Suffix</label>
+            <input class="fi" id="stf-suffix" placeholder="+" maxlength="3"></div>
+          <div class="fg"><label class="flbl">Label <span class="req">*</span></label>
+            <input class="fi" id="stf-label" placeholder="e.g. Avenue Plants"></div>
+          <div class="fg"><label class="flbl">Icon (emoji)</label>
+            <input class="fi" id="stf-icon" placeholder="🌳" maxlength="12">
+            <p style="font-size:.72rem;color:var(--muted);margin-top:5px;">Paste any emoji. Suggested: &#127795; avenue &middot; &#127807; ornamental &middot; &#127822; fruit &middot; &#127804; flower</p></div>
+        </div>
+        <div class="fp-ft">
+          <button class="btn btn-outline" onclick="closeStatForm()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveStat()">&#10003; Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIDEOS VIEW -->
+    <div class="view" id="view-videos">
+      <div style="margin-bottom:18px;">
+        <h2 style="font-size:1.08rem;font-weight:500;margin-bottom:4px;">Video Gallery</h2>
+        <p style="font-size:.8rem;color:var(--muted);margin-bottom:14px;" id="vid-sub">Videos shown on the website Gallery page</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button type="button" class="btn btn-gold" onclick="openVidForm(-1)">&#43; Add Video</button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="restoreDefaultVideos()">&#8635; Restore Defaults</button>
+        </div>
+      </div>
+      <div class="vid-grid" id="vid-admin-grid"></div>
+    </div>
+
+    <!-- VIDEO FORM -->
+    <div class="form-overlay" id="vgf-overlay">
+      <div class="form-panel" style="max-width:520px;">
+        <div class="fp-hd">
+          <h2 id="vgf-title-hd">Add Video</h2>
+          <button class="fp-close" onclick="closeVidForm()">&#10005;</button>
+        </div>
+        <div class="fp-body">
+          <div class="fg">
+            <label class="flbl">YouTube URL or Video ID <span class="req">*</span></label>
+            <input class="fi" id="vgf-url" placeholder="https://youtu.be/abc123 or abc123">
+            <p style="font-size:.72rem;color:var(--muted);margin-top:5px;">Paste any YouTube link &mdash; watch, share, shorts or embed format.</p>
+          </div>
+          <div class="fg">
+            <label class="flbl">Title</label>
+            <input class="fi" id="vgf-title" placeholder="e.g. Kadiyam 2025 — Latest Plants">
+          </div>
+          <div class="fg">
+            <label class="flbl">Description</label>
+            <textarea class="fta" id="vgf-desc" rows="2" placeholder="Short description shown under the title"></textarea>
+          </div>
+          <div class="fg">
+            <label class="flbl">Year / Label</label>
+            <input class="fi" id="vgf-year" placeholder="e.g. 2025">
+          </div>
+          <div id="vgf-preview" style="display:none;">
+            <label class="flbl">Preview</label>
+            <img id="vgf-thumb" src="" alt="" style="width:100%;max-width:280px;border-radius:6px;border:1px solid var(--line);display:block;">
+          </div>
+        </div>
+        <div class="fp-ft">
+          <button class="btn btn-outline" onclick="closeVidForm()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveVideo()">&#10003; Save Video</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GALLERY VIEW -->
     <div class="view" id="view-gallery-admin">
       <div style="margin-bottom:18px;">
         <h2 style="font-size:1.08rem;font-weight:500;margin-bottom:4px;">Gallery Management</h2>
@@ -587,6 +711,15 @@ input,select,textarea{font-family:inherit;}
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button type="button" class="btn btn-gold" onclick="galPick()" style="cursor:pointer;-webkit-tap-highlight-color:rgba(185,137,63,.2);">&#43; Add Photos / Video</button>
           <button type="button" class="btn btn-outline" onclick="galToggleYt()" style="cursor:pointer;">&#9654; Add YouTube Link</button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="forceLoadBuiltin()" style="cursor:pointer;">&#8635; Load Built-in Photos</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:9px;margin-top:12px;flex-wrap:wrap;">
+          <label style="font-size:.78rem;color:var(--muted);">Image quality:</label>
+          <select id="gal-quality" class="fi" style="width:auto;padding:6px 10px;font-size:.8rem;">
+            <option value="1200">Standard &mdash; 1200px (smallest files)</option>
+            <option value="1600" selected>High &mdash; 1600px (recommended)</option>
+            <option value="2400">Maximum &mdash; 2400px (best clarity)</option>
+          </select>
         </div>
       </div>
 
@@ -637,6 +770,12 @@ input,select,textarea{font-family:inherit;}
               <div class="fg">
                 <label class="flbl">Photo Caption</label>
                 <input class="fi" id="gal-cap-inp" placeholder="e.g. Ficus Topiary — Forest Shape · Kadiyam Nursery">
+          </div>
+          <div class="fg">
+            <label style="display:flex;align-items:center;gap:9px;font-size:.85rem;cursor:pointer;">
+              <input type="checkbox" id="gal-tall-inp" style="width:16px;height:16px;cursor:pointer;">
+              <span>Show as a tall / featured card in the gallery grid</span>
+            </label>
               </div>
             </div>
             <div class="fp-ft">
@@ -966,6 +1105,30 @@ input,select,textarea{font-family:inherit;}
 <script>
 var VIP_CATALOG_PLANTS=[{"name": "Ficus Ali (14 ft)", "botanical": "Ficus binnendijkii Alii", "cat": "ficus", "tagline": "Elegant long-leaf ficus in a 28-pot for lobbies and entrances.", "description": "Ficus Ali is prized for its long drooping willow-like leaves in deep green. A sophisticated indoor statement tree at 14 ft in a premium 28-pot.", "care": {"water": "Moderate", "light": "Bright indirect", "soil": "Rich well-draining", "difficulty": "Easy", "growth": "Medium"}, "uses": ["Hotel lobbies", "Corporate atriums", "Premium home interiors"], "tips": ["Rotate monthly", "Avoid draughts", "Wipe leaves to maintain gloss"], "price": "50,000", "size": "28 Pot", "height": "14 ft"}, {"name": "Ficus Ali (18 ft Naked)", "botanical": "Ficus binnendijkii Alii", "cat": "ficus", "tagline": "A commanding 18 ft naked-trunk Ficus Ali.", "description": "A spectacular naked-trunk Ficus Ali at 18 ft. A landmark statement for grand atriums and hotel entrances.", "care": {"water": "Moderate", "light": "Full sun", "soil": "Well-draining", "difficulty": "Moderate", "growth": "Medium"}, "uses": ["Grand hotel entrances", "Large atriums", "Open estate plantings"], "tips": ["Stake firmly during establishment", "Feed quarterly"], "price": "2,00,000 to 2,50,000", "size": "Naked", "height": "18 ft"}, {"name": "Bismarckia Nobilis", "botanical": "Bismarckia nobilis", "cat": "palm", "tagline": "Striking silver-blue fan fronds — the most architectural palm available.", "description": "Prized for its dramatic silver-blue fan fronds on a clean imposing trunk. Imported specimen with 2.5m clear trunk.", "care": {"water": "Low", "light": "Full sun", "soil": "Sandy well-draining", "difficulty": "Easy", "growth": "Slow"}, "uses": ["Grand entrance plantings", "Resort landscapes", "Open lawn focal points"], "tips": ["Never overwater", "Full sun essential"], "price": "1,25,000", "size": "Naked", "height": "2.5m Clear Trunk"}, {"name": "Baobab (Adansonia Digitata)", "botanical": "Adansonia digitata", "cat": "avenue", "tagline": "One of the rarest trees on earth — 30 ft ancient living sculpture.", "description": "An extraordinary Adansonia digitata at 30 ft. The iconic swollen trunk creates an instantly recognisable silhouette. A once-in-a-generation collectors tree.", "care": {"water": "Very low", "light": "Full sun", "soil": "Sandy well-draining", "difficulty": "Hard", "growth": "Very slow"}, "uses": ["Ultra-premium collector estates", "Botanical garden centrepieces", "Luxury resort landmarks"], "tips": ["Handle with extreme care", "Never overwater"], "price": "40,00,000", "size": "Naked", "height": "30 ft"}, {"name": "Cassia Rainbow", "botanical": "Cassia fistula hybrid", "cat": "avenue", "tagline": "Vivid rainbow blooms on a mature naked trunk.", "description": "A spectacular flowering avenue tree with cascades of colourful blooms. A rare mature specimen at 25 ft for estate drives and resort boulevards.", "care": {"water": "Moderate", "light": "Full sun", "soil": "Well-draining loam", "difficulty": "Easy", "growth": "Medium"}, "uses": ["Estate and resort avenues", "Boulevard plantings", "Garden centrepieces"], "tips": ["Full sun produces the most vibrant bloom", "Prune lightly after flowering"], "price": "3,95,000", "size": "Naked", "height": "25 ft"}, {"name": "Gulmohar Yellow", "botanical": "Peltophorum pterocarpum", "cat": "avenue", "tagline": "Rare yellow-flowering Gulmohar — a radiant canopy tree.", "description": "The Yellow Gulmohar offers a stunning golden canopy of blooms in summer. A mature 25 ft specimen on a clean naked trunk.", "care": {"water": "Low", "light": "Full sun", "soil": "Well-draining", "difficulty": "Easy", "growth": "Fast"}, "uses": ["Avenue plantings", "Estate landscapes", "Resort drives"], "tips": ["Very drought tolerant", "Prune annually"], "price": "3,95,000", "size": "Naked", "height": "25 ft"}, {"name": "Chorisia Speciosa 17 ft", "botanical": "Ceiba speciosa", "cat": "avenue", "tagline": "Thorny bottle trunk, vivid pink blooms — rare ornamental.", "description": "The Silk Floss Tree is recognisable by its thorny swollen trunk and vivid pink seasonal blossoms. In 40/40 container at 17 ft.", "care": {"water": "Low", "light": "Full sun", "soil": "Well-draining", "difficulty": "Moderate", "growth": "Fast"}, "uses": ["Statement garden focal points", "Avenue planting", "Large estate grounds"], "tips": ["Handle with care — trunk has sharp thorns"], "price": "1,55,000", "size": "40/40", "height": "17 ft"}, {"name": "Chorisia Speciosa 25 ft", "botanical": "Ceiba speciosa", "cat": "avenue", "tagline": "Mature naked-trunk Silk Floss Tree at 25 ft.", "description": "A spectacular mature naked-trunk Chorisia Speciosa at 25 ft. The dramatic silhouette, thorny trunk and seasonal pink blossoms make this one of the most striking ornamental trees available.", "care": {"water": "Low", "light": "Full sun", "soil": "Well-draining", "difficulty": "Moderate", "growth": "Fast"}, "uses": ["Premium estate centrepieces", "Grand resort landscapes", "Collector gardens"], "tips": ["Handle with care — trunk has sharp thorns"], "price": "3,00,000", "size": "Naked", "height": "25 ft"}, {"name": "Camellia Duro Pot", "botanical": "Camellia japonica", "cat": "ornamental", "tagline": "Glossy evergreen foliage with elegant seasonal blooms.", "description": "A refined Camellia specimen in a premium Duro pot trained to 2.8m. Elegant seasonal blooms and glossy dark evergreen foliage. Imported.", "care": {"water": "Moderate", "light": "Partial shade", "soil": "Acidic well-draining", "difficulty": "Moderate", "growth": "Slow"}, "uses": ["Formal courtyards", "Entry gardens", "Premium potted displays"], "tips": ["Prefers slightly acidic soil", "Protect from harsh afternoon sun"], "price": "65,000", "size": "Duro Pot", "height": "2.8m"}, {"name": "Livistonia Palm", "botanical": "Livistonia rotundifolia", "cat": "palm", "tagline": "Graceful weeping fan fronds — available in 5 heights.", "description": "The Livistonia offers graceful weeping fan fronds cascading from a clean clear trunk. Available in five trunk heights from 3.5m to 7.5m.", "care": {"water": "Moderate", "light": "Full sun to partial shade", "soil": "Well-draining", "difficulty": "Easy", "growth": "Medium"}, "uses": ["Avenue plantings", "Resort entrances", "Courtyard focal points"], "tips": ["Remove old fronds cleanly", "Fertilise quarterly"], "price": "60,000 to 1,00,000", "size": "Naked", "height": "3.5m to 7.5m"}, {"name": "Livistonia Double", "botanical": "Livistonia rotundifolia", "cat": "palm", "tagline": "Twin trunks — a matched pair for symmetrical entrances.", "description": "A double-trunk Livistonia specimen with two clean trunks rising together for formal entrance gates, hotel porticos and grand driveways.", "care": {"water": "Moderate", "light": "Full sun", "soil": "Well-draining", "difficulty": "Easy", "growth": "Medium"}, "uses": ["Symmetrical entrance pairs", "Hotel porticos", "Grand driveway plantings"], "tips": ["Ideal as matched pairs", "Feed monthly during growing season"], "price": "1,50,000", "size": "Naked", "height": "3.5m Clear Trunk"}, {"name": "Copernicia Alba", "botanical": "Copernicia alba", "cat": "palm", "tagline": "The wax palm — dramatic silvery fronds on a clean clear trunk.", "description": "Copernicia Alba is a stately wax palm with distinctive silvery-blue fronds and a clean impressive trunk. Available as single or 3-in-1 multi-stem planting.", "care": {"water": "Low", "light": "Full sun", "soil": "Sandy well-draining", "difficulty": "Easy", "growth": "Slow"}, "uses": ["Grand entrance plantings", "Resort landscapes", "Premium estate gardens"], "tips": ["Highly drought tolerant once established"], "price": "60,000 to 1,50,000", "size": "Single or 3-in-1", "height": "2.5m Clear Trunk"}, {"name": "Dicksonia Tree Fern", "botanical": "Dicksonia antarctica", "cat": "indoor", "tagline": "Ancient tree fern — lush prehistoric fronds.", "description": "One of the oldest plant forms on earth with graceful arching fronds radiating from a fibrous trunk. Creates a lush tropical atmosphere in covered atriums.", "care": {"water": "High — keep trunk moist", "light": "Bright indirect", "soil": "Rich moist well-draining", "difficulty": "Moderate", "growth": "Very slow"}, "uses": ["Indoor atriums", "Covered courtyards", "Shaded garden areas"], "tips": ["Mist the trunk daily", "Never let trunk dry out"], "price": "30,000", "size": "20 Pot", "height": "5 ft"}, {"name": "Dracaena Draco Multi Heads", "botanical": "Dracaena draco", "cat": "ornamental", "tagline": "The Dragon Blood Tree — multiple heads for a dramatic silhouette.", "description": "The Dracaena Draco with multiple branching heads creates a uniquely dramatic prehistoric silhouette. A premium specimen in a 24-pot at 6 ft.", "care": {"water": "Low", "light": "Full sun to bright indirect", "soil": "Sandy well-draining", "difficulty": "Easy", "growth": "Very slow"}, "uses": ["Statement garden focal points", "Premium terrace plantings", "Indoor atriums"], "tips": ["Extremely drought tolerant", "Multi-head form takes decades to develop"], "price": "30,000", "size": "24 Pot", "height": "6 ft"}, {"name": "Washingtonia Palm", "botanical": "Washingtonia robusta", "cat": "palm", "tagline": "The classic sky-reaching desert palm.", "description": "Washingtonia palms with clean naked trunks at 3m available as single or double specimens. Their dramatic height and feathery crown make them ideal for grand avenue and entrance plantings.", "care": {"water": "Low", "light": "Full sun", "soil": "Sandy well-draining", "difficulty": "Very Easy", "growth": "Fast"}, "uses": ["Avenue plantings", "Large estate entrances", "Resort landscapes"], "tips": ["One of the hardiest palms available"], "price": "80,000 to 1,75,000", "size": "Naked", "height": "3m to 3.5m Clear Trunk"}, {"name": "Brachychiton Rupestris Bottle Tree", "botanical": "Brachychiton rupestris", "cat": "avenue", "tagline": "The iconic swollen-trunk Bottle Tree — 6 sizes available.", "description": "One of our rarest imports — the iconic Bottle Tree with its dramatically swollen trunk. Available in six size options. A true collectors specimen.", "care": {"water": "Very low", "light": "Full sun", "soil": "Sandy well-draining", "difficulty": "Hard", "growth": "Very slow"}, "uses": ["Rare collector gardens", "Luxury resort centrepieces", "Botanical garden displays"], "tips": ["Handle with extreme care", "Full sun essential"], "price": "8,00,000", "size": "Naked", "height": "Available in 6 sizes"}, {"name": "Ficus Bonsai Ceramic Pot", "botanical": "Ficus microcarpa", "cat": "ficus", "tagline": "A premium trained Ficus bonsai in an elegant ceramic pot.", "description": "A mature Ficus microcarpa bonsai trained over many years presented in a premium ceramic pot. The intricate branching and aerial root structure make this a living work of art.", "care": {"water": "Moderate", "light": "Bright indirect", "soil": "Well-draining bonsai mix", "difficulty": "Moderate", "growth": "Slow"}, "uses": ["Premium interior display", "Corporate gifting", "Reception tables"], "tips": ["Prune lightly to maintain form", "Mist daily", "Repot every 2 years"], "price": "2,75,000", "size": "Ceramic Pot", "height": "Bonsai form"}, {"name": "Erythrina Crista Galli Coral Tree", "botanical": "Erythrina crista-galli", "cat": "avenue", "tagline": "The Coral Tree — vivid crimson blooms on a sculptural trunk.", "description": "Erythrina Crista Galli is prized for its vivid crimson blossom clusters and gnarled sculptural trunk. A rare 18 ft naked specimen — breathtaking for premium landscape projects.", "care": {"water": "Moderate", "light": "Full sun", "soil": "Well-draining", "difficulty": "Moderate", "growth": "Medium"}, "uses": ["Statement garden focal points", "Premium estate landscapes", "Botanical collection pieces"], "tips": ["Prune after flowering", "Blooms most vibrant in full sun"], "price": "9,50,000", "size": "Naked", "height": "18 ft"}, {"name": "Gulmohar Flamboyant Tree", "botanical": "Delonix regia", "cat": "avenue", "tagline": "The Flame of the Forest — spectacular orange canopy.", "description": "The Gulmohar in full bloom is one of the most spectacular sights in tropical horticulture. A mature 20 ft naked specimen delivers an immediate established canopy of vivid orange-red flowers.", "care": {"water": "Low", "light": "Full sun", "soil": "Well-draining", "difficulty": "Easy", "growth": "Fast"}, "uses": ["Estate and resort avenues", "Boulevard plantings", "Open garden centrepieces"], "tips": ["Extremely drought tolerant", "Full sun produces the most vivid bloom"], "price": "60,000", "size": "Naked", "height": "20 ft"}, {"name": "Spathodea African Tulip Tree", "botanical": "Spathodea campanulata", "cat": "avenue", "tagline": "The African Tulip Tree — dramatic orange blossoms year-round.", "description": "Spathodea campanulata produces large vivid orange-red tulip-shaped flowers almost continuously. A mature 18 ft naked specimen provides an immediate dramatic presence.", "care": {"water": "Moderate", "light": "Full sun", "soil": "Well-draining loam", "difficulty": "Easy", "growth": "Fast"}, "uses": ["Resort garden focal points", "Estate avenues", "Boulevard plantings"], "tips": ["Fast-growing — prune annually", "Flowers attract birds"], "price": "85,000", "size": "Naked", "height": "18 ft"}, {"name": "Lagerstroemia Speciosa", "botanical": "Lagerstroemia speciosa", "cat": "avenue", "tagline": "The Queen Crepe Myrtle — lavender-pink blooms on a graceful trunk.", "description": "Lagerstroemia Speciosa produces spectacular lavender to pink blooms on a graceful pale-barked trunk. A mature 15 ft naked specimen brings immediate colour and elegance.", "care": {"water": "Moderate", "light": "Full sun", "soil": "Well-draining", "difficulty": "Easy", "growth": "Medium"}, "uses": ["Estate and resort gardens", "Boulevard accent planting", "Garden centrepieces"], "tips": ["Full sun produces the most prolific bloom", "Prune in winter to encourage flowering"], "price": "85,000", "size": "Naked", "height": "15 ft"}, {"name": "Cassia Fistula Golden Shower", "botanical": "Cassia fistula", "cat": "avenue", "tagline": "The Golden Shower — cascades of yellow blooms.", "description": "Cassia Fistula earns the name Golden Shower in full bloom — long drooping clusters of vivid yellow flowers cascade from every branch. A mature 15 ft naked specimen provides immediate impact.", "care": {"water": "Low", "light": "Full sun", "soil": "Well-draining", "difficulty": "Very Easy", "growth": "Fast"}, "uses": ["Avenue and boulevard plantings", "Estate garden centrepieces", "Resort landscape drives"], "tips": ["Very low maintenance", "Full sun gives the most vivid flowering"], "price": "65,000", "size": "Naked", "height": "15 ft"}];
 
+
+function toggleKeyPanel(){
+  var p=document.getElementById('ai-key-panel');
+  if(!p) return;
+  var open = p.style.display !== 'none';
+  p.style.display = open ? 'none' : 'block';
+  var b=document.getElementById('ai-key-btn');
+  if(b) b.textContent = open ? 'Manage key' : 'Hide';
+}
+function refreshAiStatus(){
+  var dot=document.getElementById('ai-status-dot');
+  var txt=document.getElementById('ai-status-text');
+  if(!dot||!txt) return;
+  if(getApiKey()){
+    dot.style.background='#3d8b4a';
+    txt.textContent='Active — auto-fill is ready to use.';
+    txt.style.color='#276027';
+  } else {
+    dot.style.background='#c9a227';
+    txt.textContent='Not set up — add a key to enable auto-fill.';
+    txt.style.color='var(--muted)';
+  }
+}
+
 function getApiKey(){return localStorage.getItem('ssn_anthropic_key')||'';}
 function saveApiKey(){
   var val=document.getElementById('api-key-inp').value.trim();
@@ -975,14 +1138,18 @@ function saveApiKey(){
   document.getElementById('api-key-inp').placeholder='Key saved (hidden)';
   document.getElementById('api-key-status').textContent='Key saved. AI Auto-Fill is now active.';
   document.getElementById('api-key-status').style.color='#276027';
-  toast('API key saved! AI Auto-Fill active.','ok');
+  toast('AI auto-fill is now active','ok');
+  refreshAiStatus();
+  var p=document.getElementById('ai-key-panel'); if(p) p.style.display='none';
+  var b=document.getElementById('ai-key-btn'); if(b) b.textContent='Manage key';
 }
 function clearApiKey(){
   localStorage.removeItem('ssn_anthropic_key');
   document.getElementById('api-key-inp').placeholder='sk-ant-...';
   document.getElementById('api-key-inp').value='';
   document.getElementById('api-key-status').textContent='Key removed.';
-  toast('API key removed.','ok');
+  toast('Key removed','ok');
+  refreshAiStatus();
 }
 
 // ── Login constants (must be first) ──
@@ -1780,8 +1947,8 @@ function showView(id){
   else { var n2=document.getElementById('nav-'+id); if(n2) n2.classList.add('active'); }
   var titles={
     'dashboard':'Dashboard','plants':'All Plant Varieties','categories':'Plant Categories',
-    'vip':'VIP Collection','import-export':'Import & Export','visitors':'VIP Visitors',
-    'analytics':'Analytics & Insights','settings':'Site Settings','gallery-admin':'Gallery',
+    'vip':'VIP Collection','import-export':'Import & Export','visitors':'VIP Visitors','stats':'Plant Counts',
+    'analytics':'Analytics & Insights','settings':'Site Settings','gallery-admin':'Gallery','videos':'Video Gallery',
     'publish':'Publish & Share'
   };
   var tb=document.getElementById('topbar-title');
@@ -1795,9 +1962,11 @@ function showView(id){
     if(id==='categories')    renderCatGrid();
     if(id==='vip')           renderVipView();
     if(id==='visitors')      renderVisitorsView();
+    if(id==='stats')         renderStatsAdmin();
     if(id==='analytics')     setTimeout(renderAnalytics,80);
     if(id==='settings')      initSettingsView();
     if(id==='gallery-admin') renderGalAdmin();
+    if(id==='videos')        renderVideosAdmin();
     if(id==='publish')       initPublish();
   }catch(err){
     console.error('View render error ('+id+'):',err);
@@ -2526,8 +2695,7 @@ function clearHeroImg(){
   });
 }
 function initSettingsView(){
-  var ks=document.getElementById('api-key-status'),ki=document.getElementById('api-key-inp');
-  if(ks&&ki){var hk=!!getApiKey();ks.textContent=hk?'Key saved. AI Auto-Fill is active.':'No key — enter your Anthropic API key above.';ks.style.color=hk?'#276027':'';ki.placeholder=hk?'Key saved (enter new to replace)':'sk-ant-...';}
+  refreshAiStatus();
   var existing=localStorage.getItem(HERO_KEY2);
   if(existing){
     document.getElementById('hero-img-preview').src=existing;
@@ -2610,6 +2778,356 @@ document.querySelectorAll('.sb-btn').forEach(function(btn){
     if(window.innerWidth<=768) closeSidebar();
   });
 });
+
+
+
+
+function openBulkVisitors(){
+  var t=document.getElementById('bulk-vi-text'); if(t) t.value='';
+  var ov=document.getElementById('bulk-vi-overlay'); if(ov) ov.classList.add('open');
+}
+function saveBulkVisitors(){
+  var t=document.getElementById('bulk-vi-text');
+  var raw=t?t.value.trim():'';
+  if(!raw){ toast('Enter at least one guest','err'); return; }
+  var valid={government:1,hospitality:1,corporate:1,landscape:1,private:1};
+  var lines=raw.split('\n');
+  var arr=getVisitors ? getVisitors() : [];
+  var added=0;
+  for(var i=0;i<lines.length;i++){
+    var line=lines[i].trim();
+    if(!line) continue;
+    var p=line.split('|');
+    var org=(p[0]||'').trim();
+    if(!org) continue;
+    var type=(p[1]||'').trim().toLowerCase();
+    if(!valid[type]) type='private';
+    arr.push({
+      org: org,
+      type: type,
+      location: (p[2]||'').trim(),
+      date: (p[3]||'').trim(),
+      quote: '',
+      photo: null
+    });
+    added++;
+  }
+  if(!added){ toast('No valid guests found','err'); return; }
+  try{
+    localStorage.setItem('ssn_vip_visitors', JSON.stringify(arr));
+    document.getElementById('bulk-vi-overlay').classList.remove('open');
+    toast(added+' guest(s) added — tap Edit on any to add a photo','ok');
+    renderVisitorsView();
+  }catch(e){ toast('Could not save','err'); }
+}
+
+// ══ PLANT COUNT STATS ═══════════════════════════════════
+var STATS_KEY='ssn_stats';
+var _statIdx=-1;
+var DEFAULT_STATS = [{"num": "500", "suffix": "+", "label": "Avenue Plants", "icon": "&#127795;"}, {"num": "800", "suffix": "+", "label": "Ornamental Plants", "icon": "&#127807;"}, {"num": "600", "suffix": "+", "label": "Fruit Plants", "icon": "&#127822;"}, {"num": "695", "suffix": "+", "label": "Flower Plants", "icon": "&#127804;"}];
+
+function getStats(){
+  try{ var v=localStorage.getItem(STATS_KEY);
+    if(v){ var a=JSON.parse(v); if(a&&a.length) return a; } }catch(e){}
+  return DEFAULT_STATS.slice();
+}
+function saveStats(a){
+  try{ localStorage.setItem(STATS_KEY,JSON.stringify(a)); return true; }
+  catch(e){ toast('Could not save','err'); return false; }
+}
+function openStatForm(i){
+  _statIdx=i;
+  var a=getStats(), s=(i>=0&&a[i])?a[i]:{};
+  function set(id,v){ var e=document.getElementById(id); if(e) e.value=v||''; }
+  var hd=document.getElementById('stf-hd'); if(hd) hd.textContent=(i>=0?'Edit Count':'Add Count');
+  set('stf-num',s.num); set('stf-suffix',s.suffix||'+');
+  set('stf-label',s.label); set('stf-icon',s.icon);
+  var ov=document.getElementById('stf-overlay'); if(ov) ov.classList.add('open');
+}
+function closeStatForm(){
+  var ov=document.getElementById('stf-overlay'); if(ov) ov.classList.remove('open');
+  _statIdx=-1;
+}
+function saveStat(){
+  function val(id){ var e=document.getElementById(id); return e?e.value.trim():''; }
+  var num=val('stf-num'), label=val('stf-label');
+  if(!num || !label){ toast('Number and label are both required','err'); return; }
+  var s={num:num, suffix:val('stf-suffix')||'+', label:label, icon:val('stf-icon')};
+  var a=getStats();
+  if(_statIdx>=0) a[_statIdx]=s; else a.push(s);
+  if(saveStats(a)){
+    var wasEdit=_statIdx>=0;
+    closeStatForm();
+    toast(wasEdit?'Count updated':'Count added','ok');
+    renderStatsAdmin();
+  }
+}
+function delStat(i){
+  var a=getStats();
+  var nm=(a[i]&&a[i].label)||'this count';
+  openConfirm('Remove count?','"'+nm+'" will no longer appear on the home page.',function(){
+    var arr=getStats(); arr.splice(i,1); saveStats(arr);
+    closeConfirm(); toast('Removed','ok'); renderStatsAdmin();
+  });
+}
+function moveStat(i,dir){
+  var a=getStats(), j=i+dir;
+  if(j<0||j>=a.length) return;
+  var t=a[i]; a[i]=a[j]; a[j]=t;
+  saveStats(a); renderStatsAdmin();
+}
+function restoreDefaultStats(){
+  openConfirm('Restore default counts?','Resets to 500+ Avenue, 800+ Ornamental, 600+ Fruit, 695+ Flower.',function(){
+    saveStats(DEFAULT_STATS.slice());
+    closeConfirm(); toast('Defaults restored','ok'); renderStatsAdmin();
+  });
+}
+function renderStatsAdmin(){
+  var a; try{ a=getStats(); }catch(e){ a=[]; }
+  if(!a) a=[];
+  var el=document.getElementById('stats-admin-list');
+  if(!el) return;
+  if(!a.length){
+    el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--muted);font-size:.84rem;">No counts yet. Click <strong>+ Add Count</strong>.</div>';
+    return;
+  }
+  var h='';
+  for(var i=0;i<a.length;i++){
+    h+='<div style="background:var(--cream);border:1px solid var(--line);border-radius:9px;padding:18px 16px;text-align:center;">'
+      +(a[i].icon?'<div style="font-size:1.5rem;margin-bottom:7px;">'+a[i].icon+'</div>':'')
+      +'<div style="font-family:Fraunces,serif;font-size:1.9rem;font-weight:300;color:var(--green-deep);line-height:1;">'
+      +(a[i].num||'')+'<span style="color:var(--gold);font-size:.6em;vertical-align:super;">'+(a[i].suffix||'+')+'</span></div>'
+      +'<div style="font-size:.79rem;color:var(--muted);margin:8px 0 12px;">'+(a[i].label||'')+'</div>'
+      +'<div style="display:flex;gap:4px;justify-content:center;flex-wrap:wrap;">'
+      +'<button type="button" class="btn btn-outline btn-sm" onclick="openStatForm('+i+')">&#9998;</button>'
+      +'<button type="button" class="btn btn-outline btn-sm" onclick="moveStat('+i+',-1)">&#8592;</button>'
+      +'<button type="button" class="btn btn-outline btn-sm" onclick="moveStat('+i+',1)">&#8594;</button>'
+      +'<button type="button" class="btn btn-danger btn-sm" onclick="delStat('+i+')">&#10005;</button>'
+      +'</div></div>';
+  }
+  el.innerHTML=h;
+}
+
+// ══ VIDEO GALLERY MANAGEMENT ════════════════════════════
+var VID_KEY='ssn_videos';
+var _vidEditIdx=-1;
+var DEFAULT_VIDEOS = [{"ytId": "rCQaEpac3YU", "title": "Kadiyam Nursery — Sri Satyanarayana Nursery", "desc": "కడియం నర్సరీ · శ్రీ సత్యనారాయణ నర్సరీ — East Godavari, Andhra Pradesh", "year": "2023"}, {"ytId": "fQVkLTxNhTo", "title": "Kadiyam 2025 — Latest Plants", "desc": "Satyanarayana Nursery latest plant collection featured on iDream Andhra", "year": "2025"}, {"ytId": "g4_FH2t8RSA", "title": "Kadiyam January 2021 — Gangumalla Sri Satyanarayana Nursery", "desc": "A walk through the nursery gardens in full seasonal bloom", "year": "2021"}, {"ytId": "GspvSwI0Rno", "title": "Kadiyam January 2020 — Gangumalla Sri Satyanarayana Nursery", "desc": "Rajahmundry, East Godavari District, Andhra Pradesh", "year": "2020"}, {"ytId": "1QJ15g5bIXk", "title": "Best of the Best — Kadiyam Nurseries", "desc": "Graded super fine variety plants from Kadiyam", "year": "2019"}];
+
+function getVideos(){
+  try{ var v=localStorage.getItem(VID_KEY);
+    if(v){ var a=JSON.parse(v); if(a && a.length) return a; }
+  }catch(e){}
+  return DEFAULT_VIDEOS.slice();
+}
+function saveVideos(a){
+  try{ localStorage.setItem(VID_KEY,JSON.stringify(a)); return true; }
+  catch(e){ toast('Could not save videos','err'); return false; }
+}
+function ytIdFrom(url){
+  if(!url) return null;
+  url=(''+url).trim();
+  if(/^[A-Za-z0-9_-]{11}$/.test(url)) return url;
+  var m=url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/|live\/)([A-Za-z0-9_-]{11})/);
+  return m?m[1]:null;
+}
+function openVidForm(i){
+  _vidEditIdx=i;
+  var a=getVideos();
+  var v=(i>=0&&a[i])?a[i]:{};
+  var el;
+  el=document.getElementById('vgf-title-hd'); if(el) el.textContent=(i>=0?'Edit Video':'Add Video');
+  el=document.getElementById('vgf-url');   if(el) el.value=v.ytId||'';
+  el=document.getElementById('vgf-title'); if(el) el.value=v.title||'';
+  el=document.getElementById('vgf-desc');  if(el) el.value=v.desc||'';
+  el=document.getElementById('vgf-year');  if(el) el.value=v.year||'';
+  var pw=document.getElementById('vgf-preview'), th=document.getElementById('vgf-thumb');
+  if(pw&&th){
+    if(v.ytId){ th.src='https://img.youtube.com/vi/'+v.ytId+'/hqdefault.jpg'; pw.style.display='block'; }
+    else pw.style.display='none';
+  }
+  var ov=document.getElementById('vgf-overlay'); if(ov) ov.classList.add('open');
+}
+function closeVidForm(){
+  var ov=document.getElementById('vgf-overlay'); if(ov) ov.classList.remove('open');
+  _vidEditIdx=-1;
+}
+function saveVideo(){
+  var u=document.getElementById('vgf-url');
+  var id=ytIdFrom(u?u.value:'');
+  if(!id){ toast('Enter a valid YouTube link or 11-character video ID','err'); return; }
+  function val(x){ var e=document.getElementById(x); return e?e.value.trim():''; }
+  var v={ ytId:id, title:val('vgf-title')||'Nursery Video', desc:val('vgf-desc'), year:val('vgf-year') };
+  var a=getVideos();
+  if(_vidEditIdx>=0) a[_vidEditIdx]=v; else a.push(v);
+  if(saveVideos(a)){
+    var wasEdit=_vidEditIdx>=0;
+    closeVidForm();
+    toast(wasEdit?'Video updated':'Video added','ok');
+    renderVideosAdmin();
+  }
+}
+function delVideo(i){
+  var a=getVideos();
+  var nm=(a[i]&&a[i].title)||'this video';
+  openConfirm('Remove video?','"'+nm+'" will no longer appear on the website.',function(){
+    var arr=getVideos(); arr.splice(i,1); saveVideos(arr);
+    closeConfirm(); toast('Video removed','ok'); renderVideosAdmin();
+  });
+}
+function moveVideo(i,dir){
+  var a=getVideos(); var j=i+dir;
+  if(j<0||j>=a.length) return;
+  var t=a[i]; a[i]=a[j]; a[j]=t;
+  saveVideos(a); renderVideosAdmin();
+}
+function restoreDefaultVideos(){
+  openConfirm('Restore default videos?','This replaces your current list with the 5 original nursery videos.',function(){
+    saveVideos(DEFAULT_VIDEOS.slice());
+    closeConfirm(); toast('Default videos restored','ok'); renderVideosAdmin();
+  });
+}
+function renderVideosAdmin(){
+  var a; try{ a=getVideos(); }catch(e){ a=[]; }
+  if(!a) a=[];
+  var sub=document.getElementById('vid-sub');
+  if(sub) sub.textContent=a.length+' video'+(a.length!==1?'s':'')+' on the website Gallery page';
+  var grid=document.getElementById('vid-admin-grid');
+  if(!grid) return;
+  if(!a.length){
+    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:34px 20px;color:var(--muted);font-size:.84rem;">No videos yet. Click <strong>+ Add Video</strong> to paste a YouTube link.</div>';
+    return;
+  }
+  var h='';
+  for(var i=0;i<a.length;i++){
+    var v=a[i];
+    h+='<div class="vid-card"><div class="vid-thumb">'
+      +'<img src="https://img.youtube.com/vi/'+v.ytId+'/hqdefault.jpg" alt="">'
+      +'<div class="vid-play">&#9654;</div></div><div class="vid-body">'
+      +(v.year?'<div class="vid-year">'+v.year+'</div>':'')
+      +'<div class="vid-title">'+(v.title||'Nursery Video')+'</div>'
+      +(v.desc?'<div class="vid-desc">'+v.desc+'</div>':'')
+      +'<div class="vid-acts">'
+      +'<button type="button" class="btn btn-outline btn-sm" onclick="openVidForm('+i+')">&#9998;</button>'
+      +'<button type="button" class="btn btn-outline btn-sm" onclick="moveVideo('+i+',-1)">&#8593;</button>'
+      +'<button type="button" class="btn btn-outline btn-sm" onclick="moveVideo('+i+',1)">&#8595;</button>'
+      +'<button type="button" class="btn btn-danger btn-sm" onclick="delVideo('+i+')">&#10005;</button>'
+      +'</div></div></div>';
+  }
+  grid.innerHTML=h;
+}
+
+
+// ══ Built-in gallery bootstrap ═══════════════════════════
+// The 8 built-in photos live in the website file. On first open we
+// read them from there so they can be edited/removed like any other.
+var BUILTIN_GALLERY_LOADED = false;
+
+function ensureBuiltinGallery(cb){
+  if(BUILTIN_GALLERY_LOADED){ cb && cb(); return; }
+  var existing = null;
+  try{ existing = JSON.parse(localStorage.getItem(GAL_KEY)||'null'); }catch(e){}
+  if(existing && existing.length){ BUILTIN_GALLERY_LOADED = true; cb && cb(); return; }
+
+  // Try to read the built-in set from the website file in the same folder
+  var candidates = ['index.html','Gangumallas-Sri-Satyanarayana-Nursery-Website.html'];
+  var idx = 0;
+  function tryNext(){
+    if(idx >= candidates.length){
+      BUILTIN_GALLERY_LOADED = true;
+      cb && cb();
+      return;
+    }
+    var url = candidates[idx++];
+    fetch(url).then(function(r){
+      if(!r.ok) throw new Error('not found');
+      return r.text();
+    }).then(function(html){
+      var m = html.match(/var SSN_BUILTIN_GALLERY = (\[[\s\S]*?\]);/);
+      if(m){
+        try{
+          var arr = JSON.parse(m[1]);
+          if(arr && arr.length){
+            localStorage.setItem(GAL_KEY, JSON.stringify(arr));
+            toast('Loaded '+arr.length+' built-in gallery photos','ok');
+          }
+        }catch(e){}
+      }
+      BUILTIN_GALLERY_LOADED = true;
+      cb && cb();
+    }).catch(function(){ tryNext(); });
+  }
+  tryNext();
+}
+
+
+function forceLoadBuiltin(){
+  openConfirm('Load built-in photos?','This adds the 8 original nursery photos so you can edit or remove them individually. Any photos you have already added are kept.',function(){
+    closeConfirm();
+    var current = getGallery();
+    var candidates = ['index.html','Gangumallas-Sri-Satyanarayana-Nursery-Website.html'];
+    var idx = 0;
+    function tryNext(){
+      if(idx >= candidates.length){
+        toast('Could not find the website file in this folder','err');
+        return;
+      }
+      var url = candidates[idx++];
+      fetch(url).then(function(r){
+        if(!r.ok) throw new Error('nf');
+        return r.text();
+      }).then(function(html){
+        var m = html.match(/var SSN_BUILTIN_GALLERY = (\[[\s\S]*?\]);/);
+        if(!m){ tryNext(); return; }
+        var arr = JSON.parse(m[1]);
+        var have = {};
+        current.forEach(function(c){ if(c.caption) have[c.caption]=1; });
+        var added = 0;
+        arr.forEach(function(a){
+          if(!have[a.caption]){ current.push(a); added++; }
+        });
+        if(saveGallery(current)){
+          toast(added ? added+' built-in photo(s) added' : 'All built-in photos already present','ok');
+          renderGalAdmin();
+        }
+      }).catch(function(){ tryNext(); });
+    }
+    tryNext();
+  });
+}
+
+
+// ══ High-quality image processing ═══════════════════════
+// Resizes to a max edge while preserving detail, then encodes
+// as JPEG at high quality. Keeps files small without visible loss.
+function ssnProcessImage(file, maxEdge, quality, cb){
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var img = new Image();
+    img.onload = function(){
+      var w = img.width, h = img.height;
+      // Only downscale — never upscale a smaller original
+      if(w > maxEdge || h > maxEdge){
+        if(w >= h){ h = Math.round(h * maxEdge / w); w = maxEdge; }
+        else      { w = Math.round(w * maxEdge / h); h = maxEdge; }
+      }
+      var c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      var ctx = c.getContext('2d');
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, 0, 0, w, h);
+      try{
+        cb(c.toDataURL('image/jpeg', quality), w, h);
+      }catch(err){
+        cb(e.target.result, img.width, img.height);
+      }
+    };
+    img.onerror = function(){ cb(null); };
+    img.src = e.target.result;
+  };
+  reader.onerror = function(){ cb(null); };
+  reader.readAsDataURL(file);
+}
 
 // ══ GALLERY MANAGEMENT ═══════════════════════════════════
 var GAL_KEY = 'ssn_gallery';
@@ -2790,49 +3308,67 @@ function handleGalUpload(inp){
   for(var i=0;i<inp.files.length;i++) files.push(inp.files[i]);
   var arr=getGallery();
   var done=0, added=0;
+  var maxEdge = parseInt((document.getElementById('gal-quality')||{}).value || '1600', 10);
+  var quality = maxEdge >= 2000 ? 0.92 : 0.88;
+
+  toast('Processing '+files.length+' file(s)…','ok');
+
   function finish(){
     done++;
     if(done===files.length){
-      if(added>0 && saveGallery(arr)) toast(added+' item(s) added','ok');
+      if(added>0 && saveGallery(arr)) toast(added+' item(s) added at high quality','ok');
+      else if(added===0) toast('Nothing was added','err');
       renderGalAdmin();
       inp.value='';
     }
   }
   files.forEach(function(f){
     var isVid = f.type && f.type.indexOf('video/')===0;
-    var maxSz = isVid ? 60*1024*1024 : 4*1024*1024;
-    if(f.size > maxSz){
-      toast('Skipped '+f.name+' — too large','err');
-      finish(); return;
+    if(isVid){
+      if(f.size > 60*1024*1024){ toast('Skipped '+f.name+' — video over 60MB','err'); finish(); return; }
+      var r=new FileReader();
+      r.onload=function(e){
+        arr.push({src:e.target.result, type:'video',
+          caption:f.name.replace(/\.[^.]+$/,'').replace(/[-_]/g,' ')});
+        added++; finish();
+      };
+      r.onerror=function(){ toast('Could not read '+f.name,'err'); finish(); };
+      r.readAsDataURL(f);
+      return;
     }
-    var r=new FileReader();
-    r.onload=function(e){
+    if(f.size > 25*1024*1024){ toast('Skipped '+f.name+' — over 25MB','err'); finish(); return; }
+    ssnProcessImage(f, maxEdge, quality, function(dataUrl, w, h){
+      if(!dataUrl){ toast('Could not process '+f.name,'err'); finish(); return; }
       arr.push({
-        src:e.target.result,
-        type:isVid?'video':'image',
-        caption:f.name.replace(/\.[^.]+$/,'').replace(/[-_]/g,' ')
+        src: dataUrl, type:'image',
+        caption: f.name.replace(/\.[^.]+$/,'').replace(/[-_]/g,' '),
+        w: w, h: h
       });
       added++; finish();
-    };
-    r.onerror=function(){ toast('Could not read '+f.name,'err'); finish(); };
-    r.readAsDataURL(f);
+    });
   });
 }
 function renderGalAdmin(){
+  if(!BUILTIN_GALLERY_LOADED){
+    var g=document.getElementById('gal-admin-grid');
+    if(g) g.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:34px;color:var(--muted);font-size:.84rem;">Loading gallery&hellip;</div>';
+    ensureBuiltinGallery(function(){ renderGalAdmin(); });
+    return;
+  }
   var arr;
   try{ arr=getGallery(); }catch(e){ arr=[]; }
   if(!arr) arr=[];
   var sub=document.getElementById('gal-sub');
   if(sub) sub.textContent = arr.length>0
-    ? arr.length+' item'+(arr.length!==1?'s':'')+' — replacing the built-in gallery on the website'
-    : 'No custom items — website shows the 8 built-in nursery photos';
+    ? arr.length+' item'+(arr.length!==1?'s':'')+' shown on the website Gallery page'
+    : 'Loading the built-in nursery photos…';
   var clr=document.getElementById('gal-clear-wrap');
   if(clr) clr.style.display = arr.length>0 ? 'block' : 'none';
   var grid=document.getElementById('gal-admin-grid');
   if(!grid) return;
   if(!arr.length){
     grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:30px 20px;color:var(--muted);font-size:.84rem;">'
-      +'Upload photos or add a YouTube link above.<br>They will replace the built-in gallery images on the website.</div>';
+      +'No photos loaded yet.<br>Tap <strong>&#8635; Load Built-in Photos</strong> to bring in the 8 nursery photos, or upload your own.</div>';
     return;
   }
   var h='';
@@ -2851,10 +3387,12 @@ function renderGalAdmin(){
     }
     h+='<div class="gal-admin-card">'+media
       +'<div class="gal-admin-body">'
-      +'<div class="gal-admin-cap">'+(it.caption||'Untitled')+'</div>'
+      +'<div class="gal-admin-cap">'+(it.tall?'<span style="display:inline-block;background:var(--gold);color:#fff;font-size:.6rem;padding:1px 5px;border-radius:3px;margin-right:5px;vertical-align:middle;">TALL</span>':'')+(it.caption||'Untitled')+'</div>'+(it.w&&it.h?'<div style="font-size:.68rem;color:var(--muted);margin-bottom:6px;">'+it.w+' &times; '+it.h+' px</div>':'')
       +'<div class="gal-admin-acts">'
-      +'<button type="button" class="btn btn-outline btn-sm" onclick="openGalCap('+i+')">&#9998;</button>'
-      +'<button type="button" class="btn btn-danger btn-sm" onclick="delGalImg('+i+')" style="margin-left:4px;">&#10005;</button>'
+      +'<button type="button" class="btn btn-outline btn-sm" onclick="openGalCap('+i+')" title="Edit caption">&#9998;</button>'
+      +'<button type="button" class="btn btn-outline btn-sm" onclick="moveGalImg('+i+',-1)" title="Move up">&#8593;</button>'
+      +'<button type="button" class="btn btn-outline btn-sm" onclick="moveGalImg('+i+',1)" title="Move down">&#8595;</button>'
+      +'<button type="button" class="btn btn-danger btn-sm" onclick="delGalImg('+i+')" title="Remove">&#10005;</button>'
       +'</div></div></div>';
   }
   grid.innerHTML=h;
@@ -2864,6 +3402,8 @@ function openGalCap(i){
   var a=getGallery();
   var inp=document.getElementById('gal-cap-inp');
   if(inp) inp.value = a[i] ? (a[i].caption||'') : '';
+  var tallBox=document.getElementById('gal-tall-inp');
+  if(tallBox) tallBox.checked = !!(a[i] && a[i].tall);
   var ov=document.getElementById('gal-cap-overlay');
   if(ov) ov.classList.add('open');
 }
@@ -2871,13 +3411,26 @@ function saveGalCap(){
   if(_galCapIdx<0) return;
   var a=getGallery();
   var inp=document.getElementById('gal-cap-inp');
-  if(a[_galCapIdx] && inp) a[_galCapIdx].caption=inp.value.trim();
+  var tallBox=document.getElementById('gal-tall-inp');
+  if(a[_galCapIdx]){
+    if(inp) a[_galCapIdx].caption=inp.value.trim();
+    if(tallBox) a[_galCapIdx].tall=tallBox.checked;
+  }
   saveGallery(a);
   var ov=document.getElementById('gal-cap-overlay');
   if(ov) ov.classList.remove('open');
   toast('Caption saved','ok');
   renderGalAdmin();
 }
+
+function moveGalImg(i,dir){
+  var a=getGallery();
+  var j=i+dir;
+  if(j<0||j>=a.length) return;
+  var t=a[i]; a[i]=a[j]; a[j]=t;
+  saveGallery(a); renderGalAdmin();
+}
+
 function delGalImg(i){
   openConfirm('Remove this item?','It will no longer appear in the website gallery.',function(){
     var a=getGallery(); a.splice(i,1); saveGallery(a);
