@@ -357,6 +357,16 @@ input,select,textarea{font-family:inherit;}
 </style>
 </head>
 <body>
+<script>
+(function(){
+  try{
+    if(!localStorage.getItem('ssn_logo')){
+      localStorage.setItem('ssn_logo','data:image/png;base64,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');
+    }
+  }catch(e){}
+})();
+</script>
+
 
 <!-- LOGIN SCREEN -->
 <div id="login-screen">
@@ -388,7 +398,7 @@ input,select,textarea{font-family:inherit;}
     <div class="sb-lbl">Insights</div>
     <button class="sb-btn" onclick="showView('analytics')" id="nav-analytics">&#128200; Analytics</button>
     <button class="sb-btn" onclick="showView('visitors')" id="nav-visitors">&#127775; VIP Visitors</button>
-    <button class="sb-btn" onclick="showView('gallery')" id="nav-gallery-admin">&#128247; Gallery</button>
+    <button class="sb-btn" onclick="showView('gallery-admin')" id="nav-gallery-admin">&#128247; Gallery</button>
     <button class="sb-btn" onclick="showView('settings')" id="nav-settings">&#9881; Site Settings</button>
     <div class="sb-lbl">Tools</div>
     <button class="sb-btn" onclick="showView('publish')" id="nav-publish">&#128228; Publish &amp; Share</button>
@@ -571,21 +581,30 @@ input,select,textarea{font-family:inherit;}
 
         <!-- GALLERY VIEW -->
     <div class="view" id="view-gallery-admin">
-      <div class="sec-hd" style="margin-bottom:16px;">
-        <div>
-          <h2>Gallery Management</h2>
-          <p style="font-size:.8rem;color:var(--muted);margin-top:3px;" id="gal-sub">Manage photos shown in the website Gallery page</p>
+      <div style="margin-bottom:18px;">
+        <h2 style="font-size:1.08rem;font-weight:500;margin-bottom:4px;">Gallery Management</h2>
+        <p style="font-size:.8rem;color:var(--muted);margin-bottom:14px;" id="gal-sub">Manage photos and videos shown on the website Gallery page</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button type="button" class="btn btn-gold" onclick="galPick()" style="cursor:pointer;-webkit-tap-highlight-color:rgba(185,137,63,.2);">&#43; Add Photos / Video</button>
+          <button type="button" class="btn btn-outline" onclick="galToggleYt()" style="cursor:pointer;">&#9654; Add YouTube Link</button>
         </div>
-        <button class="btn btn-gold" onclick="trigGalUpload()">&#43; Add Photos</button>
       </div>
 
-      <!-- Hidden file input -->
-      <input type="file" accept="image/*" multiple id="gal-upload-inp" style="display:none;" onchange="handleGalUpload(this)">
 
-      <!-- Upload drop zone -->
-      <div style="background:var(--cream);border:2px dashed var(--line);border-radius:8px;padding:20px;
-        text-align:center;margin-bottom:20px;cursor:pointer;" onclick="trigGalUpload()"
-        id="gal-drop-zone">
+      <div id="gal-yt-form" style="display:none;background:var(--cream2);border:1px solid var(--line);border-radius:6px;padding:14px;margin-bottom:14px;">
+        <div style="font-size:.84rem;font-weight:500;margin-bottom:8px;">&#9654; Add YouTube Video (drone footage, nursery tour, etc.)</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <input type="text" id="gal-yt-url" placeholder="https://youtu.be/..." style="flex:1;min-width:180px;border:1px solid var(--line);border-radius:4px;padding:8px 11px;font-size:.82rem;">
+          <button class="btn btn-primary btn-sm" onclick="galAddYt()">Add</button>
+        </div>
+      </div>
+      <!-- Hidden file input for gallery -->
+      <input type="file" accept="image/*,video/*" multiple id="gal-file-inp" style="display:none;" onchange="handleGalUpload(this)">
+
+      <!-- Upload tap zone -->
+      <div style="background:var(--cream);border:2px dashed var(--gold);border-radius:8px;padding:28px 20px;
+        text-align:center;margin-bottom:16px;cursor:pointer;-webkit-tap-highlight-color:rgba(185,137,63,.1);"
+        onclick="document.getElementById('gal-file-inp').click()">
         <div style="font-size:1.8rem;margin-bottom:6px;">&#128247;</div>
         <div style="font-size:.84rem;color:var(--muted);">
           <strong>Click here</strong> or tap <strong>+ Add Photos</strong> above<br>
@@ -945,6 +964,7 @@ input,select,textarea{font-family:inherit;}
 <div class="toast" id="toast"></div>
 
 <script>
+var VIP_CATALOG_PLANTS=[{"name": "Ficus Ali (14 ft)", "botanical": "Ficus binnendijkii Alii", "cat": "ficus", "tagline": "Elegant long-leaf ficus in a 28-pot for lobbies and entrances.", "description": "Ficus Ali is prized for its long drooping willow-like leaves in deep green. A sophisticated indoor statement tree at 14 ft in a premium 28-pot.", "care": {"water": "Moderate", "light": "Bright indirect", "soil": "Rich well-draining", "difficulty": "Easy", "growth": "Medium"}, "uses": ["Hotel lobbies", "Corporate atriums", "Premium home interiors"], "tips": ["Rotate monthly", "Avoid draughts", "Wipe leaves to maintain gloss"], "price": "50,000", "size": "28 Pot", "height": "14 ft"}, {"name": "Ficus Ali (18 ft Naked)", "botanical": "Ficus binnendijkii Alii", "cat": "ficus", "tagline": "A commanding 18 ft naked-trunk Ficus Ali.", "description": "A spectacular naked-trunk Ficus Ali at 18 ft. A landmark statement for grand atriums and hotel entrances.", "care": {"water": "Moderate", "light": "Full sun", "soil": "Well-draining", "difficulty": "Moderate", "growth": "Medium"}, "uses": ["Grand hotel entrances", "Large atriums", "Open estate plantings"], "tips": ["Stake firmly during establishment", "Feed quarterly"], "price": "2,00,000 to 2,50,000", "size": "Naked", "height": "18 ft"}, {"name": "Bismarckia Nobilis", "botanical": "Bismarckia nobilis", "cat": "palm", "tagline": "Striking silver-blue fan fronds — the most architectural palm available.", "description": "Prized for its dramatic silver-blue fan fronds on a clean imposing trunk. Imported specimen with 2.5m clear trunk.", "care": {"water": "Low", "light": "Full sun", "soil": "Sandy well-draining", "difficulty": "Easy", "growth": "Slow"}, "uses": ["Grand entrance plantings", "Resort landscapes", "Open lawn focal points"], "tips": ["Never overwater", "Full sun essential"], "price": "1,25,000", "size": "Naked", "height": "2.5m Clear Trunk"}, {"name": "Baobab (Adansonia Digitata)", "botanical": "Adansonia digitata", "cat": "avenue", "tagline": "One of the rarest trees on earth — 30 ft ancient living sculpture.", "description": "An extraordinary Adansonia digitata at 30 ft. The iconic swollen trunk creates an instantly recognisable silhouette. A once-in-a-generation collectors tree.", "care": {"water": "Very low", "light": "Full sun", "soil": "Sandy well-draining", "difficulty": "Hard", "growth": "Very slow"}, "uses": ["Ultra-premium collector estates", "Botanical garden centrepieces", "Luxury resort landmarks"], "tips": ["Handle with extreme care", "Never overwater"], "price": "40,00,000", "size": "Naked", "height": "30 ft"}, {"name": "Cassia Rainbow", "botanical": "Cassia fistula hybrid", "cat": "avenue", "tagline": "Vivid rainbow blooms on a mature naked trunk.", "description": "A spectacular flowering avenue tree with cascades of colourful blooms. A rare mature specimen at 25 ft for estate drives and resort boulevards.", "care": {"water": "Moderate", "light": "Full sun", "soil": "Well-draining loam", "difficulty": "Easy", "growth": "Medium"}, "uses": ["Estate and resort avenues", "Boulevard plantings", "Garden centrepieces"], "tips": ["Full sun produces the most vibrant bloom", "Prune lightly after flowering"], "price": "3,95,000", "size": "Naked", "height": "25 ft"}, {"name": "Gulmohar Yellow", "botanical": "Peltophorum pterocarpum", "cat": "avenue", "tagline": "Rare yellow-flowering Gulmohar — a radiant canopy tree.", "description": "The Yellow Gulmohar offers a stunning golden canopy of blooms in summer. A mature 25 ft specimen on a clean naked trunk.", "care": {"water": "Low", "light": "Full sun", "soil": "Well-draining", "difficulty": "Easy", "growth": "Fast"}, "uses": ["Avenue plantings", "Estate landscapes", "Resort drives"], "tips": ["Very drought tolerant", "Prune annually"], "price": "3,95,000", "size": "Naked", "height": "25 ft"}, {"name": "Chorisia Speciosa 17 ft", "botanical": "Ceiba speciosa", "cat": "avenue", "tagline": "Thorny bottle trunk, vivid pink blooms — rare ornamental.", "description": "The Silk Floss Tree is recognisable by its thorny swollen trunk and vivid pink seasonal blossoms. In 40/40 container at 17 ft.", "care": {"water": "Low", "light": "Full sun", "soil": "Well-draining", "difficulty": "Moderate", "growth": "Fast"}, "uses": ["Statement garden focal points", "Avenue planting", "Large estate grounds"], "tips": ["Handle with care — trunk has sharp thorns"], "price": "1,55,000", "size": "40/40", "height": "17 ft"}, {"name": "Chorisia Speciosa 25 ft", "botanical": "Ceiba speciosa", "cat": "avenue", "tagline": "Mature naked-trunk Silk Floss Tree at 25 ft.", "description": "A spectacular mature naked-trunk Chorisia Speciosa at 25 ft. The dramatic silhouette, thorny trunk and seasonal pink blossoms make this one of the most striking ornamental trees available.", "care": {"water": "Low", "light": "Full sun", "soil": "Well-draining", "difficulty": "Moderate", "growth": "Fast"}, "uses": ["Premium estate centrepieces", "Grand resort landscapes", "Collector gardens"], "tips": ["Handle with care — trunk has sharp thorns"], "price": "3,00,000", "size": "Naked", "height": "25 ft"}, {"name": "Camellia Duro Pot", "botanical": "Camellia japonica", "cat": "ornamental", "tagline": "Glossy evergreen foliage with elegant seasonal blooms.", "description": "A refined Camellia specimen in a premium Duro pot trained to 2.8m. Elegant seasonal blooms and glossy dark evergreen foliage. Imported.", "care": {"water": "Moderate", "light": "Partial shade", "soil": "Acidic well-draining", "difficulty": "Moderate", "growth": "Slow"}, "uses": ["Formal courtyards", "Entry gardens", "Premium potted displays"], "tips": ["Prefers slightly acidic soil", "Protect from harsh afternoon sun"], "price": "65,000", "size": "Duro Pot", "height": "2.8m"}, {"name": "Livistonia Palm", "botanical": "Livistonia rotundifolia", "cat": "palm", "tagline": "Graceful weeping fan fronds — available in 5 heights.", "description": "The Livistonia offers graceful weeping fan fronds cascading from a clean clear trunk. Available in five trunk heights from 3.5m to 7.5m.", "care": {"water": "Moderate", "light": "Full sun to partial shade", "soil": "Well-draining", "difficulty": "Easy", "growth": "Medium"}, "uses": ["Avenue plantings", "Resort entrances", "Courtyard focal points"], "tips": ["Remove old fronds cleanly", "Fertilise quarterly"], "price": "60,000 to 1,00,000", "size": "Naked", "height": "3.5m to 7.5m"}, {"name": "Livistonia Double", "botanical": "Livistonia rotundifolia", "cat": "palm", "tagline": "Twin trunks — a matched pair for symmetrical entrances.", "description": "A double-trunk Livistonia specimen with two clean trunks rising together for formal entrance gates, hotel porticos and grand driveways.", "care": {"water": "Moderate", "light": "Full sun", "soil": "Well-draining", "difficulty": "Easy", "growth": "Medium"}, "uses": ["Symmetrical entrance pairs", "Hotel porticos", "Grand driveway plantings"], "tips": ["Ideal as matched pairs", "Feed monthly during growing season"], "price": "1,50,000", "size": "Naked", "height": "3.5m Clear Trunk"}, {"name": "Copernicia Alba", "botanical": "Copernicia alba", "cat": "palm", "tagline": "The wax palm — dramatic silvery fronds on a clean clear trunk.", "description": "Copernicia Alba is a stately wax palm with distinctive silvery-blue fronds and a clean impressive trunk. Available as single or 3-in-1 multi-stem planting.", "care": {"water": "Low", "light": "Full sun", "soil": "Sandy well-draining", "difficulty": "Easy", "growth": "Slow"}, "uses": ["Grand entrance plantings", "Resort landscapes", "Premium estate gardens"], "tips": ["Highly drought tolerant once established"], "price": "60,000 to 1,50,000", "size": "Single or 3-in-1", "height": "2.5m Clear Trunk"}, {"name": "Dicksonia Tree Fern", "botanical": "Dicksonia antarctica", "cat": "indoor", "tagline": "Ancient tree fern — lush prehistoric fronds.", "description": "One of the oldest plant forms on earth with graceful arching fronds radiating from a fibrous trunk. Creates a lush tropical atmosphere in covered atriums.", "care": {"water": "High — keep trunk moist", "light": "Bright indirect", "soil": "Rich moist well-draining", "difficulty": "Moderate", "growth": "Very slow"}, "uses": ["Indoor atriums", "Covered courtyards", "Shaded garden areas"], "tips": ["Mist the trunk daily", "Never let trunk dry out"], "price": "30,000", "size": "20 Pot", "height": "5 ft"}, {"name": "Dracaena Draco Multi Heads", "botanical": "Dracaena draco", "cat": "ornamental", "tagline": "The Dragon Blood Tree — multiple heads for a dramatic silhouette.", "description": "The Dracaena Draco with multiple branching heads creates a uniquely dramatic prehistoric silhouette. A premium specimen in a 24-pot at 6 ft.", "care": {"water": "Low", "light": "Full sun to bright indirect", "soil": "Sandy well-draining", "difficulty": "Easy", "growth": "Very slow"}, "uses": ["Statement garden focal points", "Premium terrace plantings", "Indoor atriums"], "tips": ["Extremely drought tolerant", "Multi-head form takes decades to develop"], "price": "30,000", "size": "24 Pot", "height": "6 ft"}, {"name": "Washingtonia Palm", "botanical": "Washingtonia robusta", "cat": "palm", "tagline": "The classic sky-reaching desert palm.", "description": "Washingtonia palms with clean naked trunks at 3m available as single or double specimens. Their dramatic height and feathery crown make them ideal for grand avenue and entrance plantings.", "care": {"water": "Low", "light": "Full sun", "soil": "Sandy well-draining", "difficulty": "Very Easy", "growth": "Fast"}, "uses": ["Avenue plantings", "Large estate entrances", "Resort landscapes"], "tips": ["One of the hardiest palms available"], "price": "80,000 to 1,75,000", "size": "Naked", "height": "3m to 3.5m Clear Trunk"}, {"name": "Brachychiton Rupestris Bottle Tree", "botanical": "Brachychiton rupestris", "cat": "avenue", "tagline": "The iconic swollen-trunk Bottle Tree — 6 sizes available.", "description": "One of our rarest imports — the iconic Bottle Tree with its dramatically swollen trunk. Available in six size options. A true collectors specimen.", "care": {"water": "Very low", "light": "Full sun", "soil": "Sandy well-draining", "difficulty": "Hard", "growth": "Very slow"}, "uses": ["Rare collector gardens", "Luxury resort centrepieces", "Botanical garden displays"], "tips": ["Handle with extreme care", "Full sun essential"], "price": "8,00,000", "size": "Naked", "height": "Available in 6 sizes"}, {"name": "Ficus Bonsai Ceramic Pot", "botanical": "Ficus microcarpa", "cat": "ficus", "tagline": "A premium trained Ficus bonsai in an elegant ceramic pot.", "description": "A mature Ficus microcarpa bonsai trained over many years presented in a premium ceramic pot. The intricate branching and aerial root structure make this a living work of art.", "care": {"water": "Moderate", "light": "Bright indirect", "soil": "Well-draining bonsai mix", "difficulty": "Moderate", "growth": "Slow"}, "uses": ["Premium interior display", "Corporate gifting", "Reception tables"], "tips": ["Prune lightly to maintain form", "Mist daily", "Repot every 2 years"], "price": "2,75,000", "size": "Ceramic Pot", "height": "Bonsai form"}, {"name": "Erythrina Crista Galli Coral Tree", "botanical": "Erythrina crista-galli", "cat": "avenue", "tagline": "The Coral Tree — vivid crimson blooms on a sculptural trunk.", "description": "Erythrina Crista Galli is prized for its vivid crimson blossom clusters and gnarled sculptural trunk. A rare 18 ft naked specimen — breathtaking for premium landscape projects.", "care": {"water": "Moderate", "light": "Full sun", "soil": "Well-draining", "difficulty": "Moderate", "growth": "Medium"}, "uses": ["Statement garden focal points", "Premium estate landscapes", "Botanical collection pieces"], "tips": ["Prune after flowering", "Blooms most vibrant in full sun"], "price": "9,50,000", "size": "Naked", "height": "18 ft"}, {"name": "Gulmohar Flamboyant Tree", "botanical": "Delonix regia", "cat": "avenue", "tagline": "The Flame of the Forest — spectacular orange canopy.", "description": "The Gulmohar in full bloom is one of the most spectacular sights in tropical horticulture. A mature 20 ft naked specimen delivers an immediate established canopy of vivid orange-red flowers.", "care": {"water": "Low", "light": "Full sun", "soil": "Well-draining", "difficulty": "Easy", "growth": "Fast"}, "uses": ["Estate and resort avenues", "Boulevard plantings", "Open garden centrepieces"], "tips": ["Extremely drought tolerant", "Full sun produces the most vivid bloom"], "price": "60,000", "size": "Naked", "height": "20 ft"}, {"name": "Spathodea African Tulip Tree", "botanical": "Spathodea campanulata", "cat": "avenue", "tagline": "The African Tulip Tree — dramatic orange blossoms year-round.", "description": "Spathodea campanulata produces large vivid orange-red tulip-shaped flowers almost continuously. A mature 18 ft naked specimen provides an immediate dramatic presence.", "care": {"water": "Moderate", "light": "Full sun", "soil": "Well-draining loam", "difficulty": "Easy", "growth": "Fast"}, "uses": ["Resort garden focal points", "Estate avenues", "Boulevard plantings"], "tips": ["Fast-growing — prune annually", "Flowers attract birds"], "price": "85,000", "size": "Naked", "height": "18 ft"}, {"name": "Lagerstroemia Speciosa", "botanical": "Lagerstroemia speciosa", "cat": "avenue", "tagline": "The Queen Crepe Myrtle — lavender-pink blooms on a graceful trunk.", "description": "Lagerstroemia Speciosa produces spectacular lavender to pink blooms on a graceful pale-barked trunk. A mature 15 ft naked specimen brings immediate colour and elegance.", "care": {"water": "Moderate", "light": "Full sun", "soil": "Well-draining", "difficulty": "Easy", "growth": "Medium"}, "uses": ["Estate and resort gardens", "Boulevard accent planting", "Garden centrepieces"], "tips": ["Full sun produces the most prolific bloom", "Prune in winter to encourage flowering"], "price": "85,000", "size": "Naked", "height": "15 ft"}, {"name": "Cassia Fistula Golden Shower", "botanical": "Cassia fistula", "cat": "avenue", "tagline": "The Golden Shower — cascades of yellow blooms.", "description": "Cassia Fistula earns the name Golden Shower in full bloom — long drooping clusters of vivid yellow flowers cascade from every branch. A mature 15 ft naked specimen provides immediate impact.", "care": {"water": "Low", "light": "Full sun", "soil": "Well-draining", "difficulty": "Very Easy", "growth": "Fast"}, "uses": ["Avenue and boulevard plantings", "Estate garden centrepieces", "Resort landscape drives"], "tips": ["Very low maintenance", "Full sun gives the most vivid flowering"], "price": "65,000", "size": "Naked", "height": "15 ft"}];
 
 function getApiKey(){return localStorage.getItem('ssn_anthropic_key')||'';}
 function saveApiKey(){
@@ -1714,7 +1734,14 @@ function getCustom(){try{return JSON.parse(localStorage.getItem(LS_CUSTOM)||'{}'
 function saveCustom(d){localStorage.setItem(LS_CUSTOM,JSON.stringify(d));}
 function getOv(){try{return JSON.parse(localStorage.getItem(LS_OVERRIDES)||'{}');}catch{return {};}}
 function saveOv(d){localStorage.setItem(LS_OVERRIDES,JSON.stringify(d));}
-function getVip(){try{return JSON.parse(localStorage.getItem(VIP_KEY)||'[]');}catch{return [];}}
+function getVip(){
+  try{
+    var stored=JSON.parse(localStorage.getItem(VIP_KEY)||'[]');
+    var catalogNames=VIP_CATALOG_PLANTS.map(function(p){return p.name;});
+    var extras=stored.filter(function(p){return catalogNames.indexOf(p.name)<0;});
+    return VIP_CATALOG_PLANTS.concat(extras);
+  }catch(e){return VIP_CATALOG_PLANTS;}
+}
 function saveVip(a){localStorage.setItem(VIP_KEY,JSON.stringify(a));}
 function getTok(){return localStorage.getItem(TOKEN_KEY)||DEF_TOKEN;}
 
@@ -1735,30 +1762,51 @@ function getAllPlants(){
 
 // ══ VIEW ROUTER ══════════════════════════════════════════
 function showView(id){
+  // Normalise legacy/alias ids
+  var alias={'gallery':'gallery-admin','insights':'analytics','clients':'visitors'};
+  if(alias[id]) id=alias[id];
+  var target=document.getElementById('view-'+id);
+  if(!target){
+    // Unknown view — fall back to dashboard rather than blanking the panel
+    id='dashboard';
+    target=document.getElementById('view-dashboard');
+    if(!target) return;
+  }
   document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
   document.querySelectorAll('.sb-btn').forEach(function(b){b.classList.remove('active');});
-  var v=document.getElementById('view-'+id);
-  if(v) v.classList.add('active');
-  var n=document.getElementById('nav-'+id); if(n) n.classList.add('active');
+  target.classList.add('active');
+  var n=document.getElementById('nav-'+id)||document.getElementById('nav-gallery-admin');
+  if(n && id==='gallery-admin') n.classList.add('active');
+  else { var n2=document.getElementById('nav-'+id); if(n2) n2.classList.add('active'); }
   var titles={
     'dashboard':'Dashboard','plants':'All Plant Varieties','categories':'Plant Categories',
     'vip':'VIP Collection','import-export':'Import & Export','visitors':'VIP Visitors',
-    'analytics':'Analytics & Insights','settings':'Site Settings','gallery-admin':'Gallery','publish':'Publish & Share'
+    'analytics':'Analytics & Insights','settings':'Site Settings','gallery-admin':'Gallery',
+    'publish':'Publish & Share'
   };
-  document.getElementById('topbar-title').textContent=titles[id]||id;
-  // Show/hide Add Plant button
+  var tb=document.getElementById('topbar-title');
+  if(tb) tb.textContent=titles[id]||id;
   var addBtn=document.getElementById('topbar-add-plant');
   if(addBtn) addBtn.style.display=(id==='plants'||id==='categories'||id==='dashboard')?'':'none';
-  // Render correct view
-  if(id==='dashboard')     renderDash();
-  if(id==='plants')        renderTable();
-  if(id==='categories')    renderCatGrid();
-  if(id==='vip')           renderVipView();
-  if(id==='visitors')      renderVisitorsView();
-  if(id==='analytics')     setTimeout(renderAnalytics,80);
-  if(id==='settings')      initSettingsView();
-  if(id==='gallery-admin') renderGalAdmin();
-  if(id==='publish') initPublish();
+  // Render — each guarded so one failure cannot blank the view
+  try{
+    if(id==='dashboard')     renderDash();
+    if(id==='plants')        renderTable();
+    if(id==='categories')    renderCatGrid();
+    if(id==='vip')           renderVipView();
+    if(id==='visitors')      renderVisitorsView();
+    if(id==='analytics')     setTimeout(renderAnalytics,80);
+    if(id==='settings')      initSettingsView();
+    if(id==='gallery-admin') renderGalAdmin();
+    if(id==='publish')       initPublish();
+  }catch(err){
+    console.error('View render error ('+id+'):',err);
+  }
+  // Close mobile sidebar after navigating
+  var sb=document.querySelector('.sidebar');
+  var bk=document.getElementById('sb-backdrop');
+  if(sb) sb.classList.remove('open');
+  if(bk) bk.classList.remove('show');
 }
 
 // ══ DASHBOARD ════════════════════════════════════════════
@@ -2567,87 +2615,21 @@ document.querySelectorAll('.sb-btn').forEach(function(btn){
 var GAL_KEY = 'ssn_gallery';
 var _galCapIdx = -1;
 
-function getGallery(){
-  try{return JSON.parse(localStorage.getItem(GAL_KEY)||'[]');}catch{return [];}
-}
-function saveGallery(arr){localStorage.setItem(GAL_KEY,JSON.stringify(arr));}
 
-function handleGalUpload(inp){
-  var files=Array.from(inp.files);
-  if(!files.length) return;
-  var arr=getGallery();
-  var processed=0;
-  files.forEach(function(f){
-    if(f.size>3*1024*1024){toast('Skipped '+f.name+' — max 3MB','err');processed++;if(processed===files.length)renderGalAdmin();return;}
-    var r=new FileReader();
-    r.onload=function(e){
-      arr.push({src:e.target.result,caption:f.name.replace(/\.[^.]+$/,'').replace(/[-_]/g,' ')});
-      processed++;
-      if(processed===files.length){saveGallery(arr);renderGalAdmin();toast(files.length+' photo(s) added!','ok');}
-    };
-    r.readAsDataURL(f);
-  });
-  inp.value='';
-}
-function trigGalUpload(){document.getElementById('gal-upload-inp').click();}
-function clearAllGallery(){
-  openConfirm('Remove all gallery photos?','The website will return to showing the 8 built-in nursery photos.',function(){
-    localStorage.removeItem(GAL_KEY);closeConfirm();toast('Gallery cleared — built-in photos restored.','ok');renderGalAdmin();
-  });
-}
-function renderGalAdmin(){
-  var arr=getGallery();
-  var sub=document.getElementById('gal-sub');
-  var notice=document.getElementById('gal-static-notice');
-  var clearWrap=document.getElementById('gal-clear-wrap');
-  if(sub) sub.textContent=arr.length>0?arr.length+' custom photo'+(arr.length!==1?'s':'')+' — replacing built-in gallery':'Using 8 built-in gallery photos';
-  if(notice) notice.style.display=arr.length===0?'':'none';
-  if(clearWrap) clearWrap.style.display=arr.length>0?'':'none';
-  var grid=document.getElementById('gal-admin-grid');
-  if(!grid) return;
-  if(!arr.length){
-    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--muted);">'
-      +'<p style="font-size:.84rem;">Upload your own photos to replace the built-in gallery images.<br>'
-      +'<strong>Higher resolution photos = sharper gallery on the website.</strong></p></div>';
-    return;
-  }
-  grid.innerHTML=arr.map(function(img,i){
-    return '<div class="gal-admin-card">'
-      +(img.src?'<img class="gal-admin-img" src="'+img.src+'" alt="" data-i="'+i+'" style="cursor:pointer;" onclick="openGalleryLightboxAdmin(+this.dataset.i)">'
-               :'<div class="gal-admin-ph">&#128247;</div>')
-      +'<div class="gal-admin-body">'
-        +'<div class="gal-admin-cap" title="'+(img.caption||'No caption')+'">'+(img.caption||'No caption')+'</div>'
-        +'<div class="gal-admin-acts">'
-          +'<button class="btn btn-outline btn-sm" data-i="'+i+'" onclick="openGalCap(+this.dataset.i)">&#9998; Caption</button>'
-          +'<button class="btn btn-danger btn-sm" data-i="'+i+'" onclick="delGalImg(+this.dataset.i)" style="margin-left:4px">&#10005; Remove</button>'
-        +'</div></div></div>';
-  }).join('');
-}
-function openGalleryLightboxAdmin(i){
-  var arr=getGallery(); var img=arr[i]; if(!img) return;
-  // Show in a simple popup
-  var w=window.open('','_blank','width=900,height=700');
-  if(w) w.document.write('<body style="margin:0;background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh;"><img src="'+img.src+'" style="max-width:100%;max-height:100vh;object-fit:contain;" alt="'+img.caption+'"></body>');
-}
-function openGalCap(i){
-  _galCapIdx=i;
-  var arr=getGallery();
-  document.getElementById('gal-cap-inp').value=arr[i]?arr[i].caption||'':'';
-  document.getElementById('gal-cap-overlay').classList.add('open');
-}
-function saveGalCap(){
-  if(_galCapIdx<0) return;
-  var arr=getGallery();
-  if(arr[_galCapIdx]) arr[_galCapIdx].caption=document.getElementById('gal-cap-inp').value.trim();
-  saveGallery(arr); document.getElementById('gal-cap-overlay').classList.remove('open');
-  toast('Caption saved!','ok'); renderGalAdmin();
-}
-function delGalImg(i){
-  openConfirm('Delete this photo?','It will be removed from the gallery on the website.',function(){
-    var arr=getGallery(); arr.splice(i,1); saveGallery(arr);
-    closeConfirm(); toast('Photo removed.','ok'); renderGalAdmin();
-  });
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Hook showView for gallery
 
 
@@ -2765,6 +2747,161 @@ function publishVIP(){
   downloadHTML(html,'SSN-VIP-Launcher.html');
   document.getElementById('pub-instructions').style.display='';
 }
+
+
+// ══ GALLERY MANAGEMENT (iOS-safe) ═══════════════════════
+var GAL_KEY='ssn_gallery';
+var _galCapIdx=-1;
+
+function getGallery(){
+  try{ var v=localStorage.getItem(GAL_KEY); return v?JSON.parse(v):[]; }
+  catch(e){ return []; }
+}
+function saveGallery(a){
+  try{ localStorage.setItem(GAL_KEY,JSON.stringify(a)); return true; }
+  catch(e){ toast('Storage full — remove some photos first','err'); return false; }
+}
+function galPick(){
+  var el=document.getElementById('gal-file-inp');
+  if(el){ el.click(); } else { toast('Upload not available','err'); }
+}
+function galToggleYt(){
+  var f=document.getElementById('gal-yt-form');
+  if(f) f.style.display = (f.style.display==='none'||!f.style.display) ? 'block' : 'none';
+}
+function galAddYt(){
+  var el=document.getElementById('gal-yt-url');
+  var url=el?el.value.trim():'';
+  if(!url){ toast('Paste a YouTube link first','err'); return; }
+  var m=url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([A-Za-z0-9_-]{11})/);
+  if(!m){ toast('Not a valid YouTube link','err'); return; }
+  var a=getGallery();
+  a.push({type:'youtube',ytId:m[1],caption:'Sri Satyanarayana Nursery, Kadiyam'});
+  if(saveGallery(a)){
+    el.value='';
+    var f=document.getElementById('gal-yt-form'); if(f) f.style.display='none';
+    toast('YouTube video added!','ok');
+    renderGalAdmin();
+  }
+}
+function handleGalUpload(inp){
+  if(!inp || !inp.files || !inp.files.length) return;
+  var files=[];
+  for(var i=0;i<inp.files.length;i++) files.push(inp.files[i]);
+  var arr=getGallery();
+  var done=0, added=0;
+  function finish(){
+    done++;
+    if(done===files.length){
+      if(added>0 && saveGallery(arr)) toast(added+' item(s) added','ok');
+      renderGalAdmin();
+      inp.value='';
+    }
+  }
+  files.forEach(function(f){
+    var isVid = f.type && f.type.indexOf('video/')===0;
+    var maxSz = isVid ? 60*1024*1024 : 4*1024*1024;
+    if(f.size > maxSz){
+      toast('Skipped '+f.name+' — too large','err');
+      finish(); return;
+    }
+    var r=new FileReader();
+    r.onload=function(e){
+      arr.push({
+        src:e.target.result,
+        type:isVid?'video':'image',
+        caption:f.name.replace(/\.[^.]+$/,'').replace(/[-_]/g,' ')
+      });
+      added++; finish();
+    };
+    r.onerror=function(){ toast('Could not read '+f.name,'err'); finish(); };
+    r.readAsDataURL(f);
+  });
+}
+function renderGalAdmin(){
+  var arr;
+  try{ arr=getGallery(); }catch(e){ arr=[]; }
+  if(!arr) arr=[];
+  var sub=document.getElementById('gal-sub');
+  if(sub) sub.textContent = arr.length>0
+    ? arr.length+' item'+(arr.length!==1?'s':'')+' — replacing the built-in gallery on the website'
+    : 'No custom items — website shows the 8 built-in nursery photos';
+  var clr=document.getElementById('gal-clear-wrap');
+  if(clr) clr.style.display = arr.length>0 ? 'block' : 'none';
+  var grid=document.getElementById('gal-admin-grid');
+  if(!grid) return;
+  if(!arr.length){
+    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:30px 20px;color:var(--muted);font-size:.84rem;">'
+      +'Upload photos or add a YouTube link above.<br>They will replace the built-in gallery images on the website.</div>';
+    return;
+  }
+  var h='';
+  for(var i=0;i<arr.length;i++){
+    var it=arr[i];
+    var media;
+    if(it.type==='youtube'){
+      media='<div style="position:relative;height:140px;background:#000;overflow:hidden;">'
+        +'<img src="https://img.youtube.com/vi/'+it.ytId+'/hqdefault.jpg" style="width:100%;height:100%;object-fit:cover;" alt="">'
+        +'<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:42px;height:42px;background:rgba(255,0,0,.85);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem;">&#9654;</div>'
+        +'</div>';
+    } else if(it.type==='video'){
+      media='<video src="'+it.src+'" style="width:100%;height:140px;object-fit:cover;display:block;background:#000;" playsinline muted></video>';
+    } else {
+      media='<img src="'+it.src+'" style="width:100%;height:140px;object-fit:cover;display:block;" alt="">';
+    }
+    h+='<div class="gal-admin-card">'+media
+      +'<div class="gal-admin-body">'
+      +'<div class="gal-admin-cap">'+(it.caption||'Untitled')+'</div>'
+      +'<div class="gal-admin-acts">'
+      +'<button type="button" class="btn btn-outline btn-sm" onclick="openGalCap('+i+')">&#9998;</button>'
+      +'<button type="button" class="btn btn-danger btn-sm" onclick="delGalImg('+i+')" style="margin-left:4px;">&#10005;</button>'
+      +'</div></div></div>';
+  }
+  grid.innerHTML=h;
+}
+function openGalCap(i){
+  _galCapIdx=i;
+  var a=getGallery();
+  var inp=document.getElementById('gal-cap-inp');
+  if(inp) inp.value = a[i] ? (a[i].caption||'') : '';
+  var ov=document.getElementById('gal-cap-overlay');
+  if(ov) ov.classList.add('open');
+}
+function saveGalCap(){
+  if(_galCapIdx<0) return;
+  var a=getGallery();
+  var inp=document.getElementById('gal-cap-inp');
+  if(a[_galCapIdx] && inp) a[_galCapIdx].caption=inp.value.trim();
+  saveGallery(a);
+  var ov=document.getElementById('gal-cap-overlay');
+  if(ov) ov.classList.remove('open');
+  toast('Caption saved','ok');
+  renderGalAdmin();
+}
+function delGalImg(i){
+  openConfirm('Remove this item?','It will no longer appear in the website gallery.',function(){
+    var a=getGallery(); a.splice(i,1); saveGallery(a);
+    closeConfirm(); toast('Removed','ok'); renderGalAdmin();
+  });
+}
+function clearAllGallery(){
+  openConfirm('Remove all gallery items?','The website will show the 8 built-in nursery photos again.',function(){
+    localStorage.removeItem(GAL_KEY);
+    closeConfirm(); toast('Gallery cleared','ok'); renderGalAdmin();
+  });
+}
+
+
+window.addEventListener('error', function(e){
+  try{
+    var c=document.querySelector('.content');
+    if(c && !c.querySelector('.view.active')){
+      c.insertAdjacentHTML('afterbegin',
+        '<div style="background:#fdecea;border:1px solid #e0b4b0;border-radius:6px;padding:14px 18px;margin-bottom:14px;font-size:.82rem;color:#8a2c22;">'
+        +'<strong>Something went wrong loading this section.</strong><br>'+ (e.message||'') +'</div>');
+    }
+  }catch(_){}
+});
 
 // ══ INIT ═════════════════════════════════════════════════
 // renderDash called by login check above
