@@ -1021,6 +1021,64 @@ footer{background:var(--green-deep);color:rgba(248,243,232,.5);padding:0;overflo
 .stat-lbl{font-size:.8rem;color:var(--muted);margin-top:9px;letter-spacing:.03em;line-height:1.4;}
 @media(max-width:420px){.stat-card{padding:22px 12px;}.stat-lbl{font-size:.73rem;}}
 
+
+/* ══ HEADER STACK — authoritative (must be last) ══════════ */
+.nav-wrap{
+  position:fixed;top:0;left:0;right:0;z-index:300;
+  display:block;
+  background:var(--cream);
+  box-shadow:0 1px 0 var(--line);
+}
+/* Nav must flow inside the wrapper, not float over it */
+.nav-wrap > nav,
+nav{
+  position:static !important;
+  top:auto !important;left:auto !important;right:auto !important;
+  z-index:auto !important;
+  box-shadow:none !important;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 40px;background:var(--cream);
+}
+.notice-strip{
+  display:block;
+  background:#1f3a2d;
+  border-top:1px solid rgba(185,137,63,.2);
+  border-bottom:1px solid rgba(185,137,63,.25);
+  padding:8px 40px;
+}
+.notice-strip p{
+  font-size:.71rem;color:rgba(248,243,232,.75);
+  line-height:1.45;margin:0 auto;max-width:1180px;text-align:center;
+}
+.notice-strip strong{color:#e3c88a;font-weight:600;}
+
+/* Page content clears the whole fixed header */
+.hero{padding-top:132px;}
+.page-hero{padding-top:168px;}
+
+@media(max-width:900px){
+  .nav-wrap > nav, nav{padding:14px 22px;}
+  .notice-strip{padding:8px 20px;}
+}
+@media(max-width:768px){
+  .nav-wrap > nav, nav{padding:12px 16px;}
+  .notice-strip{padding:7px 14px;}
+  .notice-strip p{font-size:.62rem;line-height:1.4;}
+  .brand-logo-img{height:24px;}
+  .brand-name{font-size:.82rem;}
+  .brand-sub{font-size:.6rem;}
+  .hero{padding-top:124px;}
+  .page-hero{padding-top:150px;}
+}
+@media(max-width:480px){
+  .notice-strip p{font-size:.58rem;line-height:1.38;}
+  .notice-strip{padding:6px 12px;}
+  .hero{padding-top:118px;}
+  .page-hero{padding-top:142px;}
+}
+/* Mobile dropdown sits under the whole header */
+.mobile-nav{top:auto;}
+
 </style>
 </head>
 <body>
@@ -1046,7 +1104,7 @@ footer{background:var(--green-deep);color:rgba(248,243,232,.5);padding:0;overflo
   <button class="btn btn-nav-cta" onclick="showPage('contact')">Enquire</button>
 </nav>
   <div class="notice-strip">
-    <p><strong>Note:</strong> We don't have any branches or agents for our nursery (SRI SATYANARAYANA NURSERY), and we are not responsible for the business with agents in our nursery name.</p>
+    <p><strong>Note:</strong> We have no branches or agents. We are not responsible for any business conducted by agents in our nursery's name.</p>
   </div>
 </div>
 
@@ -4212,6 +4270,23 @@ function ssnRenderStats(){
 }
 document.addEventListener('DOMContentLoaded', ssnRenderStats);
 window.addEventListener('storage',function(e){ if(e.key==='ssn_stats') ssnRenderStats(); });
+</script>
+
+
+<script>
+// ── Keep the mobile dropdown below the actual header height ──
+(function(){
+  function positionMobileNav(){
+    var wrap = document.querySelector('.nav-wrap');
+    var mn = document.getElementById('mobile-nav');
+    if(wrap && mn) mn.style.top = wrap.offsetHeight + 'px';
+  }
+  document.addEventListener('DOMContentLoaded', positionMobileNav);
+  window.addEventListener('resize', positionMobileNav);
+  window.addEventListener('orientationchange', function(){
+    setTimeout(positionMobileNav, 120);
+  });
+})();
 </script>
 
 </body>
