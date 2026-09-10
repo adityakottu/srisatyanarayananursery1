@@ -411,6 +411,9 @@ input,select,textarea{font-family:inherit;}
     <button class="sb-btn" onclick="showView('vip')" id="nav-vip">&#9670; VIP Collection <span class="sb-cnt" id="sb-vip-cnt">0</span></button>
     <div class="sb-lbl">Insights</div>
     <button class="sb-btn" onclick="showView('analytics')" id="nav-analytics">&#128200; Analytics</button>
+    <button class="sb-btn" onclick="showView('heroimg')" id="nav-heroimg">&#127968; Hero Photo</button>
+    <button class="sb-btn" onclick="showView('showcase')" id="nav-showcase">&#128106; Heritage Photo</button>
+    <button class="sb-btn" onclick="showView('chapters')" id="nav-chapters">&#128220; Heritage Chapters</button>
     <button class="sb-btn" onclick="showView('stats')" id="nav-stats">&#128202; Plant Counts</button>
     <button class="sb-btn" onclick="showView('visitors')" id="nav-visitors">&#127775; VIP Visitors</button>
     <button class="sb-btn" onclick="showView('gallery-admin')" id="nav-gallery-admin">&#128247; Gallery</button>
@@ -615,6 +618,127 @@ input,select,textarea{font-family:inherit;}
           <button class="btn btn-primary" onclick="saveBulkVisitors()">&#10003; Add Guests</button>
         </div>
       </div>
+    </div>
+
+
+    <!-- HOME PHOTO VIEW -->
+    <div class="view" id="view-heroimg">
+      <div style="margin-bottom:18px;">
+        <h2 style="font-size:1.08rem;font-weight:500;margin-bottom:4px;">Hero Photo</h2>
+        <p style="font-size:.8rem;color:var(--muted);margin-bottom:14px;">The large framed photo beside the headline at the top of the home page.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button type="button" class="btn btn-gold" onclick="document.getElementById('hero-img-inp').click()">&#128247; Change Photo</button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="restoreDefaultHero()">&#8635; Restore Default</button>
+          <button type="button" class="btn btn-danger btn-sm" onclick="removeHeroPhoto()">&#10005; Remove Photo</button>
+        </div>
+        <input type="file" accept="image/*" id="hero-img-inp" style="display:none;" onchange="handleHeroUpload(this)">
+        <div style="display:flex;align-items:center;gap:9px;margin-top:12px;flex-wrap:wrap;">
+          <label style="font-size:.78rem;color:var(--muted);">Quality:</label>
+          <select id="hero-quality" class="fi" style="width:auto;padding:6px 10px;font-size:.8rem;">
+            <option value="1280" selected>Original clarity &mdash; 1280px (recommended)</option>
+            <option value="1600">Larger &mdash; 1600px</option>
+            <option value="2000">Maximum &mdash; 2000px</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 320px;gap:22px;align-items:start;">
+        <div>
+          <div style="border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#16281e;position:relative;" id="hero-preview-box">
+            <img id="hero-preview-img" src="" alt="" style="width:100%;height:auto;display:block;">
+            <div id="hero-preview-empty" style="padding:60px 20px;text-align:center;color:rgba(248,243,232,.4);font-size:.85rem;display:none;">
+              No photo set &mdash; the home page will show only the headline.
+            </div>
+          </div>
+          <p style="font-size:.72rem;color:var(--muted);margin-top:8px;" id="hero-dims"></p>
+        </div>
+
+        <div style="background:var(--cream);border:1px solid var(--line);border-radius:10px;padding:18px;">
+          <h3 style="font-size:.9rem;font-weight:500;margin-bottom:12px;">Caption</h3>
+          <div class="fg">
+            <label class="flbl">Small label</label>
+            <input class="fi" id="hero-label-inp" placeholder="e.g. The Family">
+          </div>
+          <div class="fg">
+            <label class="flbl">Caption text</label>
+            <textarea class="fta" id="hero-text-inp" rows="3" placeholder="e.g. Gangumalla Satyanarayana &amp; Bros — three generations at Kadiyapulanka."></textarea>
+          </div>
+          <div class="fg">
+            <label class="flbl">Corner badge</label>
+            <input class="fi" id="hero-badge-inp" placeholder="e.g. ◆ Since 1963">
+            <p style="font-size:.7rem;color:var(--muted);margin-top:5px;">Leave blank to hide the badge.</p>
+          </div>
+          <button type="button" class="btn btn-primary" onclick="saveHeroCaption()" style="width:100%;">&#10003; Save Caption</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- SHOWCASE VIEW -->
+    <div class="view" id="view-showcase">
+      <div style="margin-bottom:18px;">
+        <h2 style="font-size:1.08rem;font-weight:500;margin-bottom:4px;">Heritage Photo</h2>
+        <p style="font-size:.8rem;color:var(--muted);margin-bottom:14px;">The family photo beside &ldquo;Built on relationships&rdquo; &mdash; shown on both the home page and the Our Heritage page.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button type="button" class="btn btn-gold" onclick="document.getElementById('sc-img-inp').click()">&#128247; Change Photo</button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="restoreDefaultShowcase()">&#8635; Restore Default</button>
+          <button type="button" class="btn btn-danger btn-sm" onclick="removeShowcase()">&#10005; Hide Photo</button>
+        </div>
+        <input type="file" accept="image/*" id="sc-img-inp" style="display:none;" onchange="handleShowcaseUpload(this)">
+        <div style="display:flex;align-items:center;gap:9px;margin-top:12px;flex-wrap:wrap;">
+          <label style="font-size:.78rem;color:var(--muted);">Quality:</label>
+          <select id="sc-quality" class="fi" style="width:auto;padding:6px 10px;font-size:.8rem;">
+            <option value="1400">High &mdash; 1400px</option>
+            <option value="1800" selected>Very high &mdash; 1800px (recommended)</option>
+            <option value="2400">Maximum &mdash; 2400px</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 320px;gap:22px;align-items:start;">
+        <div>
+          <div style="border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#16281e;position:relative;">
+            <img id="sc-preview-img" src="" alt="" style="width:100%;height:auto;display:block;">
+            <div id="sc-preview-empty" style="padding:60px 20px;text-align:center;color:rgba(248,243,232,.4);font-size:.85rem;display:none;">
+              Photo hidden &mdash; the Who We Are section will show text only.
+            </div>
+          </div>
+          <p style="font-size:.72rem;color:var(--muted);margin-top:8px;" id="sc-dims"></p>
+        </div>
+
+        <div style="background:var(--cream);border:1px solid var(--line);border-radius:10px;padding:18px;">
+          <h3 style="font-size:.9rem;font-weight:500;margin-bottom:12px;">Caption</h3>
+          <div class="fg">
+            <label class="flbl">Small label</label>
+            <input class="fi" id="sc-eyebrow-inp" placeholder="e.g. The Family">
+          </div>
+          <div class="fg">
+            <label class="flbl">Caption text</label>
+            <textarea class="fta" id="sc-text-inp" rows="3" placeholder="One or two sentences under the headline"></textarea>
+          </div>
+          
+          <button type="button" class="btn btn-primary" onclick="saveShowcaseText()" style="width:100%;">&#10003; Save Text</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- HERITAGE CHAPTERS VIEW -->
+    <div class="view" id="view-chapters">
+      <div style="margin-bottom:18px;">
+        <h2 style="font-size:1.08rem;font-weight:500;margin-bottom:4px;">Heritage Chapters</h2>
+        <p style="font-size:.8rem;color:var(--muted);margin-bottom:6px;">Add a photo to each of the four value sections on the Our Heritage page. Leave any blank to show text only.</p>
+        <div style="display:flex;align-items:center;gap:9px;margin-top:10px;flex-wrap:wrap;">
+          <label style="font-size:.78rem;color:var(--muted);">Quality:</label>
+          <select id="ch-quality" class="fi" style="width:auto;padding:6px 10px;font-size:.8rem;">
+            <option value="1200">High &mdash; 1200px</option>
+            <option value="1600" selected>Very high &mdash; 1600px</option>
+            <option value="2000">Maximum &mdash; 2000px</option>
+          </select>
+        </div>
+      </div>
+      <div id="chapters-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;"></div>
+      <input type="file" accept="image/*" id="ch-file-inp" style="display:none;" onchange="handleChapterUpload(this)">
     </div>
 
     <!-- STATS VIEW -->
@@ -1947,7 +2071,7 @@ function showView(id){
   else { var n2=document.getElementById('nav-'+id); if(n2) n2.classList.add('active'); }
   var titles={
     'dashboard':'Dashboard','plants':'All Plant Varieties','categories':'Plant Categories',
-    'vip':'VIP Collection','import-export':'Import & Export','visitors':'VIP Visitors','stats':'Plant Counts',
+    'vip':'VIP Collection','import-export':'Import & Export','visitors':'VIP Visitors','stats':'Plant Counts','heroimg':'Hero Photo','showcase':'Heritage Photo','chapters':'Heritage Chapters',
     'analytics':'Analytics & Insights','settings':'Site Settings','gallery-admin':'Gallery','videos':'Video Gallery',
     'publish':'Publish & Share'
   };
@@ -1963,6 +2087,9 @@ function showView(id){
     if(id==='vip')           renderVipView();
     if(id==='visitors')      renderVisitorsView();
     if(id==='stats')         renderStatsAdmin();
+    if(id==='heroimg')       renderHeroImgAdmin();
+    if(id==='showcase')      renderShowcaseAdmin();
+    if(id==='chapters')      renderChaptersAdmin();
     if(id==='analytics')     setTimeout(renderAnalytics,80);
     if(id==='settings')      initSettingsView();
     if(id==='gallery-admin') renderGalAdmin();
@@ -2819,6 +2946,296 @@ function saveBulkVisitors(){
     toast(added+' guest(s) added — tap Edit on any to add a photo','ok');
     renderVisitorsView();
   }catch(e){ toast('Could not save','err'); }
+}
+
+
+
+
+// ══ HERITAGE CHAPTER PHOTOS ═════════════════════════════
+var CH_KEY='ssn_chapter_photos';
+var _chSlot=null;
+var CHAPTER_TITLES={
+  '01':'Uncompromising Quality',
+  '02':'Knowledgeable Team',
+  '03':'Fair, Transparent Practice',
+  '04':'Customers as Friends'
+};
+
+function getChapters(){
+  try{ var v=localStorage.getItem(CH_KEY);
+    if(v){ var o=JSON.parse(v); if(o) return o; } }catch(e){}
+  return {};
+}
+function saveChapters(o){
+  try{ localStorage.setItem(CH_KEY,JSON.stringify(o)); return true; }
+  catch(e){ toast('Storage full — try a lower quality setting','err'); return false; }
+}
+function pickChapterPhoto(slot){
+  _chSlot=slot;
+  var el=document.getElementById('ch-file-inp');
+  if(el) el.click();
+}
+function handleChapterUpload(inp){
+  var f=inp.files && inp.files[0];
+  if(!f || !_chSlot) return;
+  if(f.size > 30*1024*1024){ toast('Image over 30MB','err'); return; }
+  var maxEdge=parseInt((document.getElementById('ch-quality')||{}).value||'1600',10);
+  toast('Processing…','ok');
+  ssnProcessImage(f, maxEdge, 0.92, function(dataUrl,w,h){
+    if(!dataUrl){ toast('Could not process image','err'); return; }
+    var all=getChapters();
+    if(!all[_chSlot]) all[_chSlot]={};
+    all[_chSlot].src=dataUrl; all[_chSlot].w=w; all[_chSlot].h=h;
+    if(saveChapters(all)){ toast('Photo added to '+CHAPTER_TITLES[_chSlot],'ok'); renderChaptersAdmin(); }
+    inp.value=''; _chSlot=null;
+  });
+}
+function saveChapterCaption(slot){
+  var el=document.getElementById('ch-cap-'+slot);
+  var all=getChapters();
+  if(!all[slot]) all[slot]={};
+  all[slot].caption = el ? el.value.trim() : '';
+  if(saveChapters(all)){ toast('Caption saved','ok'); }
+}
+function delChapterPhoto(slot){
+  openConfirm('Remove this photo?','"'+CHAPTER_TITLES[slot]+'" will show text only.',function(){
+    var all=getChapters();
+    delete all[slot];
+    saveChapters(all);
+    closeConfirm(); toast('Photo removed','ok'); renderChaptersAdmin();
+  });
+}
+function renderChaptersAdmin(){
+  var all; try{ all=getChapters(); }catch(e){ all={}; }
+  if(!all) all={};
+  var el=document.getElementById('chapters-list');
+  if(!el) return;
+  var slots=['01','02','03','04'];
+  var h='';
+  for(var i=0;i<slots.length;i++){
+    var s=slots[i], p=all[s]||{};
+    h+='<div style="background:var(--cream);border:1px solid var(--line);border-radius:10px;overflow:hidden;">';
+    if(p.src){
+      h+='<img src="'+p.src+'" style="width:100%;height:150px;object-fit:cover;display:block;" alt="">';
+    } else {
+      h+='<div style="height:150px;background:var(--cream2);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.8rem;text-align:center;padding:14px;">No photo &mdash; text only</div>';
+    }
+    h+='<div style="padding:13px 15px;">'
+      +'<div style="font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:3px;">Chapter '+s+'</div>'
+      +'<div style="font-size:.86rem;font-weight:500;margin-bottom:9px;">'+CHAPTER_TITLES[s]+'</div>'
+      +(p.w&&p.h?'<div style="font-size:.68rem;color:var(--muted);margin-bottom:8px;">'+p.w+' × '+p.h+' px</div>':'')
+      +'<input class="fi" id="ch-cap-'+s+'" placeholder="Optional caption" value="'+(p.caption||'').replace(/"/g,'&quot;')+'" style="font-size:.79rem;padding:7px 10px;margin-bottom:9px;">'
+      +'<div style="display:flex;gap:5px;flex-wrap:wrap;">'
+      +'<button type="button" class="btn btn-outline btn-sm" onclick="pickChapterPhoto(\''+s+'\')">'+(p.src?'&#9998; Change':'&#128247; Add')+'</button>'
+      +'<button type="button" class="btn btn-primary btn-sm" onclick="saveChapterCaption(\''+s+'\')">Save</button>'
+      +(p.src?'<button type="button" class="btn btn-danger btn-sm" onclick="delChapterPhoto(\''+s+'\')">&#10005;</button>':'')
+      +'</div></div></div>';
+  }
+  el.innerHTML=h;
+}
+
+// ══ SHOWCASE BANNER ═════════════════════════════════════
+var SC_KEY='ssn_heritage_photo';
+
+function getShowcase(){
+  try{ var v=localStorage.getItem(SC_KEY);
+    if(v){ var o=JSON.parse(v); if(o) return o; } }catch(e){}
+  return null;
+}
+function saveShowcase(o){
+  try{ localStorage.setItem(SC_KEY,JSON.stringify(o)); return true; }
+  catch(e){ toast('Image too large — try a lower quality setting','err'); return false; }
+}
+function handleShowcaseUpload(inp){
+  var f=inp.files && inp.files[0];
+  if(!f) return;
+  if(f.size > 30*1024*1024){ toast('Image over 30MB — choose a smaller file','err'); return; }
+  var maxEdge=parseInt((document.getElementById('sc-quality')||{}).value||'1800',10);
+  toast('Processing photo…','ok');
+  ssnProcessImage(f, maxEdge, 0.94, function(dataUrl, w, h){
+    if(!dataUrl){ toast('Could not process image','err'); return; }
+    var cur=getShowcase()||{};
+    cur.src=dataUrl; cur.w=w; cur.h=h;
+    if(cur.label===undefined) cur.label='The Family';
+    if(cur.text===undefined)  cur.text='Gangumalla Satyanarayana &amp; Bros — three generations at Kadiyapulanka.';
+    if(saveShowcase(cur)){ toast('Heritage photo updated','ok'); renderShowcaseAdmin(); }
+    inp.value='';
+  });
+}
+function saveShowcaseText(){
+  var cur=getShowcase();
+  if(!cur){ cur={}; }
+  function val(id){ var e=document.getElementById(id); return e?e.value.trim():''; }
+  cur.label=val('sc-eyebrow-inp');
+  cur.text=val('sc-text-inp');
+  if(!cur.src){
+    // Text-only edit before any upload — keep the default image
+    cur.useDefaultImage = true;
+  }
+  if(saveShowcase(cur)){ toast('Caption saved','ok'); renderShowcaseAdmin(); }
+}
+function removeShowcase(){
+  openConfirm('Hide the heritage photo?','The Who We Are section will show text only.',function(){
+    saveShowcase({src:'',label:'',text:''});
+    closeConfirm(); toast('Photo hidden','ok'); renderShowcaseAdmin();
+  });
+}
+function restoreDefaultShowcase(){
+  openConfirm('Restore the default photo?','This brings back the family photo and its caption.',function(){
+    try{ localStorage.removeItem(SC_KEY); }catch(e){}
+    closeConfirm(); toast('Default restored','ok'); renderShowcaseAdmin();
+  });
+}
+function renderShowcaseAdmin(){
+  var s=getShowcase();
+  var img=document.getElementById('sc-preview-img');
+  var empty=document.getElementById('sc-preview-empty');
+  var dims=document.getElementById('sc-dims');
+  function set(id,v){ var e=document.getElementById(id); if(e) e.value=v||''; }
+
+  if(s && s.src){
+    if(img){ img.src=s.src; img.style.display='block'; }
+    if(empty) empty.style.display='none';
+    if(dims) dims.textContent=(s.w&&s.h)?('Stored at '+s.w+' × '+s.h+' px'):'';
+    set('sc-eyebrow-inp',s.label); set('sc-text-inp',s.text);
+    return;
+  }
+  if(s && s.src===''){
+    if(img) img.style.display='none';
+    if(empty) empty.style.display='block';
+    if(dims) dims.textContent='';
+    set('sc-eyebrow-inp',''); set('sc-text-inp','');
+    return;
+  }
+  // Default — pull the image from the website file for preview
+  if(img) img.style.display='none';
+  if(empty){ empty.style.display='block'; empty.textContent='Loading the default photo…'; }
+  var cands=['index.html','Gangumallas-Sri-Satyanarayana-Nursery-Website.html'];
+  var i=0;
+  function next(){
+    if(i>=cands.length){
+      if(empty) empty.textContent='Default banner is on the website. Upload here to replace it.';
+      set('sc-eyebrow-inp','The Family');
+      set('sc-text-inp','Gangumalla Satyanarayana &amp; Bros — three generations at Kadiyapulanka.');
+      return;
+    }
+    fetch(cands[i++]).then(function(r){ if(!r.ok) throw new Error('nf'); return r.text(); })
+    .then(function(html){
+      var m=html.match(/SSN_DEFAULT_HERITAGE\s*=\s*\{[\s\S]*?src:\s*'(data:image\/jpeg;base64,[^']+)'/);
+      if(m && img){
+        img.src=m[1]; img.style.display='block';
+        if(empty) empty.style.display='none';
+        if(dims) dims.textContent='Default photo (from the website)';
+      }
+      set('sc-eyebrow-inp','The Family');
+      set('sc-text-inp','Gangumalla Satyanarayana &amp; Bros — three generations at Kadiyapulanka.');
+    }).catch(function(){ next(); });
+  }
+  next();
+}
+
+// ══ HOME PAGE PHOTO ═════════════════════════════════════
+var HERO_KEY='ssn_hero_portrait';
+
+function getHeroPhoto(){
+  try{ var v=localStorage.getItem(HERO_KEY);
+    if(v){ var o=JSON.parse(v); if(o) return o; } }catch(e){}
+  return null;
+}
+function saveHeroPhoto(o){
+  try{ localStorage.setItem(HERO_KEY,JSON.stringify(o)); return true; }
+  catch(e){ toast('Image too large to store — try a lower quality setting','err'); return false; }
+}
+function handleHeroUpload(inp){
+  var f=inp.files && inp.files[0];
+  if(!f) return;
+  if(f.size > 30*1024*1024){ toast('Image over 30MB — choose a smaller file','err'); return; }
+  var maxEdge=parseInt((document.getElementById('hero-quality')||{}).value||'1280',10);
+  toast('Processing photo…','ok');
+  ssnProcessImage(f, maxEdge, 0.94, function(dataUrl, w, h){
+    if(!dataUrl){ toast('Could not process image','err'); return; }
+    var cur=getHeroPhoto()||{};
+    cur.src=dataUrl; cur.w=w; cur.h=h;
+    if(cur.label===undefined) cur.label='Sri Satyanarayana Nursery';
+    if(cur.text===undefined)  cur.text='Hub for ornamentals, imported plants and rare specimens — Kadiyapulanka, Kadiyam.';
+    if(cur.badge===undefined) cur.badge='◆ Since 1963';
+    if(saveHeroPhoto(cur)){
+      toast('Home page photo updated','ok');
+      renderHeroImgAdmin();
+    }
+    inp.value='';
+  });
+}
+function saveHeroCaption(){
+  var cur=getHeroPhoto();
+  if(!cur){ toast('Upload a photo first','err'); return; }
+  function val(id){ var e=document.getElementById(id); return e?e.value.trim():''; }
+  cur.label=val('hero-label-inp');
+  cur.text=val('hero-text-inp');
+  cur.badge=val('hero-badge-inp');
+  if(saveHeroPhoto(cur)){ toast('Caption saved','ok'); renderHeroImgAdmin(); }
+}
+function removeHeroPhoto(){
+  openConfirm('Remove the home page photo?','The home page will show only the headline and text.',function(){
+    saveHeroPhoto({src:'',label:'',text:'',badge:''});
+    closeConfirm(); toast('Photo removed','ok'); renderHeroImgAdmin();
+  });
+}
+function restoreDefaultHero(){
+  openConfirm('Restore the default photo?','This brings back the original family photo and caption.',function(){
+    try{ localStorage.removeItem(HERO_KEY); }catch(e){}
+    closeConfirm(); toast('Default restored','ok'); renderHeroImgAdmin();
+  });
+}
+function renderHeroImgAdmin(){
+  var p=getHeroPhoto();
+  var img=document.getElementById('hero-preview-img');
+  var empty=document.getElementById('hero-preview-empty');
+  var dims=document.getElementById('hero-dims');
+  function set(id,v){ var e=document.getElementById(id); if(e) e.value=v||''; }
+
+  if(p && p.src){
+    if(img){ img.src=p.src; img.style.display='block'; }
+    if(empty) empty.style.display='none';
+    if(dims) dims.textContent = (p.w&&p.h) ? ('Stored at '+p.w+' × '+p.h+' px') : '';
+    set('hero-label-inp',p.label); set('hero-text-inp',p.text); set('hero-badge-inp',p.badge);
+    return;
+  }
+  if(p && p.src==='' ){
+    if(img) img.style.display='none';
+    if(empty) empty.style.display='block';
+    if(dims) dims.textContent='';
+    set('hero-label-inp',''); set('hero-text-inp',''); set('hero-badge-inp','');
+    return;
+  }
+  // No override — read the default straight from the website file
+  if(img){ img.style.display='none'; }
+  if(empty){ empty.style.display='block'; empty.textContent='Loading the default photo…'; }
+  var candidates=['index.html','Gangumallas-Sri-Satyanarayana-Nursery-Website.html'];
+  var idx=0;
+  function tryNext(){
+    if(idx>=candidates.length){
+      if(empty) empty.textContent='Default photo is on the website. Upload here to replace it.';
+      set('hero-label-inp','Sri Satyanarayana Nursery');
+      set('hero-text-inp','Hub for ornamentals, imported plants and rare specimens — Kadiyapulanka, Kadiyam.');
+      set('hero-badge-inp','◆ Since 1963');
+      return;
+    }
+    var url=candidates[idx++];
+    fetch(url).then(function(r){ if(!r.ok) throw new Error('nf'); return r.text(); })
+    .then(function(html){
+      var m=html.match(/src:\s*'(data:image\/jpeg;base64,[^']+)'/);
+      if(m && img){
+        img.src=m[1]; img.style.display='block';
+        if(empty) empty.style.display='none';
+        if(dims) dims.textContent='Default photo (from the website)';
+      }
+      set('hero-label-inp','Sri Satyanarayana Nursery');
+      set('hero-text-inp','Hub for ornamentals, imported plants and rare specimens — Kadiyapulanka, Kadiyam.');
+      set('hero-badge-inp','◆ Since 1963');
+    }).catch(function(){ tryNext(); });
+  }
+  tryNext();
 }
 
 // ══ PLANT COUNT STATS ═══════════════════════════════════
