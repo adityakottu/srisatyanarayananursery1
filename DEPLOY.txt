@@ -1,0 +1,50 @@
+HOW TO PUT THIS ON GITHUB
+=========================
+
+WHAT TO UPLOAD — all of it, folders included:
+
+    index.html          the website
+    admin.html          the admin panel
+    vip.html            the VIP client portal
+    data/plants.js      390 varieties in 8 categories
+    images/             11 photographs
+
+index.html looks for data/ and images/ sitting beside it.
+Upload index.html on its own and no photos will appear.
+
+
+STEPS
+-----
+1  Go to github.com/adityakottu/srisatyanarayananursery1
+2  Click  Add file  >  Upload files
+3  Drag the WHOLE nursery-site folder onto the page
+   (GitHub keeps the folder structure automatically)
+4  Scroll down, click  Commit changes
+5  Wait about two minutes
+
+
+YOUR LIVE ADDRESSES
+-------------------
+Website   https://adityakottu.github.io/srisatyanarayananursery1/
+Admin     https://adityakottu.github.io/srisatyanarayananursery1/admin.html
+VIP       https://adityakottu.github.io/srisatyanarayananursery1/vip.html?key=vip2024ssn
+
+
+ABOUT YOUR PHOTOS
+-----------------
+Photos you add through the admin panel are saved in your
+browser, not in these files. They show on the website when
+you view it in the same browser.
+
+To make them visible to everyone, open
+  Admin > Publish & Share
+and follow the steps there.
+
+The images/ folder holds only the starting photos that ship
+with the site so a first-time visitor sees a complete page.
+
+
+UPDATING LATER
+--------------
+Changed a plant or added photos? You only need to re-upload
+the file that changed. Usually that is just index.html.
