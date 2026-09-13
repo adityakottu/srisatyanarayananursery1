@@ -1,0 +1,12 @@
+UPLOADING TO GITHUB
+
+1  github.com/adityakottu/srisatyanarayananursery1
+2  Add file  >  Upload files
+3  Open this folder, select EVERYTHING inside (Ctrl+A / Cmd+A),
+   drag the CONTENTS onto the page — not the folder itself
+4  Commit changes
+5  Wait about two minutes
+
+.nojekyll starts with a dot so it may be hidden.
+  Windows: File Explorer > View > Hidden items
+  Mac: Cmd + Shift + .

@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+// Some browsers lack parts of the console API — make every call safe
+(function(){
+  var c = window.console = window.console || {};
+  var noop = function(){};
+  ['log','info','warn','error','debug','trace','table','group','groupEnd','time','timeEnd','assert','dir','count']
+    .forEach(function(m){ if(typeof c[m] !== 'function') c[m] = noop; });
+})();
+</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Admin Panel — Gangumalla's Sri Satyanarayana Nursery</title>
@@ -681,17 +691,39 @@ input,select,textarea{font-family:inherit;}
 
     <!-- CATEGORIES -->
     <div class="view" id="view-categories">
-      <div class="sec-hd"><h2 id="cv-title">Plant Categories</h2>
-        <button class="btn btn-outline btn-sm" id="cv-back" onclick="showCatList()" style="display:none;">&#8592; All Categories</button>
-      </div>
-      <div id="cv-list">
-        <div class="cat-grid" id="cat-grid"></div>
-        <div style="margin-top:16px;" id="cat-add-btn">
-          <button class="btn btn-primary" onclick="openAddCat()">&#43; Add New Category</button>
-          <p style="font-size:.78rem;color:var(--muted);margin-top:8px;">Built-in categories cannot be deleted. Custom categories you add appear here and in the plant forms.</p>
+      <div style="margin-bottom:18px;">
+        <h2 style="font-size:1.08rem;font-weight:500;margin-bottom:4px;">Plant Categories</h2>
+        <p style="font-size:.8rem;color:var(--muted);margin-bottom:14px;">Add, rename, reorder or remove categories. The website updates to match, in this order.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button type="button" class="btn btn-gold" onclick="openCatForm(null)">&#43; Add Category</button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="restoreDefaultCats()">&#8635; Restore Defaults</button>
         </div>
       </div>
-      <div id="cv-detail" style="display:none;"></div>
+      <div id="cat-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:13px;"></div>
+    </div>
+
+    <!-- CATEGORY FORM -->
+    <div class="form-overlay" id="cf-overlay">
+      <div class="form-panel" style="max-width:420px;">
+        <div class="fp-hd"><h2 id="cf-hd">Add Category</h2>
+          <button class="fp-close" onclick="closeCatForm()">&#10005;</button></div>
+        <div class="fp-body">
+          <div class="fg"><label class="flbl">Category name <span class="req">*</span></label>
+            <input class="fi" id="cf-label" placeholder="e.g. Bamboo Varieties"></div>
+          <div class="fg"><label class="flbl">Icon (emoji)</label>
+            <input class="fi" id="cf-icon" placeholder="🌿" maxlength="8">
+            <p style="font-size:.72rem;color:var(--muted);margin-top:5px;">Suggested: &#127795; &#127796; &#127807; &#127804; &#127822; &#127797; &#127808; &#127793;</p></div>
+          <div class="fg" id="cf-slug-row" style="display:none;">
+            <label class="flbl">Internal name</label>
+            <p style="font-size:.78rem;color:var(--muted);font-family:monospace;" id="cf-slug"></p>
+            <p style="font-size:.72rem;color:var(--muted);margin-top:5px;">Fixed once created, so existing plants stay linked.</p>
+          </div>
+        </div>
+        <div class="fp-ft">
+          <button class="btn btn-outline" onclick="closeCatForm()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveCat()">&#10003; Save</button>
+        </div>
+      </div>
     </div>
 
     <!-- VIP -->
@@ -1831,15 +1863,27 @@ function showCatDetail(cat){}
 var _curKey=null, _curType=null, _imgB64=null;
 
 function openEdit(key){
+  try{ refreshCatSelects(); }catch(e){}
   var all=getAllPlants(); var p=all[key]; if(!p) return;
   _curKey=key; _curType=p._type; _imgB64=p.image||null;
+  // Load only this plant's photos
+  _pfPhotos = [];
+  try{
+    var store = getPlantPhotos()||{};
+    if(store[key] && store[key].length) _pfPhotos = store[key].slice(0, PF_MAX);
+    else if(p.image) _pfPhotos = [p.image];
+  }catch(e){ console.warn('load photos:', e); }
+  setTimeout(renderPfGrid, 10);
   document.getElementById('fp-title').textContent='Edit — '+p.name;
   document.getElementById('reset-btn').style.display=(p._type==='edited'?'':'none');
   fillForm(p);
   document.getElementById('form-overlay').classList.add('open');
 }
 function openForm(catPreset){
+  try{ refreshCatSelects(); }catch(e){}
   _curKey=null; _curType='custom'; _imgB64=null;
+  _pfPhotos = [];
+  setTimeout(renderPfGrid, 10);
   document.getElementById('fp-title').textContent='Add New Plant';
   document.getElementById('reset-btn').style.display='none';
   fillForm({cat:catPreset||''});
@@ -1868,7 +1912,9 @@ function fillForm(p){
   var fi=document.getElementById('img-file'); if(fi) fi.value='';
   try{ renderPfGrid(); }catch(e){}
 }
-function closeForm(){document.getElementById('form-overlay').classList.remove('open');}
+function closeForm(){
+  _pfPhotos = [];
+  try{ renderPfGrid(); }catch(e){}document.getElementById('form-overlay').classList.remove('open');}
 function addRow(lid,val){
   var d=document.getElementById(lid), row=document.createElement('div');
   row.className='dyn-row';
@@ -1896,18 +1942,21 @@ function savePlant(){
       growth:document.getElementById('f-growth').value.trim()},
     uses:getRows('uses-list'),tips:getRows('tips-list'),image:_imgB64||null};
   var wasEdit = !!_curKey;
-  var key=_curKey;
   plant.image = _pfPhotos.length ? _pfPhotos[0] : null;
+  // Work out the key this plant will be stored under
+  var savedKey = _curKey;
+  if(!savedKey){
+    savedKey = cat + '__custom__' + name.toLowerCase().replace(/[^a-z0-9]+/g,'-') + '__' + Date.now();
+  }
+  var key = savedKey;
   function done(ok){
-    // Store the full set against the plant key
     try{
       var store = getPlantPhotos()||{};
-      var savedKey = _curKey || key;
-      if(_pfPhotos.length) store[savedKey] = _pfPhotos.slice(0,PF_MAX);
+      if(_pfPhotos.length) store[savedKey] = _pfPhotos.slice(0, PF_MAX);
       else delete store[savedKey];
       savePlantPhotos(store, function(){});
-    }catch(e){ console.warn('save photos:',e); }
-    if(!ok) return;              // the store already reported the problem
+    }catch(e){ console.warn('save photos:', e); }
+    if(!ok) return;
     closeForm();
     toast(wasEdit?'Plant updated!':'Plant added!','ok');
     try{ renderDash(); renderTable(); }catch(e){ console.error(e); }
@@ -1917,8 +1966,7 @@ function savePlant(){
       var ov=getOv(); ov[_curKey]=plant; saveOv(ov, done);
     } else {
       var cu=getCustom();
-      key=_curKey||(cat+'__custom__'+name.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'__'+Date.now());
-      cu[key]=plant; saveCustom(cu, done);
+      cu[savedKey]=plant; saveCustom(cu, done);
     }
   }catch(err){
     console.error('savePlant failed:', err);
@@ -3855,6 +3903,190 @@ function handleImg(inp){
     });
   });
 }
+
+
+// ══ CATEGORY MANAGEMENT (add / edit / delete / reorder) ══
+var CATS_KEY = 'ssn_categories';
+var DEFAULT_CATS = [{"key": "avenue", "label": "Avenue & Shade Trees", "icon": "🌳"}, {"key": "flowering", "label": "Flowering Trees", "icon": "🌼"}, {"key": "fruit", "label": "Fruit Plants", "icon": "🍎"}, {"key": "palm", "label": "Palms & Cycads", "icon": "🌴"}, {"key": "shrub", "label": "Shrubs & Hedges", "icon": "🌿"}, {"key": "ground", "label": "Ground Cover", "icon": "🌱"}, {"key": "desert", "label": "Desert & Succulents", "icon": "🌵"}, {"key": "aquatic", "label": "Aquatic & Pond", "icon": "🌊"}];
+var _catEditKey = null;
+
+function getCats(){
+  try{
+    var v = localStorage.getItem(CATS_KEY);
+    if(v){ var a = JSON.parse(v); if(a && a.length) return a; }
+  }catch(e){}
+  return DEFAULT_CATS.slice();
+}
+function saveCats(a, cb){
+  ssnStoreSet(CATS_KEY, a, function(ok,msg){
+    if(!ok) toast(msg||'Could not save categories','err');
+    // Keep CAT_META in step for the rest of the panel
+    try{
+      CAT_META = {};
+      a.forEach(function(c){ CAT_META[c.key] = {label:c.label, icon:c.icon}; });
+    }catch(e){}
+    cb && cb(ok);
+  });
+}
+function catSlug(s){
+  return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,28);
+}
+function catCount(key){
+  var n = 0;
+  try{
+    var all = getAllPlants() || {};
+    for(var k in all){ if(all.hasOwnProperty(k) && all[k] && all[k].cat === key) n++; }
+  }catch(e){}
+  return n;
+}
+
+function openCatForm(key){
+  _catEditKey = key || null;
+  var list = getCats();
+  var c = key ? list.filter(function(x){ return x.key===key; })[0] : null;
+  function set(id,v){ var e=document.getElementById(id); if(e) e.value = v==null?'':v; }
+  var hd = document.getElementById('cf-hd');
+  if(hd) hd.textContent = key ? 'Edit Category' : 'Add Category';
+  set('cf-label', c?c.label:'');
+  set('cf-icon',  c?c.icon:'🌿');
+  var slugRow = document.getElementById('cf-slug-row');
+  if(slugRow) slugRow.style.display = key ? 'block' : 'none';
+  var sl = document.getElementById('cf-slug');
+  if(sl) sl.textContent = key || '';
+  var ov = document.getElementById('cf-overlay');
+  if(ov) ov.classList.add('open');
+}
+function closeCatForm(){
+  var ov = document.getElementById('cf-overlay');
+  if(ov) ov.classList.remove('open');
+  _catEditKey = null;
+}
+function saveCat(){
+  function val(id){ var e=document.getElementById(id); return e?e.value.trim():''; }
+  var label = val('cf-label');
+  if(!label){ toast('Category name is required','err'); return; }
+  var icon = val('cf-icon') || '🌿';
+  var list = getCats();
+
+  if(_catEditKey){
+    for(var i=0;i<list.length;i++){
+      if(list[i].key === _catEditKey){ list[i].label = label; list[i].icon = icon; break; }
+    }
+  } else {
+    var key = catSlug(label);
+    if(!key){ toast('Please use letters or numbers in the name','err'); return; }
+    if(list.some(function(c){ return c.key === key; })){
+      toast('A category with that name already exists','err'); return;
+    }
+    list.push({key:key, label:label, icon:icon});
+  }
+  var wasEdit = !!_catEditKey;
+  saveCats(list, function(ok){
+    if(!ok) return;
+    closeCatForm();
+    toast(wasEdit ? 'Category updated' : 'Category added','ok');
+    renderCatGrid();
+    try{ refreshCatSelects(); }catch(e){}
+  });
+}
+function delCat(key){
+  var list = getCats();
+  var c = list.filter(function(x){ return x.key===key; })[0];
+  var n = catCount(key);
+  if(n > 0){
+    openConfirm('Cannot remove this category',
+      '"' + (c?c.label:key) + '" still holds ' + n + ' plant' + (n===1?'':'s') +
+      '. Move or delete those plants first, then remove the category.',
+      function(){ closeConfirm(); });
+    return;
+  }
+  openConfirm('Remove this category?',
+    '"' + (c?c.label:key) + '" will no longer appear on the website.',
+    function(){
+      var next = getCats().filter(function(x){ return x.key !== key; });
+      saveCats(next, function(){
+        closeConfirm(); toast('Category removed','ok');
+        renderCatGrid(); try{ refreshCatSelects(); }catch(e){}
+      });
+    });
+}
+function moveCat(key, dir){
+  var list = getCats();
+  var i = -1;
+  for(var k=0;k<list.length;k++){ if(list[k].key===key){ i=k; break; } }
+  if(i < 0) return;
+  var j = i + dir;
+  if(j < 0 || j >= list.length) return;
+  var t = list[i]; list[i] = list[j]; list[j] = t;
+  saveCats(list, function(){ renderCatGrid(); });
+}
+function restoreDefaultCats(){
+  openConfirm('Restore the original categories?',
+    'This resets the list to the eight categories from your catalogue sheet.',
+    function(){
+      saveCats(DEFAULT_CATS.slice(), function(){
+        closeConfirm(); toast('Categories restored','ok');
+        renderCatGrid(); try{ refreshCatSelects(); }catch(e){}
+      });
+    });
+}
+function refreshCatSelects(){
+  var list = getCats();
+  var opts = list.map(function(c){
+    return '<option value="'+c.key+'">'+ppEsc(c.label)+'</option>';
+  }).join('');
+  ['f-cat','vf-cat'].forEach(function(id){
+    var s = document.getElementById(id);
+    if(!s) return;
+    var cur = s.value;
+    s.innerHTML = '<option value="">Select category…</option>' + opts;
+    if(cur) s.value = cur;
+  });
+}
+
+function renderCatGrid(){
+  var el = document.getElementById('cat-grid');
+  if(!el) return;
+  var list = getCats();
+  if(!list.length){
+    el.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:34px;color:var(--muted);font-size:.84rem;">No categories. Click <strong>+ Add Category</strong>.</div>';
+    return;
+  }
+  var h = '';
+  for(var i=0;i<list.length;i++){
+    var c = list[i], n = catCount(c.key);
+    h += '<div style="background:var(--cream);border:1px solid var(--line);border-radius:10px;padding:16px;">'
+      + '<div style="display:flex;align-items:center;gap:11px;margin-bottom:10px;">'
+      +   '<span style="font-size:1.5rem;line-height:1;">'+ppEsc(c.icon)+'</span>'
+      +   '<div style="flex:1;min-width:0;">'
+      +     '<div style="font-size:.9rem;font-weight:500;">'+ppEsc(c.label)+'</div>'
+      +     '<div style="font-size:.68rem;color:var(--muted);margin-top:2px;">'+n+' plant'+(n===1?'':'s')+' &middot; position '+(i+1)+'</div>'
+      +   '</div>'
+      + '</div>'
+      + '<div style="display:flex;gap:5px;flex-wrap:wrap;">'
+      +   '<button type="button" class="btn btn-outline btn-sm cat-up" data-key="'+ppEsc(c.key)+'"'+(i===0?' disabled style="opacity:.35;"':'')+'>&#8593;</button>'
+      +   '<button type="button" class="btn btn-outline btn-sm cat-down" data-key="'+ppEsc(c.key)+'"'+(i===list.length-1?' disabled style="opacity:.35;"':'')+'>&#8595;</button>'
+      +   '<button type="button" class="btn btn-outline btn-sm cat-edit" data-key="'+ppEsc(c.key)+'">&#9998; Edit</button>'
+      +   '<button type="button" class="btn btn-danger btn-sm cat-del" data-key="'+ppEsc(c.key)+'">&#10005;</button>'
+      + '</div></div>';
+  }
+  el.innerHTML = h;
+}
+
+// Delegated handlers — no inline strings to break
+document.addEventListener('click', function(e){
+  var t = e.target.closest ? e.target.closest('.cat-up,.cat-down,.cat-edit,.cat-del') : null;
+  if(!t || t.disabled) return;
+  var key = t.getAttribute('data-key');
+  if(!key) return;
+  e.preventDefault();
+  try{
+    if(t.classList.contains('cat-up'))   moveCat(key,-1);
+    if(t.classList.contains('cat-down')) moveCat(key, 1);
+    if(t.classList.contains('cat-edit')) openCatForm(key);
+    if(t.classList.contains('cat-del'))  delCat(key);
+  }catch(err){ console.error('category action:', err); }
+});
 
 // ══ PLANT PHOTOS (up to 5 each) ═════════════════════════
 var PP_KEY='ssn_plant_photos';

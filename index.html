@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+// Some browsers lack parts of the console API — make every call safe
+(function(){
+  var c = window.console = window.console || {};
+  var noop = function(){};
+  ['log','info','warn','error','debug','trace','table','group','groupEnd','time','timeEnd','assert','dir','count']
+    .forEach(function(m){ if(typeof c[m] !== 'function') c[m] = noop; });
+})();
+</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Sri Satyanarayana Nursery (Gangumalla Satyanarayana &amp; Bros) &mdash; Kadiyapulanka, Kadiyam</title>
@@ -2037,6 +2047,113 @@ nav{
   .plant-gallery:not([style*="none"]) ~ .plant-hero-art{display:none !important;}
 }
 
+
+/* ══ Catalog search ═════════════════════════════════════ */
+.cat-search{
+  position:relative;max-width:520px;margin:0 auto 22px;
+}
+.cat-search-box{
+  display:flex;align-items:center;gap:10px;
+  background:#fff;border:1.5px solid var(--line);
+  border-radius:30px;padding:11px 18px;
+  transition:border-color .25s, box-shadow .25s;
+}
+.cat-search-box:focus-within{
+  border-color:var(--gold);
+  box-shadow:0 0 0 4px rgba(185,137,63,.13);
+}
+.cat-search-box svg{flex-shrink:0;opacity:.45;}
+#cat-search-input{
+  flex:1;border:none;outline:none;background:transparent;
+  font-family:'Inter',sans-serif;font-size:.92rem;color:var(--ink);
+  min-width:0;
+}
+#cat-search-input::placeholder{color:var(--muted);}
+.cat-search-clear{
+  border:none;background:none;cursor:pointer;
+  color:var(--muted);font-size:1rem;padding:2px 4px;
+  display:none;line-height:1;
+}
+.cat-search-clear.show{display:block;}
+.cat-search-clear:hover{color:var(--ink);}
+
+/* Suggestions */
+.cat-suggest{
+  position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:40;
+  background:#fff;border:1px solid var(--line);border-radius:12px;
+  box-shadow:0 18px 44px rgba(31,58,45,.16);
+  max-height:330px;overflow-y:auto;display:none;
+  padding:5px;
+}
+.cat-suggest.open{display:block;}
+.cs-item{
+  display:flex;align-items:center;gap:11px;
+  padding:9px 12px;border-radius:8px;cursor:pointer;
+  transition:background .15s;
+}
+.cs-item:hover,.cs-item.active{background:var(--cream2);}
+.cs-thumb{
+  width:34px;height:34px;border-radius:6px;flex-shrink:0;
+  background:var(--cream2);object-fit:cover;display:block;
+  border:1px solid var(--line);
+}
+.cs-ph{
+  width:34px;height:34px;border-radius:6px;flex-shrink:0;
+  background:var(--cream2);display:flex;align-items:center;
+  justify-content:center;font-size:.95rem;border:1px solid var(--line);
+}
+.cs-txt{flex:1;min-width:0;}
+.cs-name{font-size:.88rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cs-name b{color:var(--gold);font-weight:600;}
+.cs-bot{font-size:.72rem;color:var(--muted);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cs-cat{
+  font-size:.66rem;color:var(--muted);flex-shrink:0;
+  background:var(--cream2);border-radius:10px;padding:2px 9px;
+}
+.cs-empty{padding:18px;text-align:center;color:var(--muted);font-size:.85rem;}
+.cat-search-count{
+  text-align:center;font-size:.8rem;color:var(--muted);margin-bottom:14px;display:none;
+}
+.cat-search-count.show{display:block;}
+@media(max-width:600px){
+  .cat-search{margin-bottom:18px;}
+  .cat-search-box{padding:10px 15px;}
+  #cat-search-input{font-size:.88rem;}
+}
+
+
+.pg-stage{max-height:min(64vh,640px);}
+@media(max-width:700px){.pg-stage{max-height:none;}}
+
+/* ══ Catalog search — on theme ══════════════════════════ */
+.cat-search-box{
+  background:var(--cream) !important;
+  border:1.5px solid rgba(31,58,45,.16) !important;
+  border-radius:30px;
+  box-shadow:0 1px 3px rgba(31,58,45,.05);
+}
+.cat-search-box:focus-within{
+  background:#fffdf8 !important;
+  border-color:var(--gold) !important;
+  box-shadow:0 0 0 4px rgba(185,137,63,.14),0 3px 12px rgba(31,58,45,.07) !important;
+}
+.cat-search-box svg{color:var(--green-mid);opacity:.6;}
+.cat-search-box:focus-within svg{color:var(--gold);opacity:1;}
+#cat-search-input{color:var(--green-deep);}
+#cat-search-input::placeholder{color:rgba(31,58,45,.42);}
+.cat-suggest{
+  background:var(--cream) !important;
+  border:1px solid rgba(31,58,45,.14) !important;
+  box-shadow:0 18px 44px rgba(31,58,45,.15) !important;
+}
+.cs-item:hover,.cs-item.active{background:rgba(185,137,63,.12) !important;}
+.cs-thumb,.cs-ph{border-color:rgba(31,58,45,.12) !important;background:rgba(31,58,45,.05) !important;}
+.cs-cat{background:rgba(31,58,45,.07) !important;color:var(--green-mid) !important;}
+.cs-name{color:var(--green-deep);}
+.cat-search-clear{color:rgba(31,58,45,.4);}
+.cat-search-clear:hover{color:var(--green-deep);}
+.cat-search-count{color:var(--green-mid);}
+
 </style>
   <script src="data/plants.js"></script>
 </head>
@@ -2368,6 +2485,19 @@ nav{
   </div>
   <section class="catalog-section">
     <div class="wrap">
+        <div class="cat-search">
+          <div class="cat-search-box">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5" stroke-linecap="round"/>
+            </svg>
+            <input type="text" id="cat-search-input" autocomplete="off"
+              placeholder="Search 390 varieties — type a name or pick from the list"
+              oninput="csInput()" onfocus="csFocus()" onkeydown="csKey(event)">
+            <button class="cat-search-clear" id="cs-clear" onclick="csClear()" aria-label="Clear">&#10005;</button>
+          </div>
+          <div class="cat-suggest" id="cat-suggest"></div>
+        </div>
+        <div class="cat-search-count" id="cs-count"></div>
       <div class="filter-bar" id="filter-bar">
         <button class="chip active" data-cat="all">All Categories</button>
         <button class="chip" data-cat="avenue">Avenue & Shade Trees <span style="opacity:.5;font-size:.88em;">88</span></button>
@@ -2920,6 +3050,7 @@ function showPage(id, catFilter) {
   if (nl) nl.classList.add('active');
 
   if (id !== 'plant') window.scrollTo({top:0,behavior:'smooth'});
+  if (id === 'catalog') { try{ setTimeout(function(){ if(!_csList.length) csBuild(); }, 200); }catch(e){} }
   try{ triggerReveals(); }catch(e){ showAllReveals(); }
   if (id === 'catalog') {
     initCatalog();
@@ -2938,6 +3069,7 @@ function initCatalog() {
     chip.addEventListener('click', () => {
       const cat = chip.dataset.cat;
       prevCat = cat;
+      try{ csClear(); }catch(e){}
       filterCat(cat);
     });
   });
@@ -3931,7 +4063,7 @@ document.addEventListener('DOMContentLoaded', function(){
   };
   var KEYS=['ssn_plant_photos','ssn_gallery','ssn_hero_portrait','ssn_heritage_photo',
             'ssn_story_photo','ssn_chapter_photos','ssn_videos','ssn_stats',
-            'ssn_overrides','ssn_custom_plants','ssn_vip_visitors','ssn_logo'];
+            'ssn_overrides','ssn_custom_plants','ssn_vip_visitors','ssn_logo','ssn_categories'];
   window.SSN_MEDIA={};
   window.ssnMediaReady=Promise.all(KEYS.map(function(k){
     return window.ssnLoadMedia(k).then(function(v){ if(v) window.SSN_MEDIA[k]=v; });
@@ -4382,6 +4514,263 @@ window.addEventListener('load', function(){
   }
   document.addEventListener('DOMContentLoaded', function(){ setTimeout(pruneEmpty, 150); });
   if(window.ssnMediaReady) window.ssnMediaReady.then(function(){ setTimeout(pruneEmpty, 150); });
+})();
+</script>
+
+
+<script>
+// ── Catalog search ──────────────────────────────────────────
+var _csList = [], _csActive = -1;
+
+function csBuild(){
+  var built = [];
+  try{
+    var pd = (typeof PLANT_DATA === 'object' && PLANT_DATA) ? PLANT_DATA : {};
+    for(var k in pd){
+      if(!pd.hasOwnProperty(k)) continue;
+      var p = pd[k] || {};
+      if(!p.name) continue;
+      built.push({
+        key:k, name:p.name, bot:(p.botanical&&p.botanical!=='\u2014')?p.botanical:'',
+        cat:p.catLabel||p.cat||'',
+        low:p.name.toLowerCase(), botLow:(p.botanical||'').toLowerCase()
+      });
+    }
+    // Fallback: read straight off the catalog cards
+    if(!built.length){
+      document.querySelectorAll('.plant-card[data-key]').forEach(function(card){
+        var key  = card.getAttribute('data-key');
+        var nEl  = card.querySelector('.card-name');
+        var bEl  = card.querySelector('.card-bot');
+        var sec  = card.closest('.cat-section');
+        var name = nEl ? nEl.textContent.trim() : '';
+        if(!name) return;
+        var bot  = bEl ? bEl.textContent.trim() : '';
+        var catEl= sec ? sec.querySelector('.cat-title') : null;
+        built.push({
+          key:key, name:name, bot:bot,
+          cat: catEl ? catEl.textContent.trim() : (sec ? sec.dataset.cat : ''),
+          low:name.toLowerCase(), botLow:bot.toLowerCase()
+        });
+      });
+    }
+  }catch(e){ /* fall through with whatever was gathered */ }
+  try{ built.sort(function(a,b){ return String(a.name).localeCompare(String(b.name)); }); }catch(e){}
+  _csList = built;
+  try{
+    var inp = document.getElementById('cat-search-input');
+    if(inp && _csList.length) inp.placeholder = 'Search ' + _csList.length + ' varieties — type a name or pick from the list';
+  }catch(e){}
+}
+
+function csPhoto(key){
+  try{
+    var all = (window.SSN_MEDIA && window.SSN_MEDIA['ssn_plant_photos']) || null;
+    if(!all){ all = JSON.parse(localStorage.getItem('ssn_plant_photos')||'{}'); }
+    if(all && all[key] && all[key].length) return all[key][0];
+    var p = PLANT_DATA[key];
+    if(p && p.image) return p.image;
+  }catch(e){}
+  return null;
+}
+
+function csRender(items, q){
+  var box = document.getElementById('cat-suggest');
+  if(!box) return;
+  if(!items.length){
+    box.innerHTML = '<div class="cs-empty">No variety matches &ldquo;' + q + '&rdquo;.<br>'
+      + '<span style="font-size:.78rem;">We carry far more than is listed &mdash; '
+      + '<a href="#" onclick="showPage(\'contact\');return false;" style="color:var(--green-deep);">ask us</a>.</span></div>';
+    box.classList.add('open');
+    return;
+  }
+  var h = '';
+  for(var i=0;i<items.length;i++){
+    var it = items[i];
+    var ph = csPhoto(it.key);
+    var nm = it.name;
+    if(q){
+      var idx = it.low.indexOf(q.toLowerCase());
+      if(idx >= 0) nm = nm.slice(0,idx) + '<b>' + nm.slice(idx, idx+q.length) + '</b>' + nm.slice(idx+q.length);
+    }
+    h += '<div class="cs-item' + (i===_csActive?' active':'') + '" data-key="' + it.key + '" onclick="csPick(\'' + it.key + '\')">'
+      + (ph ? '<img class="cs-thumb" src="' + ph + '" alt="">' : '<div class="cs-ph">&#127807;</div>')
+      + '<div class="cs-txt"><div class="cs-name">' + nm + '</div>'
+      + (it.bot ? '<div class="cs-bot">' + it.bot + '</div>' : '') + '</div>'
+      + '<span class="cs-cat">' + it.cat + '</span></div>';
+  }
+  box.innerHTML = h;
+  box.classList.add('open');
+}
+
+function csFocus(){
+  if(!_csList.length) csBuild();
+  if(!_csList.length){ setTimeout(csBuild, 400); }
+  var v = (document.getElementById('cat-search-input')||{}).value || '';
+  csRender(v ? csMatch(v) : _csList.slice(0,40), v);
+}
+
+function csMatch(q){
+  q = q.toLowerCase().trim();
+  if(!q) return _csList.slice(0,40);
+  var starts = [], contains = [];
+  for(var i=0;i<_csList.length;i++){
+    var it = _csList[i];
+    if(it.low.indexOf(q) === 0) starts.push(it);
+    else if(it.low.indexOf(q) > 0 || it.botLow.indexOf(q) >= 0) contains.push(it);
+  }
+  return starts.concat(contains).slice(0, 40);
+}
+
+function csInput(){
+  if(!_csList.length) csBuild();
+  var inp = document.getElementById('cat-search-input');
+  var v = inp ? inp.value : '';
+  _csActive = -1;
+  var clr = document.getElementById('cs-clear');
+  if(clr) clr.classList.toggle('show', !!v);
+  csRender(csMatch(v), v);
+  csFilterGrid(v);
+}
+
+function csFilterGrid(q){
+  q = (q||'').toLowerCase().trim();
+  var count = 0;
+  document.querySelectorAll('.plant-card').forEach(function(card){
+    var key = card.getAttribute('data-key');
+    var pd = (typeof PLANT_DATA === 'object' && PLANT_DATA) ? PLANT_DATA : {};
+    var p = pd[key] || {};
+    var name = p.name || (card.querySelector('.card-name')||{}).textContent || '';
+    var bot  = p.botanical || (card.querySelector('.card-bot')||{}).textContent || '';
+    var hit = !q
+      || name.toLowerCase().indexOf(q) >= 0
+      || bot.toLowerCase().indexOf(q) >= 0;
+    card.style.display = hit ? '' : 'none';
+    if(hit) count++;
+  });
+  // Hide sections left with nothing
+  document.querySelectorAll('.cat-section').forEach(function(sec){
+    if(sec.dataset.empty === '1') return;
+    var any = [...sec.querySelectorAll('.plant-card')].some(function(c){ return c.style.display !== 'none'; });
+    sec.style.display = any ? '' : 'none';
+  });
+  var lbl = document.getElementById('cs-count');
+  if(lbl){
+    if(q){ lbl.textContent = count + ' variety' + (count===1?'':' matches') + ' found'; lbl.classList.add('show'); }
+    else lbl.classList.remove('show');
+  }
+}
+
+function csPick(key){
+  csHide();
+  var hit = null;
+  for(var i=0;i<_csList.length;i++){ if(_csList[i].key===key){ hit=_csList[i]; break; } }
+  var inp = document.getElementById('cat-search-input');
+  if(inp) inp.value = hit ? hit.name : '';
+  var clr = document.getElementById('cs-clear'); if(clr) clr.classList.add('show');
+  try{ showPlant(key); }catch(e){}
+}
+
+function csClear(){
+  var inp = document.getElementById('cat-search-input');
+  if(inp){ inp.value=''; inp.focus(); }
+  var clr = document.getElementById('cs-clear'); if(clr) clr.classList.remove('show');
+  csFilterGrid('');
+  csHide();
+}
+
+function csHide(){
+  var b = document.getElementById('cat-suggest');
+  if(b) b.classList.remove('open');
+  _csActive = -1;
+}
+
+function csKey(e){
+  var box = document.getElementById('cat-suggest');
+  var items = box ? box.querySelectorAll('.cs-item') : [];
+  if(e.key === 'Escape'){ csHide(); return; }
+  if(e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+    e.preventDefault();
+    if(!items.length) return;
+    _csActive += (e.key === 'ArrowDown' ? 1 : -1);
+    if(_csActive < 0) _csActive = items.length - 1;
+    if(_csActive >= items.length) _csActive = 0;
+    items.forEach(function(el,i){ el.classList.toggle('active', i===_csActive); });
+    if(items[_csActive].scrollIntoView) items[_csActive].scrollIntoView({block:'nearest'});
+    return;
+  }
+  if(e.key === 'Enter'){
+    e.preventDefault();
+    if(_csActive >= 0 && items[_csActive]) csPick(items[_csActive].getAttribute('data-key'));
+    else if(items.length === 1) csPick(items[0].getAttribute('data-key'));
+    else csHide();
+  }
+}
+
+document.addEventListener('click', function(e){
+  if(!e.target.closest || !e.target.closest('.cat-search')) csHide();
+});
+document.addEventListener('DOMContentLoaded', function(){ setTimeout(csBuild, 300); });
+if(window.ssnMediaReady) window.ssnMediaReady.then(function(){ setTimeout(csBuild, 200); });
+</script>
+
+
+<script>
+// ── Apply category changes made in the admin panel ──────────
+(function(){
+  function applyCats(){
+    var list = null;
+    try{
+      if(window.SSN_MEDIA && window.SSN_MEDIA['ssn_categories']) list = window.SSN_MEDIA['ssn_categories'];
+      if(!list){ list = JSON.parse(localStorage.getItem('ssn_categories')||'null'); }
+    }catch(e){}
+    if(!list || !list.length) return;
+
+    var bar = document.getElementById('filter-bar');
+    var host = document.querySelector('.cat-section') ? document.querySelector('.cat-section').parentNode : null;
+    if(!bar || !host) return;
+
+    var byKey = {};
+    document.querySelectorAll('.cat-section').forEach(function(s){ byKey[s.dataset.cat] = s; });
+
+    // Rebuild the chips in the admin's order
+    var chips = '<button class="chip active" data-cat="all">All Categories</button>';
+    list.forEach(function(c){
+      var sec = byKey[c.key];
+      var n = sec ? sec.querySelectorAll('.plant-card').length : 0;
+      if(!sec) return;                       // no section, nothing to show
+      chips += '<button class="chip" data-cat="'+c.key+'">'+c.label
+             + ' <span style="opacity:.5;font-size:.88em;">'+n+'</span></button>';
+    });
+    bar.innerHTML = chips;
+
+    // Reorder the sections and refresh their headings
+    list.forEach(function(c){
+      var sec = byKey[c.key];
+      if(!sec) return;
+      var t = sec.querySelector('.cat-title');
+      if(t) t.textContent = c.label;
+      host.appendChild(sec);                 // moves it to the end, in order
+      delete byKey[c.key];
+    });
+    // Anything the admin removed is hidden
+    for(var k in byKey){
+      if(byKey.hasOwnProperty(k)) byKey[k].style.display = 'none';
+    }
+
+    // Re-bind the chips
+    document.querySelectorAll('#filter-bar .chip').forEach(function(chip){
+      chip.addEventListener('click', function(){
+        var cat = chip.dataset.cat;
+        try{ prevCat = cat; }catch(e){}
+        try{ csClear(); }catch(e){}
+        filterCat(cat);
+      });
+    });
+  }
+  document.addEventListener('DOMContentLoaded', function(){ setTimeout(applyCats, 260); });
+  if(window.ssnMediaReady) window.ssnMediaReady.then(function(){ setTimeout(applyCats, 120); });
+  window.addEventListener('storage', function(e){ if(e.key==='ssn_categories') applyCats(); });
 })();
 </script>
 

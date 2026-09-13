@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+// Some browsers lack parts of the console API — make every call safe
+(function(){
+  var c = window.console = window.console || {};
+  var noop = function(){};
+  ['log','info','warn','error','debug','trace','table','group','groupEnd','time','timeEnd','assert','dir','count']
+    .forEach(function(m){ if(typeof c[m] !== 'function') c[m] = noop; });
+})();
+</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Gangumalla's Sri Satyanarayana Nursery — Private Collection</title>
@@ -575,6 +585,165 @@ section{padding:90px 0;}
 .vdet-gallery.single .vpg-count{display:none;}
 .vdet-gallery.single{grid-template-columns:1fr;}
 
+
+/* ══ VIP gallery — match the website exactly ════════════ */
+#vdet-gallery{
+  display:grid;grid-template-columns:60px minmax(0,1fr);
+  gap:12px;width:100%;max-width:700px;margin:0 auto;
+  padding:18px 18px 0;position:relative;
+}
+@media(max-width:700px){
+  #vdet-gallery{grid-template-columns:1fr;gap:9px;padding:14px 14px 0;}
+  #vdet-gallery .vpg-rail{order:2;flex-direction:row;max-height:none;overflow-x:auto;overflow-y:hidden;}
+  #vdet-gallery .vpg-stage{order:1;cursor:default;}
+}
+#vdet-gallery.single{grid-template-columns:1fr;}
+#vdet-gallery.single .vpg-rail,
+#vdet-gallery.single .vpg-arrow,
+#vdet-gallery.single .vpg-count{display:none !important;}
+
+#vdet-gallery .vpg-stage{
+  position:relative;width:100%;aspect-ratio:4/5;
+  max-height:min(62vh,600px);
+  border-radius:12px;overflow:hidden;
+  background:#0a1208;border:1px solid rgba(185,137,63,.2);
+}
+#vdet-gallery .vpg-track{display:flex;height:100%;transition:transform .45s cubic-bezier(.22,1,.36,1);}
+#vdet-gallery .vpg-slide{
+  flex:0 0 100%;height:100%;position:relative;overflow:hidden;
+}
+#vdet-gallery .vpg-slide .vpg-bg{
+  position:absolute;inset:0;background-size:cover;background-position:center;
+  filter:blur(22px) brightness(.45);transform:scale(1.15);
+}
+#vdet-gallery .vpg-slide img{
+  position:relative;z-index:1;
+  width:100%;height:100%;
+  object-fit:contain;   /* the whole plant, never cropped */
+  display:block;
+}
+#vdet-gallery .vpg-thumb{
+  width:56px;height:56px;border-radius:6px;overflow:hidden;cursor:pointer;
+  border:1.5px solid rgba(185,137,63,.22);background:rgba(255,255,255,.05);
+  flex-shrink:0;transition:border-color .2s,box-shadow .2s;
+}
+#vdet-gallery .vpg-thumb.active{border-color:#b9893f;box-shadow:0 0 0 3px rgba(185,137,63,.26);}
+#vdet-gallery .vpg-thumb img{width:100%;height:100%;object-fit:contain;display:block;padding:2px;}
+
+
+#vdet-gallery{max-width:620px;}
+#vdet-gallery .vpg-rail{max-height:min(62vh,600px);}
+@media(max-width:700px){
+  #vdet-gallery .vpg-stage{max-height:none;aspect-ratio:1;}
+  #vdet-gallery .vpg-rail{max-height:none;}
+}
+
+/* ══ VIP gallery — authoritative (must be last) ═════════ */
+#vdet-gallery{
+  display:grid;grid-template-columns:60px minmax(0,1fr);
+  gap:12px;width:100%;max-width:660px;margin:0 auto;
+  padding:18px 18px 0;position:relative;
+}
+#vdet-gallery.single{grid-template-columns:1fr;}
+#vdet-gallery.single .vpg-rail{display:none !important;}
+
+/* Stage must NOT clip — the zoom panel sits outside it */
+#vdet-gallery .vpg-stage{
+  position:relative !important;
+  width:100%;
+  aspect-ratio:4/5;
+  max-height:min(66vh,620px);
+  overflow:visible !important;
+  border-radius:12px;
+  background:#0a1208;
+  border:1px solid rgba(185,137,63,.2);
+  cursor:zoom-in;
+}
+/* An inner layer does the clipping instead */
+#vdet-gallery .vpg-viewport{
+  position:absolute;inset:0;
+  border-radius:12px;overflow:hidden;
+}
+#vdet-gallery .vpg-track{display:flex;height:100%;transition:transform .45s cubic-bezier(.22,1,.36,1);}
+#vdet-gallery .vpg-slide{flex:0 0 100%;height:100%;position:relative;overflow:hidden;}
+#vdet-gallery .vpg-slide .vpg-bg{
+  position:absolute;inset:0;background-size:cover;background-position:center;
+  filter:blur(22px) brightness(.42);transform:scale(1.15);
+}
+#vdet-gallery .vpg-slide img{
+  position:relative;z-index:1;
+  width:100%;height:100%;
+  object-fit:contain !important;   /* whole plant, never cropped */
+  display:block;
+}
+/* Zoom panel + lens */
+#vdet-gallery .vpg-zoom{
+  position:absolute;top:0;left:calc(100% + 16px);
+  width:min(430px,38vw);height:100%;
+  border:1px solid rgba(185,137,63,.32);border-radius:12px;
+  background:#0a1208 no-repeat;
+  box-shadow:0 22px 56px rgba(0,0,0,.55);
+  display:none;z-index:200;
+}
+#vdet-gallery .vpg-stage.zooming .vpg-zoom{display:block;}
+#vdet-gallery .vpg-lens{
+  position:absolute;pointer-events:none;display:none;
+  width:140px;height:140px;z-index:6;
+  border:1px solid rgba(185,137,63,.75);
+  background:rgba(185,137,63,.15);border-radius:4px;
+}
+#vdet-gallery .vpg-stage.zooming .vpg-lens{display:block;}
+@media(max-width:1150px){
+  #vdet-gallery .vpg-zoom,#vdet-gallery .vpg-lens{display:none !important;}
+  #vdet-gallery .vpg-stage{cursor:pointer;}
+}
+@media(max-width:700px){
+  #vdet-gallery{grid-template-columns:1fr;gap:9px;padding:14px 14px 0;}
+  #vdet-gallery .vpg-rail{order:2;flex-direction:row;max-height:none;overflow-x:auto;overflow-y:hidden;}
+  #vdet-gallery .vpg-stage{order:1;max-height:none;aspect-ratio:1;}
+}
+/* Watermark burned over every VIP photo */
+#vdet-gallery .vpg-wm{
+  position:absolute;right:10px;top:50%;
+  transform:translateY(-50%) rotate(180deg);
+  writing-mode:vertical-rl;
+  z-index:5;pointer-events:none;
+  font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(248,243,232,.62);
+  text-shadow:0 1px 6px rgba(0,0,0,.9);
+}
+/* Full-page viewer */
+#vip-fs{
+  display:none;position:fixed;inset:0;z-index:9600;
+  background:#0a1208;overflow-y:auto;-webkit-overflow-scrolling:touch;
+}
+#vip-fs.open{display:block;}
+.vfs-bar{
+  position:sticky;top:0;z-index:3;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px clamp(14px,3vw,28px);
+  background:linear-gradient(to bottom,rgba(10,18,8,.97),rgba(10,18,8,.8));
+  backdrop-filter:blur(10px);border-bottom:1px solid rgba(185,137,63,.18);
+}
+.vfs-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:300;color:#f8f3e8;}
+.vfs-sub{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(248,243,232,.45);margin-top:2px;}
+.vfs-close{
+  width:38px;height:38px;border-radius:50%;
+  background:rgba(255,255,255,.09);border:1px solid rgba(185,137,63,.3);
+  color:#e3c88a;font-size:1.1rem;cursor:pointer;flex-shrink:0;
+}
+.vfs-body{max-width:980px;margin:0 auto;padding:24px clamp(14px,3vw,28px) 70px;
+  display:flex;flex-direction:column;gap:24px;}
+.vfs-fig{position:relative;border-radius:12px;overflow:hidden;
+  background:#16281e;border:1px solid rgba(185,137,63,.14);}
+.vfs-fig img{width:100%;height:auto;display:block;}
+.vfs-num{position:absolute;top:11px;left:11px;
+  background:rgba(10,18,12,.72);border:1px solid rgba(185,137,63,.3);
+  color:#e3c88a;border-radius:13px;padding:3px 11px;font-size:.66rem;}
+.vfs-wm{position:absolute;right:11px;bottom:11px;
+  font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(248,243,232,.6);text-shadow:0 1px 6px rgba(0,0,0,.9);pointer-events:none;}
+
 </style>
 </head>
 <body>
@@ -806,6 +975,8 @@ function getPlants(){
 }
 
 function renderAll(){
+  // refresh admin photo cache reference
+  try{ if(window.SSN_MEDIA && window.SSN_MEDIA['ssn_plant_photos']) _vipPhotoCache = window.SSN_MEDIA['ssn_plant_photos']; }catch(e){}
   var plants=getPlants();
   document.getElementById('stat-count').textContent=plants.length||'0';
   var cats=['all'].concat([...new Set(plants.map(function(p){return p.cat;}).filter(Boolean))]);
@@ -976,7 +1147,7 @@ function openDp(idx){
   var filtered=activeCat==='all'?plants:plants.filter(function(p){return p.cat===activeCat;});
   var p=filtered[idx]; if(!p) return;
   if(typeof curName!=='undefined') curName=p.name;
-  var images=p.images&&p.images.length?p.images:(p.image?[p.image]:[]);
+  var images = vipResolveImages(p);
   _dpImages=images; _dpCur=0;
   if(typeof vpgRender==='function') vpgRender(images, p.name);
   var heroEl=document.getElementById('vdet-hero-img');
@@ -1108,16 +1279,18 @@ function vpgRender(images, name){
   var hero=document.getElementById('vdet-hero');
   if(!gal) return;
   _vpgPhotos=(images||[]).slice(0,5); _vpgCur=0;
-  if(_vpgPhotos.length<2){
+  if(!_vpgPhotos.length){
     gal.style.display='none';
     if(hero) hero.style.display='';
     return;
   }
+  // One photo or five — always the inline gallery, never an overlay
   if(hero) hero.style.display='none';
-  gal.style.display=''; gal.classList.remove('single');
+  gal.style.display='';
+  gal.classList.toggle('single', _vpgPhotos.length<2);
   var tr='', th='';
   for(var i=0;i<_vpgPhotos.length;i++){
-    tr+='<div class="vpg-slide"><img src="'+_vpgPhotos[i]+'" alt="'+(name||'')+'"></div>';
+    tr+='<div class="vpg-slide"><div class="vpg-bg" style="background-image:url(\''+_vpgPhotos[i]+'\')"></div><img src="'+_vpgPhotos[i]+'" alt="'+(name||'')+'" loading="lazy"></div>';
     th+='<div class="vpg-thumb'+(i===0?' active':'')+'" data-i="'+i+'"><img src="'+_vpgPhotos[i]+'" alt=""></div>';
   }
   var t=document.getElementById('vpg-track'); if(t) t.innerHTML=tr;
@@ -1164,7 +1337,7 @@ document.addEventListener('click', function(e){
     var zoom=document.getElementById('vpg-zoom');
     if(!stage||!lens||!zoom) return;
     stage.addEventListener('mouseenter', function(){
-      if(window.innerWidth<1100 || !_vpgPhotos.length) return;
+      if(window.innerWidth<1150 || !_vpgPhotos.length) return;
       zoom.style.backgroundImage='url("'+_vpgPhotos[_vpgCur]+'")';
       var r=stage.getBoundingClientRect();
       zoom.style.backgroundSize=(r.width*ZOOM)+'px '+(r.height*ZOOM)+'px';
@@ -1173,13 +1346,25 @@ document.addEventListener('click', function(e){
     stage.addEventListener('mouseleave', function(){ stage.classList.remove('zooming'); });
     stage.addEventListener('mousemove', function(e){
       if(!stage.classList.contains('zooming')) return;
-      var r=stage.getBoundingClientRect();
+      var img=stage.querySelector('.vpg-slide img');
+      if(!img) return;
+      var ir=img.getBoundingClientRect();
+      // The painted area inside a contained image
+      var natW=img.naturalWidth||ir.width, natH=img.naturalHeight||ir.height;
+      var scale=Math.min(ir.width/natW, ir.height/natH);
+      var pw=natW*scale, ph=natH*scale;
+      var px=ir.left+(ir.width-pw)/2, py=ir.top+(ir.height-ph)/2;
+      var x=e.clientX-px, y=e.clientY-py;
+      if(x<0||y<0||x>pw||y>ph){ stage.classList.remove('zooming'); return; }
       var lw=lens.offsetWidth, lh=lens.offsetHeight;
-      var x=e.clientX-r.left, y=e.clientY-r.top;
-      var lx=Math.max(0, Math.min(x-lw/2, r.width-lw));
-      var ly=Math.max(0, Math.min(y-lh/2, r.height-lh));
+      var sr=stage.getBoundingClientRect();
+      var lx=Math.max(0, Math.min(e.clientX-sr.left-lw/2, sr.width-lw));
+      var ly=Math.max(0, Math.min(e.clientY-sr.top-lh/2, sr.height-lh));
       lens.style.left=lx+'px'; lens.style.top=ly+'px';
-      zoom.style.backgroundPosition='-'+(lx*ZOOM)+'px -'+(ly*ZOOM)+'px';
+      var zr=zoom.getBoundingClientRect();
+      zoom.style.backgroundSize=(pw*ZOOM)+'px '+(ph*ZOOM)+'px';
+      var bx=(x*ZOOM)-(zr.width/2), by=(y*ZOOM)-(zr.height/2);
+      zoom.style.backgroundPosition='-'+Math.max(0,bx)+'px -'+Math.max(0,by)+'px';
     });
     var sx=0, sy=0, moved=false;
     stage.addEventListener('touchstart',function(e){sx=e.touches[0].clientX;sy=e.touches[0].clientY;moved=false;},{passive:true});
@@ -1187,10 +1372,14 @@ document.addEventListener('click', function(e){
       if(Math.abs(e.touches[0].clientX-sx)>Math.abs(e.touches[0].clientY-sy)) moved=true;
     },{passive:true});
     stage.addEventListener('touchend',function(e){
-      if(!moved) return;
       var d=sx-e.changedTouches[0].clientX;
-      if(Math.abs(d)>45) vpgNav(d>0?1:-1);
+      if(moved && Math.abs(d)>45){ vpgNav(d>0?1:-1); return; }
+      if(!moved) vipFsOpen(_vpgCur);
     },{passive:true});
+    stage.addEventListener('click', function(e){
+      if(e.target.closest && e.target.closest('.vpg-arrow')) return;
+      vipFsOpen(_vpgCur);
+    });
   });
 })();
 
@@ -1201,6 +1390,85 @@ document.addEventListener('keydown', function(e){
   if(e.key==='ArrowLeft') vpgNav(-1);
   if(e.key==='ArrowRight') vpgNav(1);
 });
+
+// ── VIP full-page photo viewer ──────────────────────────────
+function vipFsOpen(startIdx){
+  if(!_vpgPhotos || !_vpgPhotos.length) return;
+  var fs=document.getElementById('vip-fs'), body=document.getElementById('vfs-body');
+  if(!fs||!body) return;
+  var t=document.getElementById('vfs-title'), s=document.getElementById('vfs-sub');
+  var nm=(typeof curName!=='undefined'&&curName)?curName:'Photographs';
+  if(t) t.textContent=nm;
+  if(s) s.textContent=_vpgPhotos.length+(_vpgPhotos.length>1?' photographs':' photograph');
+  var h='';
+  for(var i=0;i<_vpgPhotos.length;i++){
+    h+='<figure class="vfs-fig">'
+      +'<img src="'+_vpgPhotos[i]+'" alt="'+nm+'" loading="lazy">'
+      +(_vpgPhotos.length>1?'<span class="vfs-num">'+(i+1)+' / '+_vpgPhotos.length+'</span>':'')
+      +'<span class="vfs-wm">Sri Satyanarayana Nursery</span></figure>';
+  }
+  body.innerHTML=h;
+  fs.classList.add('open');
+  document.body.style.overflow='hidden';
+  var idx=(startIdx==null)?_vpgCur:startIdx;
+  setTimeout(function(){
+    var f=body.querySelectorAll('.vfs-fig');
+    if(f[idx]&&f[idx].scrollIntoView){ try{ f[idx].scrollIntoView({block:'start'}); }catch(e){} }
+  },30);
+}
+function vipFsClose(){
+  var fs=document.getElementById('vip-fs');
+  if(fs) fs.classList.remove('open');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown', function(e){
+  if(e.key==='Escape') vipFsClose();
+});
+
+// ── Find every photo belonging to a plant ───────────────────
+function vipNorm2(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,''); }
+function vipStem(s){
+  // Drop size suffixes so "Baobab 30 ft" matches "Baobab"
+  return vipNorm2(String(s||'')
+    .replace(/\b\d+\s*(ft|feet|m|mtr|metre|meter|cm|inch|in)\b/gi,'')
+    .replace(/\bnaked\b/gi,'')
+    .replace(/\bpot\b/gi,''));
+}
+function vipResolveImages(p){
+  if(!p) return [];
+  // 1 Photos already on the record
+  if(p.images && p.images.length) return p.images.slice(0,5);
+  if(p.image) {
+    var own = [p.image];
+    try{
+      var ex = vipAdminPhotos(p.name);
+      if(ex.length) return ex.slice(0,5);
+    }catch(e){}
+    return own;
+  }
+  // 2 Photos added through the admin panel
+  try{
+    var extra = vipAdminPhotos(p.name);
+    if(extra.length) return extra.slice(0,5);
+  }catch(e){}
+  // 3 Another entry for the same plant that does carry a photo
+  try{
+    var want = vipStem(p.name);
+    if(want){
+      var all = getPlants() || [];
+      for(var i=0;i<all.length;i++){
+        var q = all[i];
+        if(!q || q === p) continue;
+        if(!q.image && !(q.images && q.images.length)) continue;
+        var qs = vipStem(q.name);
+        if(qs === want || (qs.length > 4 && want.indexOf(qs) === 0) || (want.length > 4 && qs.indexOf(want) === 0)){
+          return (q.images && q.images.length) ? q.images.slice(0,5) : [q.image];
+        }
+      }
+    }
+  }catch(e){}
+  return [];
+}
 
 </script>
 
@@ -1251,7 +1519,8 @@ document.addEventListener('keydown', function(e){
   <div class="vdet-gallery" id="vdet-gallery" style="display:none;">
     <div class="vpg-rail" id="vpg-rail"></div>
     <div class="vpg-stage" id="vpg-stage">
-      <div class="vpg-track" id="vpg-track"></div>
+      <div class="vpg-viewport"><div class="vpg-track" id="vpg-track"></div></div>
+      <span class="vpg-wm">Sri Satyanarayana Nursery</span>
       <div class="vpg-lens" id="vpg-lens"></div>
       <div class="vpg-zoom" id="vpg-zoom"></div>
       <span class="vpg-hint">Hover to zoom</span>
@@ -1293,5 +1562,77 @@ document.addEventListener('keydown', function(e){
   <button id="iv-next" onclick="ivNav(1)" style="display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.12);border:none;color:#fff;width:44px;height:44px;border-radius:50%;font-size:1.4rem;cursor:pointer;">&#8250;</button>
   <div id="iv-dots" style="display:flex;gap:8px;margin-top:14px;"></div>
 </div>
+
+<script>
+// ── Read photos saved by the admin panel ────────────────────
+(function(){
+  var DB='ssn_media', STORE='blobs', _db=null;
+  function openDB(){
+    return new Promise(function(res,rej){
+      if(_db){ res(_db); return; }
+      if(!window.indexedDB){ rej(); return; }
+      var q=indexedDB.open(DB,1);
+      q.onupgradeneeded=function(e){
+        var d=e.target.result;
+        if(!d.objectStoreNames.contains(STORE)) d.createObjectStore(STORE);
+      };
+      q.onsuccess=function(e){ _db=e.target.result; res(_db); };
+      q.onerror=function(){ rej(); };
+    });
+  }
+  function load(key){
+    return new Promise(function(resolve){
+      var v=null;
+      try{ v=localStorage.getItem(key); }catch(e){}
+      if(v){ try{ resolve(JSON.parse(v)); return; }catch(e){} }
+      openDB().then(function(db){
+        var tx=db.transaction(STORE,'readonly');
+        var r=tx.objectStore(STORE).get(key);
+        r.onsuccess=function(){
+          if(!r.result){ resolve(null); return; }
+          try{ resolve(JSON.parse(r.result)); }catch(e){ resolve(null); }
+        };
+        r.onerror=function(){ resolve(null); };
+      }).catch(function(){ resolve(null); });
+    });
+  }
+  window.SSN_MEDIA={};
+  window.ssnMediaReady=Promise.all(
+    ['ssn_plant_photos','ssn_vip_plants','ssn_vip_visitors'].map(function(k){
+      return load(k).then(function(v){ if(v) window.SSN_MEDIA[k]=v; });
+    })
+  ).then(function(){
+    try{ if(typeof renderAll==='function') renderAll(); }catch(e){}
+  });
+})();
+
+// Match admin photos to a VIP plant by name
+function vipNorm(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,''); }
+function vipAdminPhotos(name){
+  try{
+    var all=(window.SSN_MEDIA&&window.SSN_MEDIA['ssn_plant_photos'])||null;
+    if(!all){ all=JSON.parse(localStorage.getItem('ssn_plant_photos')||'{}'); }
+    if(!all) return [];
+    var want=vipNorm(name);
+    if(!want) return [];
+    for(var k in all){
+      if(!all.hasOwnProperty(k)||!all[k]||!all[k].length) continue;
+      var tail=k.indexOf('__')>=0?k.split('__').slice(1).join('-'):k;
+      if(vipNorm(tail)===want) return all[k].slice(0,5);
+    }
+  }catch(e){}
+  return [];
+}
+</script>
+
+
+<div id="vip-fs">
+  <div class="vfs-bar">
+    <div><div class="vfs-title" id="vfs-title"></div><div class="vfs-sub" id="vfs-sub"></div></div>
+    <button class="vfs-close" onclick="vipFsClose()" aria-label="Close">&#10005;</button>
+  </div>
+  <div class="vfs-body" id="vfs-body"></div>
+</div>
+
 </body>
 </html>
