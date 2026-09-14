@@ -4144,18 +4144,30 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   window.ssnLoadMedia=function(key){
     return new Promise(function(resolve){
-      var v=null;
-      try{ v=localStorage.getItem(key); }catch(e){}
-      if(v){ try{ resolve(JSON.parse(v)); return; }catch(e){} }
+      // Read the local copy first, but let the database override it.
+      // A write may have reached only the database when local storage
+      // was full, leaving the local copy stale.
+      var local=null;
+      try{
+        var v=localStorage.getItem(key);
+        if(v) local=JSON.parse(v);
+      }catch(e){}
       openDB().then(function(db){
         var tx=db.transaction(STORE,'readonly');
         var r=tx.objectStore(STORE).get(key);
         r.onsuccess=function(){
-          if(!r.result){ resolve(null); return; }
-          try{ resolve(JSON.parse(r.result)); }catch(e){ resolve(null); }
+          if(!r.result){ resolve(local); return; }
+          try{
+            var fromDB=JSON.parse(r.result);
+            if(fromDB == null){ resolve(local); return; }
+            // Prefer whichever holds more, since the database is written last
+            var a=Array.isArray(fromDB)?fromDB.length:Object.keys(fromDB||{}).length;
+            var b=local ? (Array.isArray(local)?local.length:Object.keys(local||{}).length) : -1;
+            resolve(a >= b ? fromDB : local);
+          }catch(e){ resolve(local); }
         };
-        r.onerror=function(){ resolve(null); };
-      }).catch(function(){ resolve(null); });
+        r.onerror=function(){ resolve(local); };
+      }).catch(function(){ resolve(local); });
     });
   };
   var KEYS=['ssn_plant_photos','ssn_gallery','ssn_hero_portrait','ssn_heritage_photo',

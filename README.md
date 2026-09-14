@@ -14,7 +14,4 @@ Kadiyapulanka, Kadiyam, East Godavari District, Andhra Pradesh 533126
 | `data/plants.js` | 390 varieties across 8 categories |
 | `images/` | Photographs shipped with the site |
 
-**Backup** — Admin → Import & Export → choose a folder. Point it inside
-your Google Drive folder to sync to the cloud automatically.
-
 Contact: +91 94401 79027 · srisatyanarayananursery@yahoo.co.in

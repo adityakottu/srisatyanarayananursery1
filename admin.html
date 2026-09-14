@@ -1806,14 +1806,18 @@ var LS_CUSTOM = 'ssn_custom_plants';
 var LS_OVERRIDES = 'ssn_overrides';
 
 // ══ STORAGE ══════════════════════════════════════════════
-function getCustom(){try{return JSON.parse(localStorage.getItem(LS_CUSTOM)||'{}');}catch{return {};}}
+function getCustom(){
+  var _c = ssnCacheGet(LS_CUSTOM);
+  if(_c !== undefined && _c) return _c;try{return JSON.parse(localStorage.getItem(LS_CUSTOM)||'{}');}catch{return {};}}
 function saveCustom(d, cb){
   ssnStoreSet(LS_CUSTOM, d, function(ok,msg){
     if(!ok) toast(msg||'Could not save plant','err');
     cb && cb(ok);
   });
 }
-function getOv(){try{return JSON.parse(localStorage.getItem(LS_OVERRIDES)||'{}');}catch{return {};}}
+function getOv(){
+  var _c = ssnCacheGet(LS_OVERRIDES);
+  if(_c !== undefined && _c) return _c;try{return JSON.parse(localStorage.getItem(LS_OVERRIDES)||'{}');}catch{return {};}}
 function saveOv(d, cb){
   ssnStoreSet(LS_OVERRIDES, d, function(ok,msg){
     if(!ok) toast(msg||'Could not save changes','err');
@@ -1821,8 +1825,9 @@ function saveOv(d, cb){
   });
 }
 function getVip(){
+  var _c = ssnCacheGet(VIP_KEY);
   try{
-    var stored=JSON.parse(localStorage.getItem(VIP_KEY)||'[]');
+    var stored = (_c !== undefined && _c) ? _c : JSON.parse(localStorage.getItem(VIP_KEY)||'[]');
     if(!stored || !stored.length) return VIP_CATALOG_PLANTS.slice();
     // The stored list carries the order; merge in any catalogue plant missing from it
     var seen={};
@@ -1891,7 +1896,7 @@ function showView(id){
   if(addBtn) addBtn.style.display=(id==='plants'||id==='categories'||id==='dashboard')?'':'none';
   // Render — each guarded so one failure cannot blank the view
   try{
-    if(id==='dashboard')     renderDash();
+    if(id==='dashboard')     primeAdminCache(function(){ try{ renderDash(); }catch(e){} });
     if(id==='plants')        renderTable();
     if(id==='categories')    renderCatGrid();
     if(id==='vip')           renderVipView();
@@ -2429,6 +2434,12 @@ function getAdminPwd(){
 }
 function isLoggedIn(){
   return sessionStorage.getItem(SESSION_KEY) === '1';
+}
+function primeAdminCache(done){
+  try{
+    ssnPrimeCache(['ssn_gallery','ssn_plant_photos','ssn_custom_plants','ssn_overrides',
+      'ssn_categories','ssn_vip_plants','ssn_vip_visitors','ssn_videos','ssn_stats'], done);
+  }catch(e){ done && done(); }
 }
 function doLogin(){
   try{
@@ -3191,6 +3202,8 @@ var _statIdx=-1;
 var DEFAULT_STATS = [{"num": "500", "suffix": "+", "label": "Avenue Plants", "icon": "&#127795;"}, {"num": "800", "suffix": "+", "label": "Ornamental Plants", "icon": "&#127807;"}, {"num": "600", "suffix": "+", "label": "Fruit Plants", "icon": "&#127822;"}, {"num": "695", "suffix": "+", "label": "Flower Plants", "icon": "&#127804;"}];
 
 function getStats(){
+  var _c = ssnCacheGet(STATS_KEY);
+  if(_c !== undefined && _c) return _c;
   try{ var v=localStorage.getItem(STATS_KEY);
     if(v){ var a=JSON.parse(v); if(a&&a.length) return a; } }catch(e){}
   return DEFAULT_STATS.slice();
@@ -3278,6 +3291,8 @@ var _vidEditIdx=-1;
 var DEFAULT_VIDEOS = [{"ytId": "rCQaEpac3YU", "title": "Kadiyam Nursery — Sri Satyanarayana Nursery", "desc": "కడియం నర్సరీ · శ్రీ సత్యనారాయణ నర్సరీ — East Godavari, Andhra Pradesh", "year": "2023"}, {"ytId": "fQVkLTxNhTo", "title": "Kadiyam 2025 — Latest Plants", "desc": "Satyanarayana Nursery latest plant collection featured on iDream Andhra", "year": "2025"}, {"ytId": "g4_FH2t8RSA", "title": "Kadiyam January 2021 — Gangumalla Sri Satyanarayana Nursery", "desc": "A walk through the nursery gardens in full seasonal bloom", "year": "2021"}, {"ytId": "GspvSwI0Rno", "title": "Kadiyam January 2020 — Gangumalla Sri Satyanarayana Nursery", "desc": "Rajahmundry, East Godavari District, Andhra Pradesh", "year": "2020"}, {"ytId": "1QJ15g5bIXk", "title": "Best of the Best — Kadiyam Nurseries", "desc": "Graded super fine variety plants from Kadiyam", "year": "2019"}];
 
 function getVideos(){
+  var _c = ssnCacheGet(VID_KEY);
+  if(_c !== undefined && _c) return _c;
   try{ var v=localStorage.getItem(VID_KEY);
     if(v){ var a=JSON.parse(v); if(a && a.length) return a; }
   }catch(e){}
@@ -3508,6 +3523,7 @@ function ssnIdbGet(key){
 
 // Saves anywhere it fits. Always resolves — never throws at the caller.
 function ssnStoreSet(key, obj, cb){
+  try{ ssnCacheSet(key, obj); }catch(e){}
   var _origCb = cb;
   cb = function(ok,msg){ try{ if(ok) bkNudge(); }catch(e){} _origCb && _origCb(ok,msg); };
   var json;
@@ -3657,6 +3673,34 @@ function ssnDrawWatermark(ctx, w, h, logoImg, cfg){
     ctx.fillText(cfg.text, 0, 0);
   }
   ctx.restore();
+}
+
+
+// ══ Live cache — survives a localStorage quota failure ══
+// ssnStoreSet may only reach IndexedDB when localStorage is full.
+// These readers must not fall back to a stale localStorage copy.
+var SSN_CACHE = {};
+
+function ssnCacheSet(key, val){ SSN_CACHE[key] = val; }
+function ssnCacheGet(key){
+  if(Object.prototype.hasOwnProperty.call(SSN_CACHE, key)) return SSN_CACHE[key];
+  return undefined;
+}
+// Pull everything into the cache once, from either store
+function ssnPrimeCache(keys, done){
+  var pending = keys.length;
+  if(!pending){ done && done(); return; }
+  keys.forEach(function(k){
+    var settled = false;
+    function finish(v){
+      if(settled) return; settled = true;
+      if(v != null) SSN_CACHE[k] = v;
+      if(--pending === 0) done && done();
+    }
+    try{
+      ssnStoreGet(k, function(v){ finish(v); });
+    }catch(e){ finish(null); }
+  });
 }
 
 // ══ Smart auto-compression ══════════════════════════════
@@ -4699,6 +4743,8 @@ var DEFAULT_CATS = [{"key": "avenue", "label": "Avenue & Shade Trees", "icon": "
 var _catEditKey = null;
 
 function getCats(){
+  var _c = ssnCacheGet(CATS_KEY);
+  if(_c !== undefined && _c) return _c;
   try{
     var v = localStorage.getItem(CATS_KEY);
     if(v){ var a = JSON.parse(v); if(a && a.length) return a; }
@@ -4882,6 +4928,8 @@ var PP_MAX=5;
 var _ppKey=null;
 
 function getPlantPhotos(){
+  var c = ssnCacheGet(PP_KEY);
+  if(c !== undefined) return c || {};
   try{ var v=localStorage.getItem(PP_KEY);
     if(v){ var o=JSON.parse(v); if(o) return o; } }catch(e){}
   return {};
@@ -5230,6 +5278,8 @@ var GAL_KEY='ssn_gallery';
 var _galCapIdx=-1;
 
 function getGallery(){
+  var c = ssnCacheGet(GAL_KEY);
+  if(c !== undefined) return c || [];
   try{ var v=localStorage.getItem(GAL_KEY); return v?JSON.parse(v):[]; }
   catch(e){ return []; }
 }
