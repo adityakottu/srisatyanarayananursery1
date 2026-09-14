@@ -844,6 +844,28 @@ input,select,textarea{font-family:inherit;}
         <textarea class="import-ta" id="import-ta" placeholder="Paste exported JSON here..."></textarea>
         <div id="import-btn" style="display:none;margin-top:8px;"><button class="btn btn-gold" onclick="doImport()">&#10003; Import</button></div>
       </div>
+      <div class="io-panel" style="border-left:3px solid var(--gold);background:#fffdf7;">
+        <h3>&#127760; Publish to the Live Website</h3>
+        <p style="margin-bottom:4px;">Anything you add here is stored <strong>in this browser only</strong>.
+        Your phone, your brother&rsquo;s laptop and your customers all see the website as it was last published.</p>
+        <p style="font-size:.8rem;color:var(--muted);margin-bottom:14px;">
+          That is why photos added on your laptop do not appear on your phone. Publishing puts them on the live site for everyone.</p>
+
+        <div style="background:var(--cream2);border:1px solid var(--line);border-radius:7px;padding:14px 16px;margin-bottom:14px;">
+          <p style="font-size:.82rem;font-weight:600;margin-bottom:9px;">Three steps</p>
+          <ol style="font-size:.8rem;color:var(--muted);line-height:1.75;margin:0;padding-left:19px;">
+            <li>Click <strong>Build site-content.js</strong> below &mdash; it downloads one file.</li>
+            <li>Go to your GitHub repository and open the <code>data</code> folder.</li>
+            <li>Choose <strong>Add file &rarr; Upload files</strong>, drop it in, and commit.</li>
+          </ol>
+          <p style="font-size:.77rem;color:var(--muted);margin-top:10px;">
+            Give it about two minutes, then every device will show the same content.</p>
+        </div>
+
+        <button type="button" class="btn btn-gold" id="pub-build-btn" onclick="pubBuildFile()">&#8681; Build site-content.js</button>
+        <p id="pub-build-status" style="display:none;font-size:.8rem;margin-top:11px;line-height:1.6;"></p>
+      </div>
+
       <div class="io-panel" style="border-left:3px solid var(--green-mid);">
         <h3>&#128190; Automatic Backup to a Folder</h3>
         <p>Choose a folder once. Everything &mdash; your plant data, photos, categories, VIP collection and the three website files &mdash; is written there, and refreshed whenever you make a change.</p>
@@ -4229,6 +4251,70 @@ function handleImg(inp){
 
 
 
+
+
+// ══ PUBLISH TO THE LIVE WEBSITE ═════════════════════════
+// Everything the admin saves lives in THIS browser only. To make it
+// visible to everyone, we write a single file the website loads.
+var PUB_KEYS = ['ssn_gallery','ssn_plant_photos','ssn_custom_plants','ssn_overrides',
+  'ssn_categories','ssn_vip_plants','ssn_vip_visitors','ssn_videos','ssn_stats',
+  'ssn_hero_portrait','ssn_heritage_photo','ssn_story_photo','ssn_chapter_photos','ssn_logo'];
+
+function pubCollect(){
+  return new Promise(function(resolve){
+    var out = {};
+    var pending = PUB_KEYS.length;
+    PUB_KEYS.forEach(function(k){
+      var settled = false;
+      function finish(v){
+        if(settled) return; settled = true;
+        if(v != null) out[k] = v;
+        if(--pending === 0) resolve(out);
+      }
+      try{ ssnStoreGet(k, finish); }catch(e){ finish(null); }
+    });
+  });
+}
+
+function pubBuildFile(){
+  var btn = document.getElementById('pub-build-btn');
+  var status = document.getElementById('pub-build-status');
+  if(btn) btn.disabled = true;
+  if(status){ status.style.display='block'; status.textContent = 'Gathering your content…'; }
+
+  pubCollect().then(function(data){
+    var js = '// Gangumalla\u2019s Sri Satyanarayana Nursery — published content\n'
+           + '// Generated ' + new Date().toLocaleString() + '\n'
+           + '// Upload this file to GitHub as  data/site-content.js\n'
+           + 'window.SSN_PUBLISHED = ' + JSON.stringify(data) + ';\n';
+
+    var kb = Math.round(js.length/1024);
+    var blob = new Blob([js], {type:'application/javascript'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'site-content.js';
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1500);
+
+    var counts = [];
+    if(data.ssn_gallery) counts.push(data.ssn_gallery.length + ' gallery item(s)');
+    if(data.ssn_plant_photos) counts.push(Object.keys(data.ssn_plant_photos).length + ' plant(s) with photos');
+    if(data.ssn_custom_plants) counts.push(Object.keys(data.ssn_custom_plants).length + ' custom plant(s)');
+    if(data.ssn_vip_visitors) counts.push(data.ssn_vip_visitors.length + ' visitor(s)');
+
+    if(status){
+      status.innerHTML = '<strong>site-content.js downloaded</strong> (' + kb + ' KB)<br>'
+        + (counts.length ? counts.join(' &middot; ') + '<br>' : '')
+        + '<span style="color:var(--muted);">Now upload it to GitHub inside the <code>data</code> folder.</span>';
+    }
+    if(btn) btn.disabled = false;
+    toast('site-content.js ready','ok');
+  }).catch(function(err){
+    console.error('publish:', err);
+    if(status) status.textContent = 'Could not build the file.';
+    if(btn) btn.disabled = false;
+  });
+}
 
 // ══ BACKUP ══════════════════════════════════════════════
 // Uses the File System Access API so a folder chosen once can be

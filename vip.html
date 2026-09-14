@@ -745,6 +745,7 @@ section{padding:90px 0;}
   color:rgba(248,243,232,.6);text-shadow:0 1px 6px rgba(0,0,0,.9);pointer-events:none;}
 
 </style>
+  <script src="data/site-content.js" onerror="window.SSN_PUBLISHED=window.SSN_PUBLISHED||null"></script>
 </head>
 <body>
 <script>
@@ -1613,10 +1614,21 @@ function vipResolveImages(p){
       }).catch(function(){ resolve(local); });
     });
   }
-  window.SSN_MEDIA={};
+  // Content published from the admin panel is the shared source of
+  // truth. A visitor's own browser storage only fills in gaps.
+  window.SSN_MEDIA = {};
+  try{
+    if(window.SSN_PUBLISHED && typeof window.SSN_PUBLISHED === 'object'){
+      for(var _pk in window.SSN_PUBLISHED){
+        if(window.SSN_PUBLISHED.hasOwnProperty(_pk)) window.SSN_MEDIA[_pk] = window.SSN_PUBLISHED[_pk];
+      }
+    }
+  }catch(e){}
   window.ssnMediaReady=Promise.all(
     ['ssn_plant_photos','ssn_vip_plants','ssn_vip_visitors'].map(function(k){
-      return load(k).then(function(v){ if(v) window.SSN_MEDIA[k]=v; });
+      return load(k).then(function(v){
+        if(v != null && window.SSN_MEDIA[k] === undefined) window.SSN_MEDIA[k] = v;
+      });
     })
   ).then(function(){
     try{ if(typeof renderAll==='function') renderAll(); }catch(e){}

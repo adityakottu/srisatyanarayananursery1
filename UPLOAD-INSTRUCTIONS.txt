@@ -1,8 +1,16 @@
 UPLOADING TO GITHUB
 
-1  github.com/adityakottu/srisatyanarayananursery1
-2  Add file  >  Upload files
-3  Open this folder, select EVERYTHING inside (Ctrl+A / Cmd+A),
-   drag the CONTENTS onto the page — not the folder itself
-4  Commit changes
-5  Wait about two minutes
+FIRST TIME
+  1  github.com/adityakottu/srisatyanarayananursery1
+  2  Add file > Upload files
+  3  Select EVERYTHING inside this folder (Ctrl+A / Cmd+A) and drag
+     the CONTENTS onto the page — not the folder itself
+  4  Commit changes
+
+AFTER CHANGING ANYTHING IN THE ADMIN PANEL
+  1  Admin > Import & Export > Build site-content.js
+  2  Open the data folder in your repository
+  3  Add file > Upload files, drop site-content.js in, commit
+
+  This is what makes your photos appear on other phones and laptops.
+  Without it, changes stay on the computer you made them on.

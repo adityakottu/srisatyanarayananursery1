@@ -2486,6 +2486,7 @@ nav.m-drawer-nav,
 
 </style>
   <script src="data/plants.js"></script>
+  <script src="data/site-content.js" onerror="window.SSN_PUBLISHED=window.SSN_PUBLISHED||null"></script>
 </head>
 <body>
 <script>
@@ -4443,9 +4444,20 @@ document.addEventListener('DOMContentLoaded', function(){
   var KEYS=['ssn_plant_photos','ssn_gallery','ssn_hero_portrait','ssn_heritage_photo',
             'ssn_story_photo','ssn_chapter_photos','ssn_videos','ssn_stats',
             'ssn_overrides','ssn_custom_plants','ssn_vip_visitors','ssn_logo','ssn_categories'];
-  window.SSN_MEDIA={};
+  // Content published from the admin panel is the shared source of
+  // truth. A visitor's own browser storage only fills in gaps.
+  window.SSN_MEDIA = {};
+  try{
+    if(window.SSN_PUBLISHED && typeof window.SSN_PUBLISHED === 'object'){
+      for(var _pk in window.SSN_PUBLISHED){
+        if(window.SSN_PUBLISHED.hasOwnProperty(_pk)) window.SSN_MEDIA[_pk] = window.SSN_PUBLISHED[_pk];
+      }
+    }
+  }catch(e){}
   window.ssnMediaReady=Promise.all(KEYS.map(function(k){
-    return window.ssnLoadMedia(k).then(function(v){ if(v) window.SSN_MEDIA[k]=v; });
+    return window.ssnLoadMedia(k).then(function(v){
+        if(v != null && window.SSN_MEDIA[k] === undefined) window.SSN_MEDIA[k] = v;
+      });
   })).then(function(){
     ['ssnRenderGallery','ssnRenderVideos','ssnRenderStats','ssnRenderHeroPhoto',
      'ssnRenderHeritagePhoto','ssnRenderStoryPhoto','ssnRenderChapterPhotos',
