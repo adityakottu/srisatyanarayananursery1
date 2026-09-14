@@ -993,7 +993,7 @@ input,select,textarea{font-family:inherit;}
           <div class="fg">
             <label class="flbl">One guest per line</label>
             <textarea class="fta" id="bulk-vi-text" rows="9" placeholder="Name or Organisation | Type | Location | Year&#10;&#10;Example:&#10;AP Horticulture Dept | government | Andhra Pradesh | 2024&#10;Taj Hotels | hospitality | Hyderabad | 2023&#10;Ramky Group | corporate | Hyderabad&#10;&#10;Only the name is required — the rest are optional."></textarea>
-            <p style="font-size:.72rem;color:var(--muted);margin-top:6px;">Types: government &middot; hospitality &middot; corporate &middot; landscape &middot; private. You can add photos to each guest afterwards by tapping Edit.</p>
+            <p style="font-size:.72rem;color:var(--muted);margin-top:6px;">Types: film &middot; actor &middot; director &middot; producer &middot; business &middot; itfirm &middot; corporate &middot; hospitality &middot; government &middot; landscape &middot; architect &middot; temple &middot; private &middot; and more. You can add photos to each guest afterwards by tapping Edit.</p>
           </div>
         </div>
         <div class="fp-ft">
@@ -1611,12 +1611,43 @@ input,select,textarea{font-family:inherit;}
         <div class="fg">
           <label class="flbl">Type <span class="req">*</span></label>
           <select class="fsel2" id="vi-type">
-            <option value="">Select type...</option>
-            <option value="government">Government</option>
-            <option value="hospitality">Hotels &amp; Resorts</option>
-            <option value="corporate">Corporate</option>
-            <option value="landscape">Landscape Firms</option>
-            <option value="private">Private Collector</option>
+            <option value="">Select type&hellip;</option>
+            <optgroup label="Film &amp; Media">
+              <option value="film">Film Industry</option>
+              <option value="actor">Actor</option>
+              <option value="director">Director</option>
+              <option value="producer">Producer</option>
+              <option value="media">Media &amp; Television</option>
+            </optgroup>
+            <optgroup label="Business">
+              <option value="business">Businessperson</option>
+              <option value="itfirm">IT Firm</option>
+              <option value="corporate">Corporate</option>
+              <option value="realestate">Real Estate &amp; Builders</option>
+              <option value="industrial">Industrial &amp; Manufacturing</option>
+            </optgroup>
+            <optgroup label="Hospitality &amp; Leisure">
+              <option value="hospitality">Hotels &amp; Resorts</option>
+              <option value="restaurant">Restaurants &amp; Cafes</option>
+              <option value="event">Event &amp; Wedding Planners</option>
+            </optgroup>
+            <optgroup label="Public &amp; Institutional">
+              <option value="government">Government</option>
+              <option value="temple">Temples &amp; Trusts</option>
+              <option value="education">Schools &amp; Universities</option>
+              <option value="hospital">Hospitals &amp; Healthcare</option>
+            </optgroup>
+            <optgroup label="Design &amp; Horticulture">
+              <option value="landscape">Landscape Firms</option>
+              <option value="architect">Architects &amp; Designers</option>
+              <option value="nursery">Nurseries &amp; Resellers</option>
+            </optgroup>
+            <optgroup label="Individual">
+              <option value="private">Private Collector</option>
+              <option value="sports">Sports Personality</option>
+              <option value="political">Public Figure</option>
+              <option value="other">Other</option>
+            </optgroup>
           </select>
         </div>
         <div class="fg">
@@ -2870,7 +2901,7 @@ function saveBulkVisitors(){
   var t=document.getElementById('bulk-vi-text');
   var raw=t?t.value.trim():'';
   if(!raw){ toast('Enter at least one guest','err'); return; }
-  var valid={government:1,hospitality:1,corporate:1,landscape:1,private:1};
+  var valid={}; for(var _k in VISITOR_TYPES){ if(VISITOR_TYPES.hasOwnProperty(_k)) valid[_k]=1; }
   var lines=raw.split('\n');
   var arr=getVisitors ? getVisitors() : [];
   var added=0;
@@ -4735,6 +4766,26 @@ function sheetCommit(){
       try{ renderDash(); renderTable(); renderCatGrid(); }catch(e){}
     });
   });
+}
+
+
+// ── Visitor type labels ─────────────────────────────────────
+var VISITOR_TYPES = {
+  film:'Film Industry', actor:'Actor', director:'Director', producer:'Producer',
+  media:'Media & Television',
+  business:'Businessperson', itfirm:'IT Firm', corporate:'Corporate',
+  realestate:'Real Estate & Builders', industrial:'Industrial & Manufacturing',
+  hospitality:'Hotels & Resorts', restaurant:'Restaurants & Cafes',
+  event:'Event & Wedding Planners',
+  government:'Government', temple:'Temples & Trusts',
+  education:'Schools & Universities', hospital:'Hospitals & Healthcare',
+  landscape:'Landscape Firms', architect:'Architects & Designers',
+  nursery:'Nurseries & Resellers',
+  private:'Private Collector', sports:'Sports Personality',
+  political:'Public Figure', other:'Other'
+};
+function visitorTypeLabel(t){
+  return VISITOR_TYPES[t] || (t ? t.charAt(0).toUpperCase()+t.slice(1) : '');
 }
 
 // ══ CATEGORY MANAGEMENT (add / edit / delete / reorder) ══
