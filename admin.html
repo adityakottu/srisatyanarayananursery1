@@ -550,7 +550,72 @@ input,select,textarea{font-family:inherit;}
 }
 .vpc-footer{display:flex;gap:4px;flex-wrap:wrap;}
 
+
+/* ══ Card action buttons — clearly distinct from Delete ══ */
+.vpc-footer .btn-outline,
+#cat-grid .btn-outline,
+#pf-grid .pf-btn{
+  background:rgba(31,58,45,.06);
+  border:1px solid rgba(31,58,45,.18);
+  color:var(--green-deep);
+}
+.vpc-footer .btn-outline:hover,
+#cat-grid .btn-outline:hover{
+  background:rgba(185,137,63,.16);
+  border-color:var(--gold);
+  color:var(--green-deep);
+}
+/* Move arrows share the gold treatment with Edit */
+.vip-up,.vip-down,.vip-top,
+.cat-up,.cat-down{
+  min-width:32px;padding:5px 9px;
+  background:rgba(185,137,63,.15) !important;
+  border:1px solid rgba(185,137,63,.45) !important;
+  color:#8a6520 !important;
+  font-size:.82rem;font-weight:600;
+}
+.vip-up:hover,.vip-down:hover,.vip-top:hover,
+.cat-up:hover,.cat-down:hover{
+  background:var(--gold) !important;
+  border-color:var(--gold) !important;
+  color:#fff !important;
+}
+.vip-up[disabled],.vip-down[disabled],.vip-top[disabled],
+.cat-up[disabled],.cat-down[disabled]{
+  background:rgba(185,137,63,.06) !important;
+  border-color:rgba(185,137,63,.18) !important;
+  color:rgba(138,101,32,.4) !important;
+  cursor:default;
+}
+/* Edit is the clear primary action — gold */
+.vip-edit,.cat-edit{
+  background:rgba(185,137,63,.15) !important;
+  border:1px solid rgba(185,137,63,.45) !important;
+  color:#8a6520 !important;
+  font-weight:600;
+}
+.vip-edit:hover,.cat-edit:hover{
+  background:var(--gold) !important;
+  color:#fff !important;
+  border-color:var(--gold) !important;
+}
+/* Delete stays unmistakably red */
+.vip-del,.cat-del,.pf-btn.del{
+  background:rgba(184,64,64,.12) !important;
+  border:1px solid rgba(184,64,64,.4) !important;
+  color:#9e2f2f !important;
+  font-weight:600;
+}
+.vip-del:hover,.cat-del:hover{
+  background:#b84040 !important;
+  color:#fff !important;
+  border-color:#b84040 !important;
+}
+.vpc-footer{gap:5px;align-items:center;}
+.vpc-footer .btn{white-space:nowrap;}
+
 </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
 </head>
 <body>
 <script>
@@ -779,6 +844,96 @@ input,select,textarea{font-family:inherit;}
         <textarea class="import-ta" id="import-ta" placeholder="Paste exported JSON here..."></textarea>
         <div id="import-btn" style="display:none;margin-top:8px;"><button class="btn btn-gold" onclick="doImport()">&#10003; Import</button></div>
       </div>
+      <div class="io-panel" style="border-left:3px solid var(--green-mid);">
+        <h3>&#128190; Automatic Backup to a Folder</h3>
+        <p>Choose a folder once. Everything &mdash; your plant data, photos, categories, VIP collection and the three website files &mdash; is written there, and refreshed whenever you make a change.</p>
+
+        <div id="bk-unsupported" style="display:none;background:#fffbf0;border:1px solid rgba(185,137,63,.3);border-radius:7px;padding:12px 15px;margin:12px 0;">
+          <p style="font-size:.78rem;color:#6b4c00;line-height:1.6;margin:0;">
+            <strong>This browser can&rsquo;t write to a folder.</strong> Folder backup needs Chrome or Edge on a computer.
+            Use <strong>Download Backup Now</strong> below instead &mdash; it saves the same file to your Downloads.
+          </p>
+        </div>
+
+        <div id="bk-status" style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:12px 0;">
+          <span id="bk-dot" style="width:9px;height:9px;border-radius:50%;background:#999;display:inline-block;"></span>
+          <span id="bk-text" style="font-size:.83rem;color:var(--muted);">No backup folder chosen</span>
+        </div>
+
+        <div class="io-row" style="flex-wrap:wrap;gap:9px;">
+          <button type="button" class="btn btn-primary" id="bk-choose" onclick="bkChooseFolder()">&#128193; Choose Backup Folder</button>
+          <button type="button" class="btn btn-gold" onclick="bkRunNow()">&#8635; Back Up Now</button>
+          <button type="button" class="btn btn-outline" onclick="bkDownload()">&#8595; Download Backup</button>
+          <button type="button" class="btn btn-outline btn-sm" id="bk-forget" onclick="bkForget()" style="display:none;">Stop auto-backup</button>
+        </div>
+
+        <label style="display:flex;align-items:center;gap:9px;font-size:.84rem;cursor:pointer;margin-top:14px;">
+          <input type="checkbox" id="bk-auto" style="width:16px;height:16px;cursor:pointer;" onchange="bkToggleAuto()">
+          <span>Back up automatically after every change</span>
+        </label>
+
+        <div style="background:var(--cream2);border:1px solid var(--line);border-radius:7px;padding:13px 15px;margin-top:14px;">
+          <p style="font-size:.79rem;font-weight:600;margin-bottom:7px;">Backing up to Google Drive</p>
+          <p style="font-size:.77rem;color:var(--muted);line-height:1.6;margin:0;">
+            Install <strong>Google Drive for desktop</strong>, then choose a folder inside your Google&nbsp;Drive
+            as the backup folder above. Drive syncs it to the cloud on its own &mdash; no passwords to share,
+            and it works the same on Windows and Mac.
+          </p>
+        </div>
+
+        <p id="bk-log" style="font-size:.75rem;color:var(--muted);margin-top:11px;"></p>
+      </div>
+
+      <div class="io-panel" style="border-left:3px solid var(--gold);">
+        <h3>&#128202; Import Plants from a Spreadsheet</h3>
+        <p>Bring in many plants at once from Excel (.xlsx) or a CSV exported from Google Sheets.</p>
+
+        <div style="background:var(--cream2);border:1px solid var(--line);border-radius:7px;padding:14px 16px;margin:12px 0;">
+          <p style="font-size:.8rem;font-weight:600;margin-bottom:8px;">Your sheet needs these column headings on the first row:</p>
+          <table style="width:100%;font-size:.76rem;border-collapse:collapse;">
+            <tr style="border-bottom:1px solid var(--line);">
+              <td style="padding:5px 8px;font-family:monospace;color:var(--green-deep);"><strong>Name</strong></td>
+              <td style="padding:5px 8px;color:var(--muted);">Required &mdash; the plant name</td></tr>
+            <tr style="border-bottom:1px solid var(--line);">
+              <td style="padding:5px 8px;font-family:monospace;">Botanical</td>
+              <td style="padding:5px 8px;color:var(--muted);">Botanical name</td></tr>
+            <tr style="border-bottom:1px solid var(--line);">
+              <td style="padding:5px 8px;font-family:monospace;">Category</td>
+              <td style="padding:5px 8px;color:var(--muted);">Must match a category name, e.g. Fruit Plants</td></tr>
+            <tr style="border-bottom:1px solid var(--line);">
+              <td style="padding:5px 8px;font-family:monospace;">Description</td>
+              <td style="padding:5px 8px;color:var(--muted);">A paragraph about the plant</td></tr>
+            <tr style="border-bottom:1px solid var(--line);">
+              <td style="padding:5px 8px;font-family:monospace;">Photo</td>
+              <td style="padding:5px 8px;color:var(--muted);">Image filename, e.g. <em>mango.jpg</em> &mdash; upload the photos below</td></tr>
+            <tr><td style="padding:5px 8px;font-family:monospace;">Water, Light, Soil</td>
+              <td style="padding:5px 8px;color:var(--muted);">Care details (optional)</td></tr>
+          </table>
+          <button type="button" class="btn btn-outline btn-sm" onclick="downloadTemplate()" style="margin-top:11px;">&#8595; Download a blank template</button>
+        </div>
+
+        <div class="io-row" style="flex-wrap:wrap;gap:9px;">
+          <label class="btn btn-gold" style="cursor:pointer;">&#128193; Choose Spreadsheet
+            <input type="file" accept=".xlsx,.xls,.csv" style="display:none;" onchange="sheetPick(this)"></label>
+          <label class="btn btn-outline" style="cursor:pointer;">&#128247; Add Photos (optional)
+            <input type="file" accept="image/*" multiple style="display:none;" onchange="sheetPhotos(this)"></label>
+        </div>
+        <p style="font-size:.75rem;color:var(--muted);margin-top:9px;">
+          Photos are matched to plants by filename. <em>Alphonso Mango.jpg</em> attaches to the plant named Alphonso Mango.
+          You can also name a file after the value in the Photo column.
+        </p>
+
+        <div id="sheet-status" style="display:none;margin-top:14px;padding:13px 15px;border-radius:7px;
+             background:var(--cream2);border:1px solid var(--line);font-size:.8rem;"></div>
+
+        <div id="sheet-preview" style="display:none;margin-top:14px;"></div>
+
+        <div id="sheet-actions" style="display:none;margin-top:12px;display:none;">
+          <button type="button" class="btn btn-primary" onclick="sheetCommit()">&#10003; Import These Plants</button>
+          <button type="button" class="btn btn-outline" onclick="sheetCancel()" style="margin-left:6px;">Cancel</button>
+        </div>
+      </div>
+
       <div class="io-panel" style="border-left:3px solid var(--red);">
         <h3 style="color:var(--red);">&#9888; Reset Custom Changes</h3>
         <p>Remove all custom plants and edits. Built-in plant data is not deleted — only your changes.</p>
@@ -1750,6 +1905,7 @@ function showView(id){
     if(id==='gallery-admin') renderGalAdmin();
     if(id==='videos')        renderVideosAdmin();
     if(id==='publish')       initPublish();
+    if(id==='import-export') { try{ initBackupView(); }catch(e){} }
   }catch(err){
     console.error('View render error ('+id+'):',err);
   }
@@ -3352,6 +3508,8 @@ function ssnIdbGet(key){
 
 // Saves anywhere it fits. Always resolves — never throws at the caller.
 function ssnStoreSet(key, obj, cb){
+  var _origCb = cb;
+  cb = function(ok,msg){ try{ if(ok) bkNudge(); }catch(e){} _origCb && _origCb(ok,msg); };
   var json;
   try{ json=JSON.stringify(obj); }
   catch(e){ cb && cb(false,'Could not serialise data'); return; }
@@ -3994,6 +4152,546 @@ function handleImg(inp){
   });
 }
 
+
+
+
+// ══ BACKUP ══════════════════════════════════════════════
+// Uses the File System Access API so a folder chosen once can be
+// written to again later. Chrome and Edge on desktop support this.
+var _bkHandle = null;
+var _bkDB = 'ssn_backup', _bkStore = 'handles';
+var BK_KEYS = ['ssn_custom_plants','ssn_overrides','ssn_plant_photos','ssn_gallery',
+  'ssn_categories','ssn_vip_plants','ssn_vip_visitors','ssn_videos','ssn_stats',
+  'ssn_hero_portrait','ssn_heritage_photo','ssn_story_photo','ssn_chapter_photos',
+  'ssn_logo','ssn_watermark','ssn_vip_token','ssn_admin_pwd'];
+
+function bkSupported(){ return typeof window.showDirectoryPicker === 'function'; }
+
+function bkOpenDB(){
+  return new Promise(function(res,rej){
+    var q=indexedDB.open(_bkDB,1);
+    q.onupgradeneeded=function(e){
+      var d=e.target.result;
+      if(!d.objectStoreNames.contains(_bkStore)) d.createObjectStore(_bkStore);
+    };
+    q.onsuccess=function(e){ res(e.target.result); };
+    q.onerror=function(){ rej(); };
+  });
+}
+function bkSaveHandle(h){
+  return bkOpenDB().then(function(db){
+    return new Promise(function(res){
+      var tx=db.transaction(_bkStore,'readwrite');
+      tx.objectStore(_bkStore).put(h,'folder');
+      tx.oncomplete=function(){ res(true); };
+      tx.onerror=function(){ res(false); };
+    });
+  }).catch(function(){ return false; });
+}
+function bkLoadHandle(){
+  return bkOpenDB().then(function(db){
+    return new Promise(function(res){
+      var tx=db.transaction(_bkStore,'readonly');
+      var r=tx.objectStore(_bkStore).get('folder');
+      r.onsuccess=function(){ res(r.result||null); };
+      r.onerror=function(){ res(null); };
+    });
+  }).catch(function(){ return null; });
+}
+
+// Gather everything worth keeping
+function bkCollect(){
+  return new Promise(function(resolve){
+    var out = {
+      savedAt: new Date().toISOString(),
+      nursery: "Gangumalla's Sri Satyanarayana Nursery",
+      version: 1,
+      data: {}
+    };
+    var pending = BK_KEYS.length;
+    BK_KEYS.forEach(function(k){
+      var done=false;
+      function finish(v){
+        if(done) return; done=true;
+        if(v != null) out.data[k]=v;
+        if(--pending === 0) resolve(out);
+      }
+      try{
+        var local = localStorage.getItem(k);
+        if(local){ finish(JSON.parse(local)); return; }
+      }catch(e){}
+      try{
+        ssnStoreGet(k, function(v){ finish(v); });
+      }catch(e){ finish(null); }
+    });
+    if(!BK_KEYS.length) resolve(out);
+  });
+}
+
+function bkSetStatus(state, msg){
+  var dot=document.getElementById('bk-dot'), txt=document.getElementById('bk-text');
+  var colours={ok:'#3d8b4a', warn:'#c9a227', off:'#999', busy:'#b9893f'};
+  if(dot) dot.style.background = colours[state] || '#999';
+  if(txt){ txt.textContent = msg; txt.style.color = state==='ok' ? '#276027' : 'var(--muted)'; }
+}
+function bkLog(msg){
+  var el=document.getElementById('bk-log');
+  if(el) el.innerHTML = msg;
+}
+
+function bkChooseFolder(){
+  if(!bkSupported()){
+    toast('This browser cannot write to a folder — use Download Backup','err');
+    return;
+  }
+  window.showDirectoryPicker({mode:'readwrite', startIn:'documents'}).then(function(h){
+    _bkHandle = h;
+    return bkSaveHandle(h).then(function(){
+      try{ localStorage.setItem('ssn_bk_name', h.name); }catch(e){}
+      bkSetStatus('ok','Backing up to folder: ' + h.name);
+      var f=document.getElementById('bk-forget'); if(f) f.style.display='';
+      toast('Backup folder set','ok');
+      bkRunNow();
+    });
+  }).catch(function(err){
+    if(err && err.name === 'AbortError') return;   // user cancelled
+    console.error('choose folder:', err);
+    toast('Could not open that folder','err');
+  });
+}
+
+function bkForget(){
+  openConfirm('Stop automatic backup?','The folder is left untouched — only the link to it is removed.',function(){
+    _bkHandle=null;
+    try{ localStorage.removeItem('ssn_bk_name'); localStorage.removeItem('ssn_bk_auto'); }catch(e){}
+    bkOpenDB().then(function(db){
+      var tx=db.transaction(_bkStore,'readwrite');
+      tx.objectStore(_bkStore).delete('folder');
+    }).catch(function(){});
+    var a=document.getElementById('bk-auto'); if(a) a.checked=false;
+    var f=document.getElementById('bk-forget'); if(f) f.style.display='none';
+    bkSetStatus('off','No backup folder chosen');
+    closeConfirm(); toast('Automatic backup stopped','ok');
+  });
+}
+
+function bkWriteFile(dir, name, contents){
+  return dir.getFileHandle(name, {create:true}).then(function(fh){
+    return fh.createWritable().then(function(w){
+      return w.write(contents).then(function(){ return w.close(); });
+    });
+  });
+}
+
+function bkRunNow(){
+  if(!_bkHandle){
+    if(!bkSupported()){ bkDownload(); return; }
+    toast('Choose a backup folder first','err');
+    return;
+  }
+  bkSetStatus('busy','Backing up…');
+  _bkHandle.queryPermission({mode:'readwrite'}).then(function(p){
+    if(p === 'granted') return true;
+    return _bkHandle.requestPermission({mode:'readwrite'}).then(function(r){ return r === 'granted'; });
+  }).then(function(allowed){
+    if(!allowed){
+      bkSetStatus('warn','Permission to that folder was declined');
+      toast('Folder permission declined','err');
+      return;
+    }
+    return bkCollect().then(function(payload){
+      var stamp = new Date().toISOString().slice(0,10);
+      var json = JSON.stringify(payload, null, 2);
+      var jobs = [
+        bkWriteFile(_bkHandle, 'nursery-data.json', json),
+        bkWriteFile(_bkHandle, 'nursery-data-' + stamp + '.json', json)
+      ];
+      // Copy the three site files when they are reachable
+      if(location.protocol !== 'file:'){
+        ['index.html','admin.html','vip.html','data/plants.js'].forEach(function(f){
+          jobs.push(
+            fetch(f).then(function(r){ return r.ok ? r.text() : null; })
+              .then(function(t){
+                if(t == null) return;
+                return bkWriteFile(_bkHandle, f.replace('/','-'), t);
+              }).catch(function(){})
+          );
+        });
+      }
+      return Promise.all(jobs).then(function(){
+        var when = new Date().toLocaleString();
+        try{ localStorage.setItem('ssn_bk_last', when); }catch(e){}
+        bkSetStatus('ok','Backed up to ' + _bkHandle.name);
+        bkLog('Last backup: ' + when + ' &middot; ' + Math.round(json.length/1024) + ' KB of data');
+        toast('Backup complete','ok');
+      });
+    });
+  }).catch(function(err){
+    console.error('backup:', err);
+    bkSetStatus('warn','Backup failed — ' + (err && err.message ? err.message : 'unknown'));
+    toast('Backup failed','err');
+  });
+}
+
+function bkDownload(){
+  bkCollect().then(function(payload){
+    var json = JSON.stringify(payload, null, 2);
+    var blob = new Blob([json], {type:'application/json'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'nursery-backup-' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+    bkLog('Downloaded ' + Math.round(json.length/1024) + ' KB');
+    toast('Backup downloaded','ok');
+  });
+}
+
+function bkToggleAuto(){
+  var on = (document.getElementById('bk-auto')||{}).checked;
+  try{ localStorage.setItem('ssn_bk_auto', on ? '1' : '0'); }catch(e){}
+  if(on && !_bkHandle){
+    toast('Choose a backup folder first','err');
+    var a=document.getElementById('bk-auto'); if(a) a.checked=false;
+    try{ localStorage.setItem('ssn_bk_auto','0'); }catch(e){}
+    return;
+  }
+  toast(on ? 'Automatic backup on' : 'Automatic backup off','ok');
+}
+
+// Debounced trigger fired after any save
+var _bkTimer = null;
+function bkNudge(){
+  try{
+    if(localStorage.getItem('ssn_bk_auto') !== '1') return;
+  }catch(e){ return; }
+  if(!_bkHandle) return;
+  clearTimeout(_bkTimer);
+  _bkTimer = setTimeout(function(){ bkRunNow(); }, 4000);
+}
+
+function initBackupView(){
+  var un=document.getElementById('bk-unsupported');
+  if(un) un.style.display = bkSupported() ? 'none' : 'block';
+  var choose=document.getElementById('bk-choose');
+  if(choose) choose.disabled = !bkSupported();
+  var auto=document.getElementById('bk-auto');
+  try{ if(auto) auto.checked = localStorage.getItem('ssn_bk_auto')==='1'; }catch(e){}
+  try{
+    var last=localStorage.getItem('ssn_bk_last');
+    if(last) bkLog('Last backup: ' + last);
+  }catch(e){}
+
+  bkLoadHandle().then(function(h){
+    if(!h){ bkSetStatus('off','No backup folder chosen'); return; }
+    _bkHandle = h;
+    var f=document.getElementById('bk-forget'); if(f) f.style.display='';
+    h.queryPermission({mode:'readwrite'}).then(function(p){
+      if(p==='granted') bkSetStatus('ok','Backing up to folder: ' + h.name);
+      else bkSetStatus('warn','Folder "' + h.name + '" needs permission again — click Back Up Now');
+    }).catch(function(){
+      bkSetStatus('warn','Folder "' + h.name + '" needs permission again');
+    });
+  });
+}
+
+// ══ SPREADSHEET IMPORT ══════════════════════════════════
+var _sheetRows = [];      // parsed rows awaiting confirmation
+var _sheetPhotos = {};    // normalised filename -> data URL
+
+function sheetNorm(s){ return String(s==null?'':s).toLowerCase().replace(/[^a-z0-9]+/g,''); }
+function sheetStatus(msg, kind){
+  var el=document.getElementById('sheet-status');
+  if(!el) return;
+  el.style.display='block';
+  el.style.borderColor = kind==='err' ? 'rgba(184,64,64,.4)' : (kind==='ok' ? 'rgba(61,139,74,.4)' : 'var(--line)');
+  el.style.background  = kind==='err' ? '#fdecea' : (kind==='ok' ? '#eef7ef' : 'var(--cream2)');
+  el.innerHTML = msg;
+}
+
+function downloadTemplate(){
+  var rows = [
+    ['Name','Botanical','Category','Description','Photo','Water','Light','Soil'],
+    ['Alphonso Mango','Mangifera indica','Fruit Plants','Premium grafted mango, heavy bearing.','alphonso.jpg','Regular during fruiting','Full sun','Rich loam'],
+    ['Bottle Palm','Hyophorbe lagenicaulis','Palms & Cycads','Distinctive swollen trunk, ideal for entrances.','bottle-palm.jpg','Moderate','Full sun','Sandy, free-draining']
+  ];
+  var csv = rows.map(function(r){
+    return r.map(function(c){
+      c = String(c==null?'':c);
+      return /[",\n]/.test(c) ? '"'+c.replace(/"/g,'""')+'"' : c;
+    }).join(',');
+  }).join('\n');
+  var blob = new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8;'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'nursery-plant-template.csv';
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+  toast('Template downloaded','ok');
+}
+
+// Minimal CSV parser that copes with quotes and newlines inside fields
+function parseCSV(text){
+  var rows=[], row=[], cur='', q=false;
+  text = text.replace(/^\ufeff/,'').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  for(var i=0;i<text.length;i++){
+    var ch=text[i];
+    if(q){
+      if(ch==='"'){ if(text[i+1]==='"'){ cur+='"'; i++; } else q=false; }
+      else cur+=ch;
+    } else {
+      if(ch==='"') q=true;
+      else if(ch===','){ row.push(cur); cur=''; }
+      else if(ch==='\n'){ row.push(cur); rows.push(row); row=[]; cur=''; }
+      else cur+=ch;
+    }
+  }
+  if(cur!=='' || row.length){ row.push(cur); rows.push(row); }
+  return rows.filter(function(r){ return r.some(function(c){ return String(c).trim()!==''; }); });
+}
+
+function sheetPick(inp){
+  var f = inp.files && inp.files[0];
+  if(!f) return;
+  sheetStatus('Reading <strong>'+ppEsc(f.name)+'</strong>&hellip;');
+  var isCSV = /\.csv$/i.test(f.name);
+  var reader = new FileReader();
+  reader.onerror = function(){ sheetStatus('Could not read that file.','err'); };
+  reader.onload = function(e){
+    var rows;
+    try{
+      if(isCSV){
+        rows = parseCSV(e.target.result);
+      } else {
+        if(typeof XLSX === 'undefined'){
+          sheetStatus('Excel support needs an internet connection. Save your sheet as <strong>CSV</strong> and try again.','err');
+          return;
+        }
+        var wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+        var ws = wb.Sheets[wb.SheetNames[0]];
+        rows = XLSX.utils.sheet_to_json(ws, {header:1, blankrows:false, defval:''});
+      }
+    }catch(err){
+      console.error('sheet parse:', err);
+      sheetStatus('That file could not be read. Try saving it as CSV.','err');
+      return;
+    }
+    sheetProcess(rows, f.name);
+  };
+  if(isCSV) reader.readAsText(f, 'UTF-8');
+  else reader.readAsArrayBuffer(f);
+  inp.value='';
+}
+
+function sheetProcess(rows, fname){
+  if(!rows || rows.length < 2){
+    sheetStatus('That sheet has no data rows under the headings.','err');
+    return;
+  }
+  var head = rows[0].map(function(h){ return sheetNorm(h); });
+  function col(){
+    for(var a=0;a<arguments.length;a++){
+      var i = head.indexOf(sheetNorm(arguments[a]));
+      if(i >= 0) return i;
+    }
+    return -1;
+  }
+  var iName = col('name','plantname','commonname','plant');
+  if(iName < 0){
+    sheetStatus('No <strong>Name</strong> column found. The first row must contain the column headings.','err');
+    return;
+  }
+  var iBot=col('botanical','botanicalname','scientificname','botanicname'),
+      iCat=col('category','cat','type'),
+      iDesc=col('description','desc','details','about'),
+      iPhoto=col('photo','image','picture','filename','photofile'),
+      iWater=col('water','watering'), iLight=col('light','sunlight'),
+      iSoil=col('soil'), iTag=col('tagline','shortnote','summary');
+
+  var cats = getCats();
+  function matchCat(v){
+    var n = sheetNorm(v);
+    if(!n) return '';
+    for(var i=0;i<cats.length;i++){
+      if(sheetNorm(cats[i].label)===n || sheetNorm(cats[i].key)===n) return cats[i].key;
+    }
+    for(var j=0;j<cats.length;j++){
+      if(sheetNorm(cats[j].label).indexOf(n)>=0 || n.indexOf(sheetNorm(cats[j].key))>=0) return cats[j].key;
+    }
+    return '';
+  }
+
+  _sheetRows = [];
+  var skipped = 0, noCat = 0;
+  for(var r=1;r<rows.length;r++){
+    var row = rows[r] || [];
+    var name = String(row[iName]||'').trim();
+    if(!name){ skipped++; continue; }
+    var catRaw = iCat>=0 ? String(row[iCat]||'').trim() : '';
+    var cat = matchCat(catRaw);
+    if(!cat){ cat = cats.length ? cats[0].key : 'avenue'; noCat++; }
+    _sheetRows.push({
+      name: name,
+      botanical: iBot>=0 ? String(row[iBot]||'').trim() : '',
+      cat: cat,
+      catRaw: catRaw,
+      tagline: iTag>=0 ? String(row[iTag]||'').trim() : '',
+      description: iDesc>=0 ? String(row[iDesc]||'').trim() : '',
+      photoName: iPhoto>=0 ? String(row[iPhoto]||'').trim() : '',
+      water: iWater>=0 ? String(row[iWater]||'').trim() : '',
+      light: iLight>=0 ? String(row[iLight]||'').trim() : '',
+      soil:  iSoil>=0 ? String(row[iSoil]||'').trim() : ''
+    });
+  }
+
+  if(!_sheetRows.length){
+    sheetStatus('No usable rows found.','err');
+    return;
+  }
+  var msg = 'Read <strong>'+_sheetRows.length+'</strong> plant'+(_sheetRows.length===1?'':'s')+' from '+ppEsc(fname)+'.';
+  if(skipped) msg += ' '+skipped+' row'+(skipped===1?'':'s')+' skipped (no name).';
+  if(noCat)   msg += ' '+noCat+' had no matching category and will go to <strong>'+ppEsc((cats[0]||{}).label||'the first category')+'</strong>.';
+  sheetStatus(msg, 'ok');
+  sheetRenderPreview();
+}
+
+function sheetPhotos(inp){
+  if(!inp.files || !inp.files.length) return;
+  var files=[];
+  for(var i=0;i<inp.files.length;i++) files.push(inp.files[i]);
+  upsStart(files);
+  var done=0, ok=0;
+  function fin(){
+    done++;
+    if(done<files.length) return;
+    upsFinish(ok, files.length-ok, true);
+    sheetRenderPreview();
+  }
+  files.forEach(function(f){
+    if(!f.type || f.type.indexOf('image/')!==0){ upsDone(f.name,false,'Not an image'); fin(); return; }
+    upsUpdate(f.name, 12, 'Reading…');
+    ssnSmartCompress(f, {targetKB:420, maxEdge:1400, minEdge:800,
+      onProgress:function(s,kb){ upsUpdate(f.name, Math.min(88,20+s*14), 'Compressing… '+kb+' KB'); }
+    }, function(url,w,h,kb){
+      if(!url){ upsDone(f.name,false,'Could not process'); fin(); return; }
+      var base = f.name.replace(/\.[^.]+$/,'');
+      _sheetPhotos[sheetNorm(f.name)] = url;   // full filename
+      _sheetPhotos[sheetNorm(base)]   = url;   // without extension
+      ok++;
+      upsDone(f.name, true, w+'×'+h+' · '+kb+' KB', url);
+      fin();
+    });
+  });
+  inp.value='';
+}
+
+function sheetPhotoFor(row){
+  if(row.photoName){
+    var byCol = _sheetPhotos[sheetNorm(row.photoName)]
+             || _sheetPhotos[sheetNorm(row.photoName.replace(/\.[^.]+$/,''))];
+    if(byCol) return byCol;
+  }
+  return _sheetPhotos[sheetNorm(row.name)] || null;
+}
+
+function sheetRenderPreview(){
+  var box=document.getElementById('sheet-preview');
+  var acts=document.getElementById('sheet-actions');
+  if(!box) return;
+  if(!_sheetRows.length){ box.style.display='none'; if(acts) acts.style.display='none'; return; }
+  var cats=getCats();
+  function catLabel(k){ for(var i=0;i<cats.length;i++) if(cats[i].key===k) return cats[i].label; return k; }
+
+  var withPhoto=0;
+  var h='<div style="border:1px solid var(--line);border-radius:8px;overflow:hidden;">'
+    + '<div style="background:var(--cream2);padding:9px 13px;font-size:.78rem;font-weight:600;">Preview</div>'
+    + '<div style="max-height:320px;overflow-y:auto;">';
+  for(var i=0;i<_sheetRows.length;i++){
+    var r=_sheetRows[i], ph=sheetPhotoFor(r);
+    if(ph) withPhoto++;
+    h+='<div style="display:flex;align-items:center;gap:11px;padding:9px 13px;border-bottom:1px solid rgba(31,58,45,.07);">'
+      + (ph ? '<img src="'+ph+'" style="width:38px;height:38px;object-fit:cover;border-radius:5px;flex-shrink:0;border:1px solid var(--line);">'
+            : '<div style="width:38px;height:38px;border-radius:5px;background:var(--cream2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;">&#127807;</div>')
+      + '<div style="flex:1;min-width:0;">'
+      +   '<div style="font-size:.84rem;font-weight:500;">'+ppEsc(r.name)+'</div>'
+      +   '<div style="font-size:.7rem;color:var(--muted);">'+ppEsc(r.botanical||'—')+'</div>'
+      + '</div>'
+      + '<span style="font-size:.68rem;color:var(--muted);background:var(--cream2);border-radius:10px;padding:2px 9px;flex-shrink:0;">'+ppEsc(catLabel(r.cat))+'</span>'
+      + '</div>';
+  }
+  h+='</div></div>';
+  h+='<p style="font-size:.76rem;color:var(--muted);margin-top:9px;">'
+    + withPhoto+' of '+_sheetRows.length+' have a photo matched. '
+    + (withPhoto<_sheetRows.length ? 'Add more photos above — they match by filename.' : '')
+    + '</p>';
+  box.innerHTML=h;
+  box.style.display='block';
+  if(acts) acts.style.display='block';
+}
+
+function sheetCancel(){
+  _sheetRows=[]; _sheetPhotos={};
+  ['sheet-preview','sheet-actions','sheet-status'].forEach(function(id){
+    var e=document.getElementById(id); if(e) e.style.display='none';
+  });
+}
+
+function sheetCommit(){
+  if(!_sheetRows.length){ toast('Nothing to import','err'); return; }
+  var cats=getCats();
+  var CARE_DEF={water:'Moderate',light:'Full sun',soil:'Well-draining loam',difficulty:'Easy',growth:'Medium'};
+
+  var custom={}; try{ custom=getCustom()||{}; }catch(e){}
+  var photos={}; try{ photos=getPlantPhotos()||{}; }catch(e){}
+
+  var added=0, updated=0, photosLinked=0;
+  // Existing names so a re-import updates rather than duplicates
+  var existing={};
+  try{
+    var all=getAllPlants()||{};
+    for(var k in all){ if(all.hasOwnProperty(k) && all[k] && all[k].name) existing[sheetNorm(all[k].name)]=k; }
+  }catch(e){}
+
+  _sheetRows.forEach(function(r){
+    var norm=sheetNorm(r.name);
+    var key=existing[norm];
+    var isNew=!key;
+    if(isNew) key = r.cat+'__sheet__'+r.name.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'__'+Date.now()+Math.floor(Math.random()*999);
+
+    var ph=sheetPhotoFor(r);
+    var plant={
+      name:r.name,
+      botanical:r.botanical||'—',
+      cat:r.cat,
+      catLabel:(function(){ for(var i=0;i<cats.length;i++) if(cats[i].key===r.cat) return cats[i].label; return ''; })(),
+      tagline:r.tagline||'',
+      description:r.description||(r.name+' is grown and supplied by Gangumalla\u2019s Sri Satyanarayana Nursery at Kadiyapulanka, Kadiyam. Contact us for current stock, sizing and pricing.'),
+      care:{
+        water:r.water||CARE_DEF.water, light:r.light||CARE_DEF.light,
+        soil:r.soil||CARE_DEF.soil, difficulty:CARE_DEF.difficulty, growth:CARE_DEF.growth
+      },
+      uses:[], tips:[], related:[],
+      image: ph || null
+    };
+    custom[key]=plant;
+    if(ph){ photos[key]=[ph]; photosLinked++; }
+    if(isNew) added++; else updated++;
+  });
+
+  saveCustom(custom, function(ok){
+    if(!ok) return;
+    savePlantPhotos(photos, function(){
+      sheetStatus('<strong>Done.</strong> '+added+' plant'+(added===1?'':'s')+' added'
+        + (updated?', '+updated+' updated':'')
+        + (photosLinked?', '+photosLinked+' photo'+(photosLinked===1?'':'s')+' linked':'')+'.', 'ok');
+      toast(added+' plant(s) imported','ok');
+      _sheetRows=[]; _sheetPhotos={};
+      var p=document.getElementById('sheet-preview'); if(p) p.style.display='none';
+      var a=document.getElementById('sheet-actions'); if(a) a.style.display='none';
+      try{ renderDash(); renderTable(); renderCatGrid(); }catch(e){}
+    });
+  });
+}
 
 // ══ CATEGORY MANAGEMENT (add / edit / delete / reorder) ══
 var CATS_KEY = 'ssn_categories';

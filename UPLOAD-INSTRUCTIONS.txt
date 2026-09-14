@@ -6,7 +6,3 @@ UPLOADING TO GITHUB
    drag the CONTENTS onto the page — not the folder itself
 4  Commit changes
 5  Wait about two minutes
-
-.nojekyll starts with a dot so it may be hidden.
-  Windows: File Explorer > View > Hidden items
-  Mac: Cmd + Shift + .
