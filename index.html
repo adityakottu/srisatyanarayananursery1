@@ -2018,8 +2018,8 @@ nav{
 
 /* ══ Plant gallery on small screens ═════════════════════ */
 @media(max-width:700px){
-  .plant-gallery{
-    display:grid !important;
+  .plant-gallery:not([hidden]){
+    display:grid;
     grid-template-columns:1fr;
     gap:10px;
     width:100%;
@@ -2153,6 +2153,77 @@ nav{
 .cat-search-clear{color:rgba(31,58,45,.4);}
 .cat-search-clear:hover{color:var(--green-deep);}
 .cat-search-count{color:var(--green-mid);}
+
+
+/* ══ Plant page — hide the gallery properly, photo in the circle ══ */
+/* An inline display:none must always win, even on mobile */
+.plant-gallery[hidden],
+.plant-gallery[style*="display: none"],
+.plant-gallery[style*="display:none"]{display:none !important;}
+
+/* Photo inside the circle when there is one */
+.plant-hero-art{
+  position:relative;overflow:hidden;
+  background:rgba(248,243,232,.06);
+}
+.plant-hero-art.has-photo{
+  background:#16281e;
+  box-shadow:0 14px 40px rgba(0,0,0,.35), 0 0 0 1px rgba(185,137,63,.2) inset;
+  cursor:pointer;
+}
+.plant-hero-art .pha-img{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;display:block;border-radius:50%;
+  transition:transform .6s cubic-bezier(.22,1,.36,1);
+}
+.plant-hero-art.has-photo:hover .pha-img{transform:scale(1.06);}
+.plant-hero-art.has-photo svg{display:none;}
+.plant-hero-art .pha-count{
+  position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
+  background:rgba(10,18,12,.72);border:1px solid rgba(185,137,63,.35);
+  color:var(--gold-l);border-radius:13px;padding:3px 12px;
+  font-size:.66rem;letter-spacing:.08em;z-index:2;white-space:nowrap;
+}
+@media(max-width:600px){
+  .plant-hero-art{width:210px;height:210px;}
+  .plant-hero-art .pha-count{font-size:.6rem;bottom:10px;}
+}
+
+
+/* ══ Location: map / satellite / street view ════════════ */
+.map-panel{margin-top:38px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--cream);}
+.map-tabs{display:flex;gap:0;border-bottom:1px solid var(--line);background:var(--cream2);}
+.map-tab{
+  flex:1;padding:11px 8px;border:none;background:none;cursor:pointer;
+  font-family:'Inter',sans-serif;font-size:.8rem;color:var(--muted);
+  border-bottom:2px solid transparent;transition:color .2s,border-color .2s,background .2s;
+  -webkit-tap-highlight-color:transparent;
+}
+.map-tab:hover{background:rgba(185,137,63,.07);color:var(--green-deep);}
+.map-tab.active{color:var(--green-deep);border-bottom-color:var(--gold);background:rgba(185,137,63,.1);font-weight:600;}
+.map-frame{display:none;}
+.map-frame.active{display:block;}
+.map-frame iframe{width:100%;height:340px;border:0;display:block;}
+.map-foot{
+  padding:13px 16px;background:var(--cream);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  border-top:1px solid var(--line);
+}
+.map-code{font-size:.78rem;color:var(--muted);}
+.map-code strong{color:var(--green-deep);font-family:monospace;letter-spacing:.02em;}
+.map-go{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--gold);color:#142319;text-decoration:none;
+  padding:9px 18px;border-radius:22px;font-size:.82rem;font-weight:600;
+  transition:transform .2s,box-shadow .2s;
+}
+.map-go:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(185,137,63,.35);}
+@media(max-width:600px){
+  .map-frame iframe{height:280px;}
+  .map-tab{font-size:.74rem;padding:10px 5px;}
+  .map-foot{flex-direction:column;align-items:flex-start;}
+}
 
 </style>
   <script src="data/plants.js"></script>
@@ -2730,14 +2801,35 @@ nav{
           <div class="c-row"><span class="c-label">Imports</span><span>Select plants and pots from China, Bangkok and Spain</span></div>
           <div class="c-row"><span class="c-label">Website</span><span>srisatyanarayananursery.in</span></div>
         </div>
-        <div style="margin-top:38px;border-radius:8px;overflow:hidden;border:1px solid var(--line);">
-          <iframe src="https://maps.google.com/maps?q=Gangumalla+Sri+Satyanarayana+Nursery+Kadiyapulanka+Kadiyam+Andhra+Pradesh&output=embed&z=15"
-            width="100%" height="300" style="border:0;display:block;" allowfullscreen loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade" title="Sri Satyanarayana Nursery Location"></iframe>
-          <div style="padding:12px 16px;background:var(--cream);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-            <span style="font-size:.78rem;color:var(--ink);">&#128205; Kadiyapulanka Village, Kadiyam Mandal, East Godavari</span>
-            <a href="https://maps.app.goo.gl/s7G9hKYGYd2Epd2e9" target="_blank" rel="noopener"
-              style="font-size:.76rem;color:var(--green-deep);text-decoration:none;font-weight:600;">Open in Google Maps &#8599;</a>
+        <div class="map-panel">
+          <div class="map-tabs">
+            <button type="button" class="map-tab active" data-map="road" onclick="showMap('road')">&#128506; Map</button>
+            <button type="button" class="map-tab" data-map="sat" onclick="showMap('sat')">&#128760; Satellite</button>
+            <button type="button" class="map-tab" data-map="street" onclick="showMap('street')">&#128694; Street View</button>
+          </div>
+
+          <div class="map-frame active" id="map-road">
+            <iframe loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"
+              title="Nursery location map"
+              src="https://maps.google.com/maps?q=VRJ5%2B7C+Rajahmundry,+Andhra+Pradesh&output=embed&z=17"></iframe>
+          </div>
+
+          <div class="map-frame" id="map-sat">
+            <iframe loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"
+              title="Nursery satellite view"
+              src="https://maps.google.com/maps?q=VRJ5%2B7C+Rajahmundry,+Andhra+Pradesh&output=embed&z=18&t=k"></iframe>
+          </div>
+
+          <div class="map-frame" id="map-street">
+            <iframe loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"
+              title="Nursery street view"
+              src="https://maps.google.com/maps?q=VRJ5%2B7C+Rajahmundry,+Andhra+Pradesh&output=embed&layer=c&cbp=11,0,0,0,0"></iframe>
+          </div>
+
+          <div class="map-foot">
+            <span class="map-code">Plus Code <strong>VRJ5+7C</strong> &middot; Rajamahendravaram, Andhra Pradesh</span>
+            <a class="map-go" href="https://www.google.com/maps/search/?api=1&query=VRJ5%2B7C+Rajahmundry+Andhra+Pradesh"
+               target="_blank" rel="noopener">&#10230; Open in Google Maps</a>
           </div>
         </div>
       </div>
@@ -2909,8 +3001,12 @@ function showPlant(key){
   try{ _showPlant(key); }
   catch(err){
     console.error('showPlant failed for "'+key+'":', err);
-    try{ showPage('plant'); }catch(e){}
   }
+  // Whatever happened above, land on the plant page
+  try{
+    var p = document.getElementById('page-plant');
+    if(p && !p.classList.contains('active')) showPage('plant');
+  }catch(e){}
 }
 function _showPlant(key) {
   var raw = PLANT_DATA[key];
@@ -4084,6 +4180,38 @@ document.addEventListener('DOMContentLoaded', function(){
   });
 })();
 
+
+// ── Show the plant photo inside the circle ──────────────────
+function paintHeroCircle(art, photos, name){
+  if(!art) return;
+  var old = art.querySelector('.pha-img');
+  var cnt = art.querySelector('.pha-count');
+  if(!photos || !photos.length){
+    if(old) old.remove();
+    if(cnt) cnt.remove();
+    art.classList.remove('has-photo');
+    art.onclick = null;
+    return;
+  }
+  if(!old){
+    old = document.createElement('img');
+    old.className = 'pha-img';
+    art.insertBefore(old, art.firstChild);
+  }
+  old.src = photos[0];
+  old.alt = name || '';
+  art.classList.add('has-photo');
+  if(photos.length > 1){
+    if(!cnt){
+      cnt = document.createElement('span');
+      cnt.className = 'pha-count';
+      art.appendChild(cnt);
+    }
+    cnt.textContent = photos.length + ' photographs';
+  } else if(cnt) cnt.remove();
+  art.onclick = function(){ try{ pgFsOpen(0); }catch(e){} };
+}
+
 // ── Plant gallery — Amazon-style with magnifier ─────────────
 var _pgPhotos=[], _pgCur=0;
 
@@ -4125,8 +4253,20 @@ function ssnRenderPlantPhotos(key,name){
   if(!gal||!art) return;
   _pgPhotos=ssnGetPlantPhotos(key, name); _pgCur=0;
   if(!_pgPhotos.length && window._plantRecordImage) _pgPhotos=[window._plantRecordImage];
-  if(!_pgPhotos.length){ gal.style.display='none'; art.style.display=''; return; }
+
+  // Put the first photo inside the circle either way
+  paintHeroCircle(art, _pgPhotos, name);
+
+  if(!_pgPhotos.length){
+    gal.setAttribute('hidden','');
+    gal.style.display='none';
+    art.style.display='';
+    art.removeAttribute('hidden');
+    return;
+  }
   art.style.display='none';
+  art.setAttribute('hidden','');
+  gal.removeAttribute('hidden');
   gal.style.display='';
   gal.style.visibility='visible';
   gal.classList.toggle('single', _pgPhotos.length<2);
@@ -4772,6 +4912,65 @@ if(window.ssnMediaReady) window.ssnMediaReady.then(function(){ setTimeout(csBuil
   if(window.ssnMediaReady) window.ssnMediaReady.then(function(){ setTimeout(applyCats, 120); });
   window.addEventListener('storage', function(e){ if(e.key==='ssn_categories') applyCats(); });
 })();
+</script>
+
+
+<script>
+// ── Plant cards: delegated click, independent of inline handlers ──
+(function(){
+  function openFrom(el){
+    var card = el.closest ? el.closest('.plant-card,[data-key]') : null;
+    if(!card) return false;
+    var key = card.getAttribute('data-key');
+    if(!key) return false;
+    try{
+      if(typeof showPlant === 'function'){ showPlant(key); return true; }
+    }catch(err){ console.error('open plant failed:', err); }
+    return false;
+  }
+  document.addEventListener('click', function(e){
+    var card = e.target.closest ? e.target.closest('.plant-card') : null;
+    if(!card) return;
+    // Let the inline handler run if it already worked
+    var plant = document.getElementById('page-plant');
+    setTimeout(function(){
+      if(plant && !plant.classList.contains('active')) openFrom(card);
+    }, 60);
+  }, true);
+  // Touch fallback for browsers that swallow the synthetic click
+  var tx=0, ty=0, moved=false;
+  document.addEventListener('touchstart', function(e){
+    if(!e.target.closest || !e.target.closest('.plant-card')) return;
+    tx=e.touches[0].clientX; ty=e.touches[0].clientY; moved=false;
+  }, {passive:true});
+  document.addEventListener('touchmove', function(e){
+    if(!e.touches || !e.touches.length) return;
+    if(Math.abs(e.touches[0].clientX-tx)>12 || Math.abs(e.touches[0].clientY-ty)>12) moved=true;
+  }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if(moved) return;
+    var card = e.target.closest ? e.target.closest('.plant-card') : null;
+    if(!card) return;
+    var plant = document.getElementById('page-plant');
+    setTimeout(function(){
+      if(plant && !plant.classList.contains('active')) openFrom(card);
+    }, 120);
+  }, {passive:true});
+})();
+</script>
+
+
+<script>
+// ── Location map tabs ───────────────────────────────────────
+function showMap(which){
+  ['road','sat','street'].forEach(function(k){
+    var f=document.getElementById('map-'+k);
+    if(f) f.classList.toggle('active', k===which);
+  });
+  document.querySelectorAll('.map-tab').forEach(function(t){
+    t.classList.toggle('active', t.getAttribute('data-map')===which);
+  });
+}
 </script>
 
 </body>

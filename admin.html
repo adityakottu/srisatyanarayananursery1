@@ -538,6 +538,18 @@ input,select,textarea{font-family:inherit;}
 }
 #pf-grid .pf-btn.del{background:rgba(184,64,64,.95);color:#fff;}
 
+
+.vip-plant-card{position:relative;}
+.vpc-pos{
+  position:absolute;top:8px;left:8px;z-index:3;
+  background:rgba(10,18,12,.78);color:var(--gold-l);
+  border:1px solid rgba(185,137,63,.4);
+  border-radius:50%;width:24px;height:24px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.68rem;font-weight:600;
+}
+.vpc-footer{display:flex;gap:4px;flex-wrap:wrap;}
+
 </style>
 </head>
 <body>
@@ -1656,10 +1668,25 @@ function saveOv(d, cb){
 function getVip(){
   try{
     var stored=JSON.parse(localStorage.getItem(VIP_KEY)||'[]');
-    var catalogNames=VIP_CATALOG_PLANTS.map(function(p){return p.name;});
-    var extras=stored.filter(function(p){return catalogNames.indexOf(p.name)<0;});
-    return VIP_CATALOG_PLANTS.concat(extras);
-  }catch(e){return VIP_CATALOG_PLANTS;}
+    if(!stored || !stored.length) return VIP_CATALOG_PLANTS.slice();
+    // The stored list carries the order; merge in any catalogue plant missing from it
+    var seen={};
+    var out=[];
+    stored.forEach(function(p){
+      if(!p || !p.name || seen[p.name]) return;
+      seen[p.name]=1;
+      // Prefer the catalogue entry's full detail, keeping any admin edits
+      var base=null;
+      for(var i=0;i<VIP_CATALOG_PLANTS.length;i++){
+        if(VIP_CATALOG_PLANTS[i].name===p.name){ base=VIP_CATALOG_PLANTS[i]; break; }
+      }
+      out.push(base ? Object.assign({}, base, p) : p);
+    });
+    VIP_CATALOG_PLANTS.forEach(function(p){
+      if(!seen[p.name]) out.push(p);
+    });
+    return out;
+  }catch(e){ return VIP_CATALOG_PLANTS.slice(); }
 }
 function saveVip(a){ssnStoreSet(VIP_KEY, a, function(ok,msg){ if(!ok) toast(msg||'Could not save','err'); });}
 function getTok(){return localStorage.getItem(TOKEN_KEY)||DEF_TOKEN;}
@@ -2032,18 +2059,81 @@ function saveToken(){var t=document.getElementById('vip-tok').value.trim();if(!t
 function copyVipLink(){navigator.clipboard.writeText(document.getElementById('vip-link-preview').textContent).then(()=>toast('Copied!','ok'));}
 function openVipPage(){window.open('vip.html?key='+(document.getElementById('vip-tok').value.trim()||getTok()),'_blank');}
 function renderVipView(){
-  document.getElementById('vip-tok').value=getTok(); updateLP();
-  var arr=getVip();
-  document.getElementById('sb-vip-cnt').textContent=arr.length;
-  document.getElementById('vip-sub').textContent=arr.length+' exclusive plant'+(arr.length!==1?'s':'')+' in VIP collection';
+  var tok=document.getElementById('vip-tok'); if(tok) tok.value=getTok();
+  try{ updateLP(); }catch(e){}
+  var arr=getVip()||[];
+  var cnt=document.getElementById('sb-vip-cnt'); if(cnt) cnt.textContent=arr.length;
+  var sub=document.getElementById('vip-sub');
+  if(sub) sub.textContent=arr.length+' exclusive plant'+(arr.length!==1?'s':'')+' in VIP collection &middot; drag the arrows to reorder';
   var g=document.getElementById('vip-plant-grid');
-  if(!arr.length){g.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:44px 0;color:var(--muted);"><div style="font-size:2rem;margin-bottom:10px;">&#9670;</div><p>No VIP plants yet. Click "+ Add VIP Plant" to begin.</p></div>';return;}
-  g.innerHTML=arr.map((p,i)=>'<div class="vip-plant-card">'
-    +'<div class="vpc-img">'+(p.image?'<img src="'+p.image+'">'  :'<span class="ni">&#127807;</span>')+'</div>'
-    +'<div class="vpc-body"><div class="vpc-name">'+(p.name||'')+'</div><div class="vpc-bot">'+(p.botanical||'')+'</div><div class="vpc-desc">'+(p.description||'')+'</div></div>'
-    +'<div class="vpc-footer"><button class="btn btn-outline btn-sm" onclick="openVipForm('+i+')">Edit</button><button class="btn btn-danger btn-sm" onclick="delVip('+i+')" style="margin-left:4px">Delete</button></div>'
-    +'</div>').join('');
+  if(!g) return;
+  if(!arr.length){
+    g.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:44px 0;color:var(--muted);">'
+      +'<div style="font-size:2rem;margin-bottom:10px;">&#9670;</div>'
+      +'<p>No VIP plants yet. Click &ldquo;+ Add VIP Plant&rdquo; to begin.</p></div>';
+    return;
+  }
+  var h='';
+  for(var i=0;i<arr.length;i++){
+    var p=arr[i]||{};
+    h+='<div class="vip-plant-card">'
+      +'<span class="vpc-pos">'+(i+1)+'</span>'
+      +'<div class="vpc-img">'+(p.image?'<img src="'+p.image+'">':'<span class="ni">&#127807;</span>')+'</div>'
+      +'<div class="vpc-body">'
+      +  '<div class="vpc-name">'+ppEsc(p.name||'')+'</div>'
+      +  '<div class="vpc-bot">'+ppEsc(p.botanical||'')+'</div>'
+      +  '<div class="vpc-desc">'+ppEsc(p.description||'')+'</div>'
+      +'</div>'
+      +'<div class="vpc-footer">'
+      +  '<button type="button" class="btn btn-outline btn-sm vip-up" data-i="'+i+'"'
+      +    (i===0?' disabled style="opacity:.35;"':'')+' title="Move up">&#8593;</button>'
+      +  '<button type="button" class="btn btn-outline btn-sm vip-down" data-i="'+i+'"'
+      +    (i===arr.length-1?' disabled style="opacity:.35;"':'')+' title="Move down">&#8595;</button>'
+      +  '<button type="button" class="btn btn-outline btn-sm vip-top" data-i="'+i+'"'
+      +    (i===0?' disabled style="opacity:.35;"':'')+' title="Move to first">&#8607;</button>'
+      +  '<button type="button" class="btn btn-outline btn-sm vip-edit" data-i="'+i+'">Edit</button>'
+      +  '<button type="button" class="btn btn-danger btn-sm vip-del" data-i="'+i+'">Delete</button>'
+      +'</div></div>';
+  }
+  g.innerHTML=h;
 }
+
+function saveVipOrder(arr, cb){
+  // Store the complete ordered list — getVip() reads the order from it
+  ssnStoreSet(VIP_KEY, arr, function(ok,msg){
+    if(!ok) toast(msg||'Could not save order','err');
+    cb && cb(ok);
+  });
+}
+function moveVip(i, dir){
+  var arr=getVip()||[];
+  var j=i+dir;
+  if(j<0||j>=arr.length) return;
+  var t=arr[i]; arr[i]=arr[j]; arr[j]=t;
+  saveVipOrder(arr, function(ok){ if(ok) renderVipView(); });
+}
+function vipToTop(i){
+  var arr=getVip()||[];
+  if(i<=0||i>=arr.length) return;
+  var item=arr.splice(i,1)[0];
+  arr.unshift(item);
+  saveVipOrder(arr, function(ok){ if(ok){ toast('Moved to first','ok'); renderVipView(); } });
+}
+
+document.addEventListener('click', function(e){
+  var t=e.target.closest ? e.target.closest('.vip-up,.vip-down,.vip-top,.vip-edit,.vip-del') : null;
+  if(!t || t.disabled) return;
+  var i=parseInt(t.getAttribute('data-i'),10);
+  if(isNaN(i)) return;
+  e.preventDefault();
+  try{
+    if(t.classList.contains('vip-up'))   moveVip(i,-1);
+    if(t.classList.contains('vip-down')) moveVip(i, 1);
+    if(t.classList.contains('vip-top'))  vipToTop(i);
+    if(t.classList.contains('vip-edit')) openVipForm(i);
+    if(t.classList.contains('vip-del'))  delVip(i);
+  }catch(err){ console.error('vip action:', err); }
+});
 function openVipForm(idx){
   _vei=(idx!==undefined)?idx:null; _vib=null;
   document.getElementById('vfp-title').textContent=(_vei!==null)?'Edit VIP Plant':'Add VIP Plant';
