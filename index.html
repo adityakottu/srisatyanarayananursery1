@@ -4454,11 +4454,47 @@ document.addEventListener('DOMContentLoaded', function(){
       }
     }
   }catch(e){}
+
+  // GitHub Pages caches files aggressively, so a freshly published
+  // site-content.js can sit unseen for hours. Re-fetch it with the
+  // cache bypassed and re-render if it differs.
+  window.ssnPublishedReady = (function(){
+    if(location.protocol === 'file:') return Promise.resolve(false);
+    var url = 'data/site-content.js?t=' + Date.now();
+    return fetch(url, {cache:'no-store'})
+      .then(function(r){ return r.ok ? r.text() : null; })
+      .then(function(txt){
+        if(!txt) return false;
+        var m = txt.match(/window\.SSN_PUBLISHED\s*=\s*([\s\S]*);\s*$/);
+        if(!m) return false;
+        var fresh;
+        try{ fresh = JSON.parse(m[1]); }catch(e){ return false; }
+        if(!fresh || typeof fresh !== 'object') return false;
+        var changed = false;
+        for(var k in fresh){
+          if(!fresh.hasOwnProperty(k)) continue;
+          var a = JSON.stringify(fresh[k]);
+          var b = JSON.stringify(window.SSN_MEDIA[k]);
+          if(a !== b){ window.SSN_MEDIA[k] = fresh[k]; changed = true; }
+        }
+        if(changed){
+          ['ssnRenderGallery','ssnRenderVideos','ssnRenderStats','ssnRenderHeroPhoto',
+           'ssnRenderHeritagePhoto','ssnRenderStoryPhoto','ssnRenderChapterPhotos',
+           'ssnRenderAboutPhoto','ssnApplyCardPhotos','renderAll'].forEach(function(fn){
+            try{ if(typeof window[fn]==='function') window[fn](); }catch(e){}
+          });
+        }
+        return changed;
+      })
+      .catch(function(){ return false; });
+  })();
+
   window.ssnMediaReady=Promise.all(KEYS.map(function(k){
     return window.ssnLoadMedia(k).then(function(v){
         if(v != null && window.SSN_MEDIA[k] === undefined) window.SSN_MEDIA[k] = v;
       });
   })).then(function(){
+    try{ if(window.ssnPublishedReady) window.ssnPublishedReady.then(function(){}); }catch(e){}
     ['ssnRenderGallery','ssnRenderVideos','ssnRenderStats','ssnRenderHeroPhoto',
      'ssnRenderHeritagePhoto','ssnRenderStoryPhoto','ssnRenderChapterPhotos',
      'ssnRenderAboutPhoto'].forEach(function(fn){
