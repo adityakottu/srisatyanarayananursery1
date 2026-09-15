@@ -3643,13 +3643,29 @@ function ssnStoreSet(key, obj, cb){
 }
 
 function ssnStoreGet(key, cb){
-  var v=null;
-  try{ v=localStorage.getItem(key); }catch(e){}
-  if(v){ try{ cb(JSON.parse(v)); return; }catch(e){} }
+  // The live cache is always what was last written, wherever it landed
+  try{
+    var cached = ssnCacheGet(key);
+    if(cached !== undefined){ cb(cached); return; }
+  }catch(e){}
+
+  var local = null;
+  try{
+    var v = localStorage.getItem(key);
+    if(v) local = JSON.parse(v);
+  }catch(e){}
+
+  // A write may have reached only the database when local storage was
+  // full, so the local copy can be stale. Let the database win.
   ssnIdbGet(key).then(function(j){
-    if(!j){ cb(null); return; }
-    try{ cb(JSON.parse(j)); }catch(e){ cb(null); }
-  }).catch(function(){ cb(null); });
+    if(!j){ cb(local); return; }
+    var fromDB = null;
+    try{ fromDB = JSON.parse(j); }catch(e){}
+    if(fromDB == null){ cb(local); return; }
+    var a = Array.isArray(fromDB) ? fromDB.length : Object.keys(fromDB||{}).length;
+    var b = local ? (Array.isArray(local) ? local.length : Object.keys(local||{}).length) : -1;
+    cb(a >= b ? fromDB : local);
+  }).catch(function(){ cb(local); });
 }
 
 // Usage meter
@@ -4307,6 +4323,13 @@ var PUB_KEYS = ['ssn_gallery','ssn_plant_photos','ssn_custom_plants','ssn_overri
 
 function pubCollect(){
   return new Promise(function(resolve){
+    // Make sure every key is loaded from whichever store holds it
+    try{ ssnPrimeCache(PUB_KEYS, function(){ pubGather(resolve); }); return; }catch(e){}
+    pubGather(resolve);
+  });
+}
+function pubGather(resolve){
+  (function(){
     var out = {};
     var pending = PUB_KEYS.length;
     PUB_KEYS.forEach(function(k){
@@ -4316,9 +4339,14 @@ function pubCollect(){
         if(v != null) out[k] = v;
         if(--pending === 0) resolve(out);
       }
+      // Prefer exactly what the admin is showing right now
+      try{
+        var live = ssnCacheGet(k);
+        if(live !== undefined){ finish(live); return; }
+      }catch(e){}
       try{ ssnStoreGet(k, finish); }catch(e){ finish(null); }
     });
-  });
+  })();
 }
 
 function pubBuildFile(){
@@ -4342,6 +4370,7 @@ function pubBuildFile(){
     setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1500);
 
     var counts = [];
+    if(!data.ssn_gallery || !data.ssn_gallery.length) counts.push('no gallery items found');
     if(data.ssn_gallery) counts.push(data.ssn_gallery.length + ' gallery item(s)');
     if(data.ssn_plant_photos) counts.push(Object.keys(data.ssn_plant_photos).length + ' plant(s) with photos');
     if(data.ssn_custom_plants) counts.push(Object.keys(data.ssn_custom_plants).length + ' custom plant(s)');
