@@ -7,10 +7,12 @@ FIRST TIME
      the CONTENTS onto the page — not the folder itself
   4  Commit changes
 
-AFTER CHANGING ANYTHING IN THE ADMIN PANEL
-  1  Admin > Import & Export > Build site-content.js
-  2  Open the data folder in your repository
-  3  Add file > Upload files, drop site-content.js in, commit
+THEN SET UP ONE-CLICK PUBLISHING (once)
+  1  github.com/settings/tokens > Fine-grained tokens > Generate new
+  2  Repository access: Only select repositories > srisatyanarayananursery1
+  3  Repository permissions > Contents: Read and write
+  4  Copy the token
+  5  Admin > Import & Export > Connection settings > paste > Save & Connect
 
-  This is what makes your photos appear on other phones and laptops.
-  Without it, changes stay on the computer you made them on.
+  From then on, just press "Publish Now" after making changes.
+  Your photos appear on every device within a minute.

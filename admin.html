@@ -844,8 +844,53 @@ input,select,textarea{font-family:inherit;}
         <textarea class="import-ta" id="import-ta" placeholder="Paste exported JSON here..."></textarea>
         <div id="import-btn" style="display:none;margin-top:8px;"><button class="btn btn-gold" onclick="doImport()">&#10003; Import</button></div>
       </div>
+      <div class="io-panel" style="border-left:3px solid #3d8b4a;background:#f6fbf6;">
+        <h3>&#9889; One-Click Publish (recommended)</h3>
+        <p style="margin-bottom:12px;">Connect your GitHub account once, then every change goes live on all devices with a single click &mdash; no downloading, no uploading.</p>
+
+        <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:13px;">
+          <span id="gh-dot" style="width:9px;height:9px;border-radius:50%;background:#c9a227;display:inline-block;"></span>
+          <span id="gh-text" style="font-size:.83rem;color:var(--muted);">Not connected</span>
+          <button type="button" class="btn btn-outline btn-sm" onclick="ghTogglePanel()" style="margin-left:auto;">Connection settings</button>
+        </div>
+
+        <button type="button" class="btn btn-gold" id="gh-publish-btn" onclick="ghPublish()" disabled>&#9889; Publish Now</button>
+        <p id="gh-status-line" style="display:none;font-size:.8rem;margin-top:11px;line-height:1.6;"></p>
+        <p id="gh-last" style="font-size:.75rem;color:var(--muted);margin-top:8px;"></p>
+
+        <div id="gh-panel" style="display:none;margin-top:16px;padding-top:15px;border-top:1px solid var(--line);">
+          <div style="background:#fffbf0;border:1px solid rgba(185,137,63,.3);border-radius:7px;padding:13px 15px;margin-bottom:14px;">
+            <p style="font-size:.79rem;font-weight:600;margin-bottom:8px;">Creating your token</p>
+            <ol style="font-size:.78rem;color:var(--muted);line-height:1.8;margin:0;padding-left:18px;">
+              <li>Open <strong>github.com/settings/tokens</strong> &rarr; Fine-grained tokens &rarr; Generate new token</li>
+              <li>Repository access: <strong>Only select repositories</strong> &rarr; choose <code>srisatyanarayananursery1</code></li>
+              <li>Permissions &rarr; Repository permissions &rarr; <strong>Contents: Read and write</strong></li>
+              <li>Set an expiry, generate, and paste the token below</li>
+            </ol>
+            <p style="font-size:.75rem;color:#6b4c00;margin-top:9px;">
+              The token is kept on this device only and is never shown on your website.
+              Give it access to this one repository and nothing else.
+            </p>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div class="fg"><label class="flbl">GitHub username</label>
+              <input class="fi" id="gh-owner" placeholder="adityakottu"></div>
+            <div class="fg"><label class="flbl">Repository</label>
+              <input class="fi" id="gh-repo" placeholder="srisatyanarayananursery1"></div>
+          </div>
+          <div class="fg"><label class="flbl">Branch</label>
+            <input class="fi" id="gh-branch" placeholder="main"></div>
+          <div class="fg"><label class="flbl">Access token</label>
+            <input type="password" class="fi" id="gh-token" placeholder="github_pat_..." autocomplete="off"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button type="button" class="btn btn-primary" onclick="ghSaveSettings()">Save &amp; Connect</button>
+            <button type="button" class="btn btn-danger btn-sm" onclick="ghClearToken()">Remove Token</button>
+          </div>
+        </div>
+      </div>
+
       <div class="io-panel" style="border-left:3px solid var(--gold);background:#fffdf7;">
-        <h3>&#127760; Publish to the Live Website</h3>
+        <h3>&#127760; Publish Manually (if you prefer)</h3>
         <p style="margin-bottom:4px;">Anything you add here is stored <strong>in this browser only</strong>.
         Your phone, your brother&rsquo;s laptop and your customers all see the website as it was last published.</p>
         <p style="font-size:.8rem;color:var(--muted);margin-bottom:14px;">
@@ -1963,7 +2008,7 @@ function showView(id){
     if(id==='gallery-admin') renderGalAdmin();
     if(id==='videos')        renderVideosAdmin();
     if(id==='publish')       initPublish();
-    if(id==='import-export') { try{ initBackupView(); }catch(e){} }
+    if(id==='import-export') { try{ initBackupView(); }catch(e){} try{ initGithubPanel(); }catch(e){} }
   }catch(err){
     console.error('View render error ('+id+'):',err);
   }
@@ -4314,6 +4359,145 @@ function pubBuildFile(){
     if(status) status.textContent = 'Could not build the file.';
     if(btn) btn.disabled = false;
   });
+}
+
+
+// ══ ONE-CLICK PUBLISH TO GITHUB ═════════════════════════
+// Commits data/site-content.js straight to the repository using a
+// fine-grained token. GitHub Pages rebuilds and every device picks
+// up the change within a minute or two.
+var GH_CFG_KEY = 'ssn_gh_cfg';
+
+function ghCfg(){
+  try{
+    var c = JSON.parse(localStorage.getItem(GH_CFG_KEY)||'null');
+    if(c && c.owner && c.repo) return c;
+  }catch(e){}
+  return {owner:'adityakottu', repo:'srisatyanarayananursery1', branch:'main', path:'data/site-content.js', token:''};
+}
+function ghSaveCfg(c){
+  try{ localStorage.setItem(GH_CFG_KEY, JSON.stringify(c)); return true; }catch(e){ return false; }
+}
+
+function ghSaveSettings(){
+  function val(id){ var e=document.getElementById(id); return e?e.value.trim():''; }
+  var c = ghCfg();
+  c.owner  = val('gh-owner')  || c.owner;
+  c.repo   = val('gh-repo')   || c.repo;
+  c.branch = val('gh-branch') || 'main';
+  var tok  = val('gh-token');
+  if(tok) c.token = tok;
+  c.path = 'data/site-content.js';
+  if(ghSaveCfg(c)){
+    toast('GitHub settings saved','ok');
+    ghRefreshStatus();
+    var p=document.getElementById('gh-panel'); if(p) p.style.display='none';
+    var t=document.getElementById('gh-token'); if(t) t.value='';
+  }
+}
+function ghClearToken(){
+  var c = ghCfg(); c.token='';
+  ghSaveCfg(c); ghRefreshStatus();
+  toast('Token removed','ok');
+}
+function ghTogglePanel(){
+  var p=document.getElementById('gh-panel');
+  if(!p) return;
+  var open = p.style.display !== 'none';
+  p.style.display = open ? 'none' : 'block';
+  if(!open){
+    var c=ghCfg();
+    var set=function(id,v){ var e=document.getElementById(id); if(e) e.value=v||''; };
+    set('gh-owner',c.owner); set('gh-repo',c.repo); set('gh-branch',c.branch);
+  }
+}
+function ghRefreshStatus(){
+  var c = ghCfg();
+  var dot=document.getElementById('gh-dot'), txt=document.getElementById('gh-text');
+  var btn=document.getElementById('gh-publish-btn');
+  if(c.token){
+    if(dot) dot.style.background='#3d8b4a';
+    if(txt){ txt.textContent='Connected to '+c.owner+'/'+c.repo; txt.style.color='#276027'; }
+    if(btn) btn.disabled=false;
+  } else {
+    if(dot) dot.style.background='#c9a227';
+    if(txt){ txt.textContent='Not connected — add a token to publish with one click'; txt.style.color='var(--muted)'; }
+    if(btn) btn.disabled=true;
+  }
+}
+
+function ghPublish(){
+  var c = ghCfg();
+  if(!c.token){ toast('Add a GitHub token first','err'); return; }
+  var btn=document.getElementById('gh-publish-btn');
+  var st=document.getElementById('gh-status-line');
+  if(btn) btn.disabled=true;
+  function say(msg, kind){
+    if(!st) return;
+    st.style.display='block';
+    st.innerHTML=msg;
+    st.style.color = kind==='err' ? '#8a2c22' : (kind==='ok' ? '#276027' : 'var(--muted)');
+  }
+  say('Gathering your content&hellip;');
+
+  pubCollect().then(function(data){
+    var js = '// Gangumalla\u2019s Sri Satyanarayana Nursery — published content\n'
+           + '// Published ' + new Date().toLocaleString() + '\n'
+           + 'window.SSN_PUBLISHED = ' + JSON.stringify(data) + ';\n';
+    // base64 encode, UTF-8 safe
+    var b64 = btoa(unescape(encodeURIComponent(js)));
+    var kb = Math.round(js.length/1024);
+    say('Uploading ' + kb + ' KB to GitHub&hellip;');
+
+    var api = 'https://api.github.com/repos/' + c.owner + '/' + c.repo + '/contents/' + c.path;
+    var headers = {
+      'Authorization': 'Bearer ' + c.token,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    };
+    // Need the current file's sha to replace it
+    return fetch(api + '?ref=' + encodeURIComponent(c.branch), {headers:headers})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(existing){
+        var body = {
+          message: 'Publish site content — ' + new Date().toLocaleString(),
+          content: b64,
+          branch: c.branch
+        };
+        if(existing && existing.sha) body.sha = existing.sha;
+        return fetch(api, {method:'PUT', headers:headers, body:JSON.stringify(body)});
+      })
+      .then(function(r){
+        if(r.ok) return r.json();
+        return r.json().then(function(j){
+          var m = (j && j.message) || ('HTTP ' + r.status);
+          if(r.status === 401 || r.status === 403) m = 'Token rejected. Check it has Contents: Read and write on this repository.';
+          if(r.status === 404) m = 'Repository or path not found. Check the owner and repository name.';
+          throw new Error(m);
+        });
+      })
+      .then(function(){
+        try{ localStorage.setItem('ssn_gh_last', new Date().toLocaleString()); }catch(e){}
+        say('<strong>Published.</strong> ' + kb + ' KB committed. '
+          + 'Your website updates on every device in about a minute.', 'ok');
+        toast('Published to the live website','ok');
+        if(btn) btn.disabled=false;
+      });
+  }).catch(function(err){
+    console.error('gh publish:', err);
+    say('Could not publish: ' + (err && err.message ? err.message : 'unknown error'), 'err');
+    toast('Publish failed','err');
+    if(btn) btn.disabled=false;
+  });
+}
+
+function initGithubPanel(){
+  ghRefreshStatus();
+  try{
+    var last=localStorage.getItem('ssn_gh_last');
+    var el=document.getElementById('gh-last');
+    if(last && el) el.textContent = 'Last published: ' + last;
+  }catch(e){}
 }
 
 // ══ BACKUP ══════════════════════════════════════════════
