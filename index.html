@@ -4061,8 +4061,9 @@ document.addEventListener('keydown', function(e){
 // ── Video gallery ─────────────────────────────────────────
 var SSN_DEFAULT_VIDEOS = [{"ytId": "rCQaEpac3YU", "title": "Kadiyam Nursery — Sri Satyanarayana Nursery", "desc": "కడియం నర్సరీ · శ్రీ సత్యనారాయణ నర్సరీ — East Godavari, Andhra Pradesh", "year": "2023"}, {"ytId": "fQVkLTxNhTo", "title": "Kadiyam 2025 — Latest Plants", "desc": "Satyanarayana Nursery latest collection, featured on iDream Andhra", "year": "2025"}, {"ytId": "g4_FH2t8RSA", "title": "Kadiyam January 2021", "desc": "A walk through Gangumalla Sri Satyanarayana Nursery in full seasonal bloom", "year": "2021"}, {"ytId": "GspvSwI0Rno", "title": "Kadiyam January 2020", "desc": "Rajahmundry, East Godavari District, Andhra Pradesh", "year": "2020"}, {"ytId": "1QJ15g5bIXk", "title": "Best of the Best — Kadiyam Nurseries", "desc": "Graded super fine variety plants from Kadiyam", "year": "2019"}];
 function ssnGetVideos(){
-  try{ var s=JSON.parse(localStorage.getItem('ssn_videos')||'null');
-    if(s && s.length) return s; }catch(e){}
+  try{
+    if(window.SSN_MEDIA && window.SSN_MEDIA['ssn_videos']) return window.SSN_MEDIA['ssn_videos'];
+  }catch(e){}
   return SSN_DEFAULT_VIDEOS;
 }
 function ssnPlayVideo(el, ytId){
@@ -4099,8 +4100,6 @@ var SSN_BUILTIN_GALLERY = [];
 function ssnGetGallery(){
   try{
     if(window.SSN_MEDIA && window.SSN_MEDIA['ssn_gallery']) return window.SSN_MEDIA['ssn_gallery'];
-    var s = JSON.parse(localStorage.getItem('ssn_gallery')||'null');
-    if(s && s.length) return s;
   }catch(e){}
   return SSN_BUILTIN_GALLERY;
 }
@@ -4156,8 +4155,7 @@ window.addEventListener('storage', function(e){
 // ── Plant count stats (editable via admin) ──────────────────
 var SSN_DEFAULT_STATS = [{"num": "500", "suffix": "+", "label": "Avenue Plants", "icon": "&#127795;"}, {"num": "800", "suffix": "+", "label": "Ornamental Plants", "icon": "&#127807;"}, {"num": "600", "suffix": "+", "label": "Fruit Plants", "icon": "&#127822;"}, {"num": "695", "suffix": "+", "label": "Flower Plants", "icon": "&#127804;"}];
 function ssnGetStats(){
-  try{ var s=JSON.parse(localStorage.getItem('ssn_stats')||'null');
-    if(s && s.length) return s; }catch(e){}
+  try{ if(window.SSN_MEDIA && window.SSN_MEDIA['ssn_stats']) return window.SSN_MEDIA['ssn_stats']; }catch(e){}
   return SSN_DEFAULT_STATS;
 }
 function ssnRenderStats(){
@@ -4212,8 +4210,6 @@ var SSN_DEFAULT_HERO = {
 function ssnGetHeroPhoto(){
   try{
     if(window.SSN_MEDIA && window.SSN_MEDIA['ssn_hero_portrait']) return window.SSN_MEDIA['ssn_hero_portrait'];
-    var s = JSON.parse(localStorage.getItem('ssn_hero_portrait')||'null');
-    if(s && s.src) return s;
   }catch(e){}
   return SSN_DEFAULT_HERO;
 }
@@ -4259,8 +4255,6 @@ var SSN_DEFAULT_HERITAGE = {
 function ssnGetHeritagePhoto(){
   try{
     if(window.SSN_MEDIA && window.SSN_MEDIA['ssn_heritage_photo']) return window.SSN_MEDIA['ssn_heritage_photo'];
-    var s = JSON.parse(localStorage.getItem('ssn_heritage_photo')||'null');
-    if(s && typeof s === 'object') return s;
   }catch(e){}
   return SSN_DEFAULT_HERITAGE;
 }
@@ -4293,8 +4287,6 @@ window.addEventListener('storage', function(e){
 function ssnGetChapterPhotos(){
   try{
     if(window.SSN_MEDIA && window.SSN_MEDIA['ssn_chapter_photos']) return window.SSN_MEDIA['ssn_chapter_photos'];
-    var s = JSON.parse(localStorage.getItem('ssn_chapter_photos')||'null');
-    if(s && typeof s === 'object') return s;
   }catch(e){}
   return {};
 }
@@ -4347,8 +4339,6 @@ var SSN_DEFAULT_STORY = {
 function ssnGetStoryPhoto(){
   try{
     if(window.SSN_MEDIA && window.SSN_MEDIA['ssn_story_photo']) return window.SSN_MEDIA['ssn_story_photo'];
-    var s = JSON.parse(localStorage.getItem('ssn_story_photo')||'null');
-    if(s && typeof s === 'object') return s;
   }catch(e){}
   return SSN_DEFAULT_STORY;
 }
@@ -4414,38 +4404,13 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   }
   window.ssnLoadMedia=function(key){
-    return new Promise(function(resolve){
-      // Read the local copy first, but let the database override it.
-      // A write may have reached only the database when local storage
-      // was full, leaving the local copy stale.
-      var local=null;
-      try{
-        var v=localStorage.getItem(key);
-        if(v) local=JSON.parse(v);
-      }catch(e){}
-      openDB().then(function(db){
-        var tx=db.transaction(STORE,'readonly');
-        var r=tx.objectStore(STORE).get(key);
-        r.onsuccess=function(){
-          if(!r.result){ resolve(local); return; }
-          try{
-            var fromDB=JSON.parse(r.result);
-            if(fromDB == null){ resolve(local); return; }
-            // Prefer whichever holds more, since the database is written last
-            var a=Array.isArray(fromDB)?fromDB.length:Object.keys(fromDB||{}).length;
-            var b=local ? (Array.isArray(local)?local.length:Object.keys(local||{}).length) : -1;
-            resolve(a >= b ? fromDB : local);
-          }catch(e){ resolve(local); }
-        };
-        r.onerror=function(){ resolve(local); };
-      }).catch(function(){ resolve(local); });
-    });
+    return Promise.resolve(window.SSN_PUBLISHED && window.SSN_PUBLISHED[key] != null
+      ? window.SSN_PUBLISHED[key] : null);
   };
   var KEYS=['ssn_plant_photos','ssn_gallery','ssn_hero_portrait','ssn_heritage_photo',
             'ssn_story_photo','ssn_chapter_photos','ssn_videos','ssn_stats',
             'ssn_overrides','ssn_custom_plants','ssn_vip_visitors','ssn_logo','ssn_categories'];
-  // Content published from the admin panel is the shared source of
-  // truth. A visitor's own browser storage only fills in gaps.
+  // Published content is the only visitor-facing source of truth.
   window.SSN_MEDIA = {};
   try{
     if(window.SSN_PUBLISHED && typeof window.SSN_PUBLISHED === 'object'){
@@ -4488,6 +4453,35 @@ document.addEventListener('DOMContentLoaded', function(){
       })
       .catch(function(){ return false; });
   })();
+
+  window.__ssnSyncInterval = setInterval(function(){
+    if(location.protocol === 'file:') return;
+    fetch('data/site-content.js?t=' + Date.now(), {cache:'no-store'})
+      .then(function(r){ return r.ok ? r.text() : null; })
+      .then(function(txt){
+        if(!txt) return;
+        var m = txt.match(/window\.SSN_PUBLISHED\s*=\s*([\s\S]*);\s*$/);
+        if(!m) return;
+        var fresh; try{ fresh = JSON.parse(m[1]); }catch(e){ return; }
+        if(!fresh || typeof fresh !== 'object') return;
+        var changed = false;
+        for(var k in fresh){
+          if(!fresh.hasOwnProperty(k)) continue;
+          if(JSON.stringify(window.SSN_MEDIA[k]) !== JSON.stringify(fresh[k])){
+            window.SSN_MEDIA[k] = fresh[k];
+            changed = true;
+          }
+        }
+        if(changed){
+          ['ssnRenderGallery','ssnRenderVideos','ssnRenderStats','ssnRenderHeroPhoto',
+           'ssnRenderHeritagePhoto','ssnRenderStoryPhoto','ssnRenderChapterPhotos',
+           'ssnRenderAboutPhoto','ssnApplyCardPhotos','renderAll'].forEach(function(fn){
+            try{ if(typeof window[fn]==='function') window[fn](); }catch(e){}
+          });
+        }
+      })
+      .catch(function(){ });
+  }, 12000);
 
   window.ssnMediaReady=Promise.all(KEYS.map(function(k){
     return window.ssnLoadMedia(k).then(function(v){
@@ -4552,7 +4546,6 @@ function ssnNormName(s){
 function ssnGetPlantPhotos(key, name){
   var all=null;
   if(window.SSN_MEDIA && window.SSN_MEDIA['ssn_plant_photos']) all=window.SSN_MEDIA['ssn_plant_photos'];
-  if(!all){ try{ all=JSON.parse(localStorage.getItem('ssn_plant_photos')||'{}'); }catch(e){ all={}; } }
   if(!all) return [];
 
   // 1 Exact key
@@ -4776,7 +4769,6 @@ document.addEventListener('keydown', function(e){
 function ssnApplyCardPhotos(){
   try{
     var photos = (window.SSN_MEDIA && window.SSN_MEDIA['ssn_plant_photos']) || null;
-    if(!photos){ try{ photos=JSON.parse(localStorage.getItem('ssn_plant_photos')||'{}'); }catch(e){ photos={}; } }
     var cards = document.querySelectorAll('.plant-card[data-key], .related-card[data-key]');
     for(var i=0;i<cards.length;i++){
       var key = cards[i].getAttribute('data-key');
@@ -5027,7 +5019,6 @@ function csBuild(){
 function csPhoto(key){
   try{
     var all = (window.SSN_MEDIA && window.SSN_MEDIA['ssn_plant_photos']) || null;
-    if(!all){ all = JSON.parse(localStorage.getItem('ssn_plant_photos')||'{}'); }
     if(all && all[key] && all[key].length) return all[key][0];
     var p = PLANT_DATA[key];
     if(p && p.image) return p.image;
@@ -5183,7 +5174,6 @@ if(window.ssnMediaReady) window.ssnMediaReady.then(function(){ setTimeout(csBuil
     var list = null;
     try{
       if(window.SSN_MEDIA && window.SSN_MEDIA['ssn_categories']) list = window.SSN_MEDIA['ssn_categories'];
-      if(!list){ list = JSON.parse(localStorage.getItem('ssn_categories')||'null'); }
     }catch(e){}
     if(!list || !list.length) return;
 

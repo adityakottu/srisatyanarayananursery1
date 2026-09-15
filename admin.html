@@ -13,6 +13,7 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<script src="data/site-content.js" onerror="window.SSN_PUBLISHED=window.SSN_PUBLISHED||null"></script>
 <title>Admin Panel — Gangumalla's Sri Satyanarayana Nursery</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -2005,8 +2006,8 @@ function showView(id){
     if(id==='chapters')      renderChaptersAdmin();
     if(id==='analytics')     setTimeout(renderAnalytics,80);
     if(id==='settings')      initSettingsView();
-    if(id==='gallery-admin') renderGalAdmin();
-    if(id==='videos')        renderVideosAdmin();
+    if(id==='gallery-admin') primeAdminCache(function(){ try{ renderGalAdmin(); }catch(e){} });
+    if(id==='videos')        primeAdminCache(function(){ try{ renderVideosAdmin(); }catch(e){} });
     if(id==='publish')       initPublish();
     if(id==='import-export') { try{ initBackupView(); }catch(e){} try{ initGithubPanel(); }catch(e){} }
   }catch(err){
@@ -3392,13 +3393,21 @@ function getVideos(){
   var _c = ssnCacheGet(VID_KEY);
   if(_c !== undefined && _c) return _c;
   try{ var v=localStorage.getItem(VID_KEY);
-    if(v){ var a=JSON.parse(v); if(a && a.length) return a; }
+    var localVideos = v ? JSON.parse(v) : [];
+    var publishedVideos = window.SSN_PUBLISHED && window.SSN_PUBLISHED[VID_KEY];
+    var combined = ssnMergeVideos(localVideos, publishedVideos);
+    if(combined.length) return combined;
   }catch(e){}
   return DEFAULT_VIDEOS.slice();
 }
 function saveVideos(a){
-  try{ localStorage.setItem(VID_KEY,JSON.stringify(a)); return true; }
-  catch(e){ toast('Could not save videos','err'); return false; }
+  try{
+    ssnStoreSet(VID_KEY, a, function(ok,msg){
+      if(!ok) toast(msg||'Could not save videos','err');
+      else if(msg) toast(msg,'ok');
+    });
+    return true;
+  }catch(e){ toast('Could not save videos','err'); return false; }
 }
 function ytIdFrom(url){
   if(!url) return null;
@@ -3620,6 +3629,26 @@ function ssnIdbGet(key){
 }
 
 // Saves anywhere it fits. Always resolves — never throws at the caller.
+function ssnMaybePublishToRemote(){
+  try{
+    var cfg = ghCfg ? ghCfg() : null;
+    if(!cfg || !cfg.token || !cfg.owner || !cfg.repo) return;
+    var already = localStorage.getItem('ssn_sync_lock') || '0';
+    if(already === '1') return;
+    localStorage.setItem('ssn_sync_lock', '1');
+    setTimeout(function(){
+      try{ localStorage.removeItem('ssn_sync_lock'); }catch(e){}
+      try{
+        ghPublish(true);
+      }catch(e){
+        console.warn('Auto sync failed:', e);
+      }
+    }, 600);
+  }catch(e){
+    console.warn('Auto sync check failed:', e);
+  }
+}
+
 function ssnStoreSet(key, obj, cb){
   try{ ssnCacheSet(key, obj); }catch(e){}
   var _origCb = cb;
@@ -3635,8 +3664,9 @@ function ssnStoreSet(key, obj, cb){
 
   ssnIdbSet(key,json).then(function(){
     cb && cb(true, lsOK ? null : 'Saved (large library — stored in browser database)');
+    setTimeout(function(){ ssnMaybePublishToRemote(); }, 250);
   }).catch(function(err){
-    if(lsOK){ cb && cb(true,null); return; }
+    if(lsOK){ cb && cb(true,null); setTimeout(function(){ ssnMaybePublishToRemote(); }, 250); return; }
     console.error('Both stores failed for '+key+':',err);
     cb && cb(false,'Storage is full. Remove some photos or lower the quality setting.');
   });
@@ -3664,6 +3694,7 @@ function ssnStoreGet(key, cb){
     if(fromDB == null){ cb(local); return; }
     var a = Array.isArray(fromDB) ? fromDB.length : Object.keys(fromDB||{}).length;
     var b = local ? (Array.isArray(local) ? local.length : Object.keys(local||{}).length) : -1;
+    if(key === VID_KEY){ cb(ssnMergeVideos(local, fromDB)); return; }
     cb(a >= b ? fromDB : local);
   }).catch(function(){ cb(local); });
 }
@@ -3800,6 +3831,18 @@ function ssnCacheGet(key){
   if(Object.prototype.hasOwnProperty.call(SSN_CACHE, key)) return SSN_CACHE[key];
   return undefined;
 }
+function ssnMergeVideos(first, second){
+  var result = [], seen = {};
+  [first, second].forEach(function(list){
+    if(!Array.isArray(list)) return;
+    list.forEach(function(video){
+      if(!video || !video.ytId || seen[video.ytId]) return;
+      seen[video.ytId] = true;
+      result.push(video);
+    });
+  });
+  return result;
+}
 // Pull everything into the cache once, from either store
 function ssnPrimeCache(keys, done){
   var pending = keys.length;
@@ -3808,6 +3851,11 @@ function ssnPrimeCache(keys, done){
     var settled = false;
     function finish(v){
       if(settled) return; settled = true;
+      if(k === VID_KEY){
+        v = ssnMergeVideos(v, window.SSN_PUBLISHED && window.SSN_PUBLISHED[k]);
+      } else if(v == null && window.SSN_PUBLISHED && window.SSN_PUBLISHED[k] != null){
+        v = window.SSN_PUBLISHED[k];
+      }
       if(v != null) SSN_CACHE[k] = v;
       if(--pending === 0) done && done();
     }
@@ -4455,9 +4503,12 @@ function ghRefreshStatus(){
   }
 }
 
-function ghPublish(){
+function ghPublish(silent){
   var c = ghCfg();
-  if(!c.token){ toast('Add a GitHub token first','err'); return; }
+  if(!c.token){
+    if(!silent){ toast('Add a GitHub token first','err'); }
+    return;
+  }
   var btn=document.getElementById('gh-publish-btn');
   var st=document.getElementById('gh-status-line');
   if(btn) btn.disabled=true;
@@ -4467,16 +4518,15 @@ function ghPublish(){
     st.innerHTML=msg;
     st.style.color = kind==='err' ? '#8a2c22' : (kind==='ok' ? '#276027' : 'var(--muted)');
   }
-  say('Gathering your content&hellip;');
+  if(!silent) say('Gathering your content&hellip;');
 
   pubCollect().then(function(data){
     var js = '// Gangumalla\u2019s Sri Satyanarayana Nursery — published content\n'
            + '// Published ' + new Date().toLocaleString() + '\n'
            + 'window.SSN_PUBLISHED = ' + JSON.stringify(data) + ';\n';
-    // base64 encode, UTF-8 safe
     var b64 = btoa(unescape(encodeURIComponent(js)));
     var kb = Math.round(js.length/1024);
-    say('Uploading ' + kb + ' KB to GitHub&hellip;');
+    if(!silent) say('Uploading ' + kb + ' KB to GitHub&hellip;');
 
     var api = 'https://api.github.com/repos/' + c.owner + '/' + c.repo + '/contents/' + c.path;
     var headers = {
@@ -4484,7 +4534,6 @@ function ghPublish(){
       'Accept': 'application/vnd.github+json',
       'Content-Type': 'application/json'
     };
-    // Need the current file's sha to replace it
     return fetch(api + '?ref=' + encodeURIComponent(c.branch), {headers:headers})
       .then(function(r){ return r.ok ? r.json() : null; })
       .then(function(existing){
@@ -4507,15 +4556,19 @@ function ghPublish(){
       })
       .then(function(){
         try{ localStorage.setItem('ssn_gh_last', new Date().toLocaleString()); }catch(e){}
-        say('<strong>Published.</strong> ' + kb + ' KB committed. '
-          + 'Your website updates on every device in about a minute.', 'ok');
-        toast('Published to the live website','ok');
+        if(!silent){
+          say('<strong>Published.</strong> ' + kb + ' KB committed. '
+            + 'Your website updates on every device in about a minute.', 'ok');
+          toast('Published to the live website','ok');
+        }
         if(btn) btn.disabled=false;
       });
   }).catch(function(err){
     console.error('gh publish:', err);
-    say('Could not publish: ' + (err && err.message ? err.message : 'unknown error'), 'err');
-    toast('Publish failed','err');
+    if(!silent){
+      say('Could not publish: ' + (err && err.message ? err.message : 'unknown error'), 'err');
+      toast('Publish failed','err');
+    }
     if(btn) btn.disabled=false;
   });
 }
@@ -5630,7 +5683,12 @@ var _galCapIdx=-1;
 function getGallery(){
   var c = ssnCacheGet(GAL_KEY);
   if(c !== undefined) return c || [];
-  try{ var v=localStorage.getItem(GAL_KEY); return v?JSON.parse(v):[]; }
+  try{
+    var v=localStorage.getItem(GAL_KEY);
+    if(v) return JSON.parse(v);
+    if(window.SSN_PUBLISHED && window.SSN_PUBLISHED[GAL_KEY]) return window.SSN_PUBLISHED[GAL_KEY];
+    return [];
+  }
   catch(e){ return []; }
 }
 function saveGallery(a, cb){

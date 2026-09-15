@@ -1594,25 +1594,8 @@ function vipResolveImages(p){
     });
   }
   function load(key){
-    return new Promise(function(resolve){
-      var local=null;
-      try{ var v=localStorage.getItem(key); if(v) local=JSON.parse(v); }catch(e){}
-      openDB().then(function(db){
-        var tx=db.transaction(STORE,'readonly');
-        var r=tx.objectStore(STORE).get(key);
-        r.onsuccess=function(){
-          if(!r.result){ resolve(local); return; }
-          try{
-            var fromDB=JSON.parse(r.result);
-            if(fromDB == null){ resolve(local); return; }
-            var a=Array.isArray(fromDB)?fromDB.length:Object.keys(fromDB||{}).length;
-            var b=local ? (Array.isArray(local)?local.length:Object.keys(local||{}).length) : -1;
-            resolve(a >= b ? fromDB : local);
-          }catch(e){ resolve(local); }
-        };
-        r.onerror=function(){ resolve(local); };
-      }).catch(function(){ resolve(local); });
-    });
+    return Promise.resolve(window.SSN_PUBLISHED && window.SSN_PUBLISHED[key] != null
+      ? window.SSN_PUBLISHED[key] : null);
   }
   // Content published from the admin panel is the shared source of
   // truth. A visitor's own browser storage only fills in gaps.
@@ -1659,6 +1642,27 @@ function vipResolveImages(p){
       .catch(function(){ return false; });
   })();
 
+  window.__ssnSyncInterval = setInterval(function(){
+    if(location.protocol === 'file:') return;
+    fetch('data/site-content.js?t=' + Date.now(), {cache:'no-store'})
+      .then(function(r){ return r.ok ? r.text() : null; })
+      .then(function(txt){
+        if(!txt) return;
+        var m = txt.match(/window\.SSN_PUBLISHED\s*=\s*([\s\S]*);\s*$/);
+        if(!m) return;
+        var fresh; try{ fresh = JSON.parse(m[1]); }catch(e){ return; }
+        if(!fresh || typeof fresh !== 'object') return;
+        for(var k in fresh){
+          if(!fresh.hasOwnProperty(k)) continue;
+          if(JSON.stringify(window.SSN_MEDIA[k]) !== JSON.stringify(fresh[k])){
+            window.SSN_MEDIA[k] = fresh[k];
+            try{ if(typeof renderAll === 'function') renderAll(); }catch(e){}
+          }
+        }
+      })
+      .catch(function(){ });
+  }, 12000);
+
   window.ssnMediaReady=Promise.all(
     ['ssn_plant_photos','ssn_vip_plants','ssn_vip_visitors'].map(function(k){
       return load(k).then(function(v){
@@ -1675,7 +1679,6 @@ function vipNorm(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,''
 function vipAdminPhotos(name){
   try{
     var all=(window.SSN_MEDIA&&window.SSN_MEDIA['ssn_plant_photos'])||null;
-    if(!all){ all=JSON.parse(localStorage.getItem('ssn_plant_photos')||'{}'); }
     if(!all) return [];
     var want=vipNorm(name);
     if(!want) return [];
