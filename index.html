@@ -414,6 +414,12 @@ section{padding:108px 0;}
 .g-cap{position:absolute;bottom:0;left:0;right:0;padding:11px 13px;font-size:.72rem;
   color:var(--cream);background:linear-gradient(transparent,rgba(20,35,25,.72));
   letter-spacing:.03em;}
+.gallery-intro{max-width:620px;margin-bottom:42px;}
+.gallery-intro h2{font-size:clamp(1.8rem,3.4vw,2.7rem);font-weight:300;
+  margin-top:14px;line-height:1.18;}
+.gallery-intro h2 em{font-style:italic;color:var(--gold);font-weight:500;}
+.gallery-intro p{max-width:540px;margin-top:16px;color:rgba(27,42,32,.68);
+  font-size:.94rem;font-weight:300;}
 .gallery-note{margin-top:34px;border:1px dashed var(--gold);padding:18px 22px;
   font-size:.86rem;color:var(--muted);background:var(--cream2);border-radius:4px;font-weight:300;}
 
@@ -3029,9 +3035,14 @@ nav.m-drawer-nav,
 
   <section style="background:var(--cream);padding:108px 0;">
     <div class="wrap">
+      <div class="gallery-intro reveal">
+        <span class="eyebrow">Images / gallery</span>
+        <h2>Grown here, <em>seen here.</em></h2>
+        <p>A closer look at the living collection at Kadiyapulanka &mdash; shaped by the seasons, ready for gardens, estates and interiors.</p>
+      </div>
       <div class="gallery-grid" id="gallery-grid"></div>
 
-      <div class="gallery-note<div class="gallery-note reveal">
+      <div class="gallery-note reveal">
         <strong>Our Nursery in Kadiyam</strong> &mdash; Real specimens from Gangumalla's Sri Satyanarayana Nursery. These plants are available for wholesale and retail orders. Contact us for current availability and pricing.
       </div>
     </div>
@@ -3162,7 +3173,6 @@ nav.m-drawer-nav,
           <img loading="lazy" decoding="async" src="images/gallery-e92598cf.png" alt="Gangumalla Sri Satyanarayana Nursery">
         </div>
         <div class="ft-tree-label">Est. Kadiyam &middot; Andhra Pradesh</div>
-        <span class="ft-logo-hint">Tap the mark</span>
       </div>
 
       <!-- Col 3: Navigate only -->
