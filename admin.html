@@ -3628,21 +3628,32 @@ function ssnIdbGet(key){
   });
 }
 
+var ssnPublishInFlight = false;
+var ssnPublishQueued = false;
+
 // Saves anywhere it fits. Always resolves — never throws at the caller.
 function ssnMaybePublishToRemote(){
   try{
     var cfg = ghCfg ? ghCfg() : null;
     if(!cfg || !cfg.token || !cfg.owner || !cfg.repo) return;
+    if(ssnPublishInFlight){ ssnPublishQueued = true; return; }
     var already = localStorage.getItem('ssn_sync_lock') || '0';
     if(already === '1') return;
     localStorage.setItem('ssn_sync_lock', '1');
     setTimeout(function(){
       try{ localStorage.removeItem('ssn_sync_lock'); }catch(e){}
-      try{
-        ghPublish(true);
-      }catch(e){
-        console.warn('Auto sync failed:', e);
+      ssnPublishInFlight = true;
+      var request;
+      try{ request = ghPublish(true); }catch(e){ console.warn('Auto sync failed:', e); }
+      if(!request || typeof request.then !== 'function'){
+        ssnPublishInFlight = false;
+        if(ssnPublishQueued){ ssnPublishQueued = false; ssnMaybePublishToRemote(); }
+        return;
       }
+      request.then(function(){
+        ssnPublishInFlight = false;
+        if(ssnPublishQueued){ ssnPublishQueued = false; ssnMaybePublishToRemote(); }
+      });
     }, 600);
   }catch(e){
     console.warn('Auto sync check failed:', e);
@@ -4403,7 +4414,7 @@ function pubBuildFile(){
   if(btn) btn.disabled = true;
   if(status){ status.style.display='block'; status.textContent = 'Gathering your content…'; }
 
-  pubCollect().then(function(data){
+  return pubCollect().then(function(data){
     var js = '// Gangumalla\u2019s Sri Satyanarayana Nursery — published content\n'
            + '// Generated ' + new Date().toLocaleString() + '\n'
            + '// Upload this file to GitHub as  data/site-content.js\n'
@@ -4520,7 +4531,7 @@ function ghPublish(silent){
   }
   if(!silent) say('Gathering your content&hellip;');
 
-  pubCollect().then(function(data){
+  return pubCollect().then(function(data){
     var js = '// Gangumalla\u2019s Sri Satyanarayana Nursery — published content\n'
            + '// Published ' + new Date().toLocaleString() + '\n'
            + 'window.SSN_PUBLISHED = ' + JSON.stringify(data) + ';\n';

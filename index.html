@@ -938,15 +938,35 @@ footer{background:var(--green-deep);color:rgba(248,243,232,.5);padding:0;overflo
   background:rgba(10,16,12,.93);backdrop-filter:blur(8px);
   align-items:center;justify-content:center;flex-direction:column;}
 .g-lightbox.open{display:flex;}
-.g-lightbox-img{max-width:95vw;max-height:85vh;object-fit:contain;
-  border-radius:4px;box-shadow:0 20px 60px rgba(0,0,0,.6);}
+.g-lightbox-img{max-width:88vw;max-height:78vh;object-fit:contain;
+  border-radius:4px;box-shadow:0 20px 60px rgba(0,0,0,.6);
+  transform:translate(0,0) scale(1);transform-origin:center;transition:transform .2s ease;
+  cursor:grab;user-select:none;-webkit-user-select:none;}
+.g-lightbox-img.is-panning{cursor:grabbing;transition:none;}
 .g-lightbox-cap{color:rgba(248,243,232,.7);font-size:.84rem;
-  margin-top:12px;text-align:center;max-width:600px;}
+  margin-top:12px;text-align:center;max-width:600px;padding:0 20px;}
 .g-lightbox-close{position:absolute;top:20px;right:24px;
   background:rgba(255,255,255,.1);border:none;color:#fff;
   width:36px;height:36px;border-radius:50%;font-size:1.1rem;
   cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .g-lightbox-close:hover{background:rgba(255,255,255,.2);}
+.g-lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);
+  color:#fff;width:46px;height:64px;border-radius:4px;font-size:2rem;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.g-lightbox-nav:hover{background:rgba(255,255,255,.2);}
+.g-lightbox-prev{left:24px;}.g-lightbox-next{right:24px;}
+.g-lightbox-tools{display:flex;align-items:center;gap:8px;margin-top:16px;}
+.g-lightbox-tool{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);
+  color:#fff;min-width:38px;height:34px;border-radius:3px;font-size:1rem;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.g-lightbox-tool:hover{background:rgba(255,255,255,.2);}
+@media(max-width:600px){
+  .g-lightbox-img{max-width:82vw;max-height:70vh;}
+  .g-lightbox-nav{width:36px;height:50px;font-size:1.5rem;}
+  .g-lightbox-prev{left:8px;}.g-lightbox-next{right:8px;}
+  .g-lightbox-close{top:12px;right:12px;}
+}
 
 
 .agent-notice{background:#fff8e6;border:1px solid rgba(185,137,63,.4);border-left:4px solid #b9893f;border-radius:6px;padding:18px 22px;margin:30px 0 0;}
@@ -2492,9 +2512,10 @@ nav.m-drawer-nav,
 
 </style>
   <script src="data/plants.js"></script>
-  <script src="data/site-content.js" onerror="window.SSN_PUBLISHED=window.SSN_PUBLISHED||null"></script>
+  <script src="data/site-content.js" defer onerror="window.SSN_PUBLISHED=window.SSN_PUBLISHED||null"></script>
 </head>
 <body>
+<noscript><div style="padding:14px 20px;background:#142319;color:#f8f3e8;text-align:center;font:500 .85rem/1.5 Inter,sans-serif;">Please enable JavaScript to browse the full catalog and gallery. Call or WhatsApp us at <a href="tel:+919440179027" style="color:#e3c88a;">+91 94401 79027</a>.</div></noscript>
 <script>
 (function(){
   // Clear legacy categories and seeded plants that predate the catalog sheet
@@ -2521,7 +2542,7 @@ nav.m-drawer-nav,
 <!-- ══ NAV ═════════════════════════════════════════════════════ -->
 <div class="nav-wrap">
 <nav>
-      <button class="m-menu-btn" id="m-menu-btn" onclick="mDrawerToggle()" aria-label="Open menu" type="button"><span class="m-menu-dots"><i></i><i></i><i></i></span></button>
+      <button class="m-menu-btn" id="m-menu-btn" onclick="mDrawerToggle()" aria-label="Open menu" aria-expanded="false" aria-controls="m-drawer" type="button"><span class="m-menu-dots"><i></i><i></i><i></i></span></button>
     <div class="brand" onclick="showPage('home')">
     <img loading="lazy" decoding="async" src="images/gallery-e92598cf.png" alt="Gangumalla Sri Satyanarayana Nursery" class="brand-logo-img">
     <div>
@@ -3110,17 +3131,17 @@ nav.m-drawer-nav,
         <div class="contact-card">
           <h3>Request a Consultation</h3>
           <p>For private estate orders, bulk landscaping enquiries, or a guided tour, send us a note and we&rsquo;ll respond promptly.</p>
-          <div class="form-row"><label class="form-label">Your Name</label><input type="text" placeholder="Full name"></div>
-          <div class="form-row"><label class="form-label">Phone / WhatsApp</label><input type="text" placeholder="+91 "></div>
-          <div class="form-row"><label class="form-label">I am a&hellip;</label>
-            <select style="background:rgba(248,243,232,.07);border:1px solid rgba(248,243,232,.2);color:var(--cream);padding:10px 13px;width:100%;border-radius:2px;">
+          <div class="form-row"><label class="form-label" for="enquiry-name">Your Name</label><input id="enquiry-name" name="name" type="text" placeholder="Full name" autocomplete="name" required></div>
+          <div class="form-row"><label class="form-label" for="enquiry-phone">Phone / WhatsApp</label><input id="enquiry-phone" name="phone" type="tel" placeholder="+91 " autocomplete="tel" required></div>
+          <div class="form-row"><label class="form-label" for="enquiry-type">I am a&hellip;</label>
+            <select id="enquiry-type" name="customerType" style="background:rgba(248,243,232,.07);border:1px solid rgba(248,243,232,.2);color:var(--cream);padding:10px 13px;width:100%;border-radius:2px;">
               <option>Home gardener</option><option>Landscaper / Contractor</option>
               <option>Retail nursery</option><option>Estate / Resort</option><option>Other</option>
             </select></div>
-          <div class="form-row"><label class="form-label">What are you looking for?</label><textarea rows="4" placeholder="Plant types, quantity, delivery location..."></textarea></div>
+          <div class="form-row"><label class="form-label" for="enquiry-message">What are you looking for?</label><textarea id="enquiry-message" name="message" rows="4" placeholder="Plant types, quantity, delivery location..." required></textarea></div>
           <div class="enquiry-options" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;">
-          <a href="mailto:srisatyanarayananursery@yahoo.co.in?subject=Plant%20Enquiry%20—%20Gangumalla's%20Sri%20Satyanarayana%20Nursery" class="btn btn-green" style="text-decoration:none;flex:1;justify-content:center;min-width:160px;">&#9993; Send Email Enquiry</a>
-          <a href="https://wa.me/919440179027?text=Hello%2C%20I%20came%20across%20your%20website%20and%20would%20like%20to%20enquire%20about%20plants%20from%20Gangumalla%27s%20Sri%20Satyanarayana%20Nursery.%0A%0ACould%20you%20please%20share%20your%20catalogue%20and%20current%20availability%3F" target="_blank" rel="noopener" class="btn" style="background:#25D366;color:#fff;text-decoration:none;flex:1;justify-content:center;min-width:160px;">&#128172; WhatsApp Us</a>
+          <button type="button" class="btn btn-green" onclick="sendEnquiry('email')" style="flex:1;justify-content:center;min-width:160px;">&#9993; Send Email Enquiry</button>
+          <button type="button" class="btn" onclick="sendEnquiry('whatsapp')" style="background:#25D366;color:#fff;flex:1;justify-content:center;min-width:160px;">&#128172; WhatsApp Us</button>
         </div>
         </div>
       </div>
@@ -3279,6 +3300,10 @@ function showPlant(key){
   try{
     var p = document.getElementById('page-plant');
     if(p && !p.classList.contains('active')) showPage('plant');
+    if(PLANT_DATA[key]){
+      var plantHash='#plant/'+encodeURIComponent(key);
+      if(location.hash!==plantHash) history.replaceState({page:'plant',plant:key},'',plantHash);
+    }
   }catch(e){}
 }
 function _showPlant(key) {
@@ -3407,7 +3432,7 @@ function goBack() {
 const ALL_PAGES = ['home','about','catalog','clients','gallery','contact','plant'];
 let catalogReady = false;
 
-function showPage(id, catFilter) {
+function showPage(id, catFilter, routeOptions) {
   ALL_PAGES.forEach(p => {
     document.getElementById('page-'+p).classList.remove('active');
     const n = document.getElementById('nav-'+p);
@@ -3427,7 +3452,65 @@ function showPage(id, catFilter) {
     else { filterCat(prevCat); }
   }
   setTimeout(triggerReveals, 80);
+  if(!routeOptions || routeOptions.push !== false){
+    var hash='#'+id;
+    if(id==='catalog' && catFilter && catFilter!=='all') hash+='/'+encodeURIComponent(catFilter);
+    if(location.hash!==hash) history.pushState({page:id,category:catFilter||''},'',hash);
+  }
 }
+
+function enquiryValue(id){
+  var el=document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+function sendEnquiry(channel){
+  var name=enquiryValue('enquiry-name');
+  var phone=enquiryValue('enquiry-phone');
+  var customerType=enquiryValue('enquiry-type');
+  var message=enquiryValue('enquiry-message');
+  if(!name || !phone || !message){
+    var firstMissing=!name ? 'enquiry-name' : (!phone ? 'enquiry-phone' : 'enquiry-message');
+    var field=document.getElementById(firstMissing);
+    if(field){ field.focus(); field.setCustomValidity('Please complete this field.'); field.reportValidity(); field.setCustomValidity(''); }
+    return;
+  }
+  var body=[
+    'Hello, I would like to enquire about plants from Gangumalla\'s Sri Satyanarayana Nursery.',
+    '',
+    'Name: '+name,
+    'Phone / WhatsApp: '+phone,
+    'Customer type: '+customerType,
+    'Requirements: '+message
+  ].join('\n');
+  if(channel==='email'){
+    window.location.href='mailto:srisatyanarayananursery@yahoo.co.in?subject='
+      +encodeURIComponent('Plant enquiry - '+name)+'&body='+encodeURIComponent(body);
+    return;
+  }
+  if(channel==='whatsapp'){
+    window.open('https://wa.me/919440179027?text='+encodeURIComponent(body),'_blank','noopener,noreferrer');
+  }
+}
+
+function routeFromLocation(){
+  var route=(location.hash||'#home').slice(1).split('/');
+  var page=route[0] || 'home';
+  if(ALL_PAGES.indexOf(page)<0) page='home';
+  if(page==='plant'){
+    var plantKey=route.slice(1).join('/');
+    try{ plantKey=decodeURIComponent(plantKey); }catch(e){ plantKey=''; }
+    if(plantKey && PLANT_DATA[plantKey]) showPlant(plantKey);
+    else showPage('catalog', null, {push:false});
+    return;
+  }
+  var category=page==='catalog' && route[1] ? decodeURIComponent(route[1]) : null;
+  showPage(page, category, {push:false});
+}
+
+window.addEventListener('popstate', routeFromLocation);
+window.addEventListener('hashchange', routeFromLocation);
+document.addEventListener('DOMContentLoaded', routeFromLocation);
 
 // ── Catalog filter ────────────────────────────────────────────────
 function initCatalog() {
@@ -4041,26 +4124,120 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
 <!-- Gallery lightbox -->
-<div class="g-lightbox" id="g-lightbox" onclick="closeGalleryLightbox()">
-  <button class="g-lightbox-close" onclick="closeGalleryLightbox()">&#10005;</button>
-  <img class="g-lightbox-img" id="g-lb-img" alt="" style="display:none;">
+<div class="g-lightbox" id="g-lightbox" onclick="closeGalleryLightbox()" role="dialog" aria-modal="true" aria-label="Gallery photo viewer">
+  <button class="g-lightbox-close" onclick="closeGalleryLightbox(event)" aria-label="Close photo viewer">&#10005;</button>
+  <button class="g-lightbox-nav g-lightbox-prev" onclick="galleryLightboxStep(-1,event)" aria-label="Previous gallery photo">&#8249;</button>
+  <img class="g-lightbox-img" id="g-lb-img" alt="" style="display:none;" onclick="event.stopPropagation()" ondblclick="resetGalleryZoom();event.stopPropagation()">
+  <button class="g-lightbox-nav g-lightbox-next" onclick="galleryLightboxStep(1,event)" aria-label="Next gallery photo">&#8250;</button>
   <div class="g-lightbox-cap" id="g-lb-cap"></div>
+  <div class="g-lightbox-tools" onclick="event.stopPropagation()">
+    <button class="g-lightbox-tool" onclick="zoomGallery(-.25)" aria-label="Zoom out" title="Zoom out">&minus;</button>
+    <button class="g-lightbox-tool" onclick="zoomGallery(.25)" aria-label="Zoom in" title="Zoom in">&plus;</button>
+  </div>
 </div>
 
 
 <script>
-function openGalleryLightbox(src, cap){
-  var _lb=document.getElementById('g-lb-img'); if(_lb){ _lb.src=src; _lb.style.display=''; }
-  document.getElementById('g-lb-cap').textContent = cap || '';
+var SSN_GALLERY_LIGHTBOX_ITEMS = [];
+var ssnGalleryLightboxIndex = 0;
+var ssnGalleryZoom = 1;
+var ssnGalleryPanX = 0;
+var ssnGalleryPanY = 0;
+var ssnGalleryDragging = false;
+var ssnGalleryDragStartX = 0;
+var ssnGalleryDragStartY = 0;
+var ssnGalleryDragOriginX = 0;
+var ssnGalleryDragOriginY = 0;
+
+function renderGalleryLightbox(){
+  var item=SSN_GALLERY_LIGHTBOX_ITEMS[ssnGalleryLightboxIndex];
+  var image=document.getElementById('g-lb-img');
+  if(!item || !image) return;
+  image.src=item.src;
+  image.alt=item.cap || 'Nursery gallery photo';
+  image.style.display='';
+  document.getElementById('g-lb-cap').textContent=item.cap || '';
+  image.style.transform='translate('+ssnGalleryPanX+'px,'+ssnGalleryPanY+'px) scale('+ssnGalleryZoom+')';
+  var hasMultiple=SSN_GALLERY_LIGHTBOX_ITEMS.length>1;
+  document.querySelector('.g-lightbox-prev').style.display=hasMultiple?'flex':'none';
+  document.querySelector('.g-lightbox-next').style.display=hasMultiple?'flex':'none';
+}
+function openGalleryLightbox(src, cap, index){
+  if(index !== undefined) ssnGalleryLightboxIndex=index;
+  else {
+    for(var i=0;i<SSN_GALLERY_LIGHTBOX_ITEMS.length;i++){
+      if(SSN_GALLERY_LIGHTBOX_ITEMS[i].src===src){ ssnGalleryLightboxIndex=i; break; }
+    }
+  }
+  ssnGalleryZoom=1;
+  ssnGalleryPanX=0;
+  ssnGalleryPanY=0;
+  renderGalleryLightbox();
   document.getElementById('g-lightbox').classList.add('open');
   document.body.style.overflow = 'hidden';
+  document.querySelector('.g-lightbox-close').focus();
 }
-function closeGalleryLightbox(){
+function galleryLightboxStep(direction, event){
+  if(event) event.stopPropagation();
+  var total=SSN_GALLERY_LIGHTBOX_ITEMS.length;
+  if(total<2) return;
+  ssnGalleryLightboxIndex=(ssnGalleryLightboxIndex+direction+total)%total;
+  ssnGalleryZoom=1;
+  ssnGalleryPanX=0;
+  ssnGalleryPanY=0;
+  renderGalleryLightbox();
+}
+function zoomGallery(direction){
+  var factor=direction>0 ? 1.25 : .8;
+  ssnGalleryZoom=Math.max(.5,Math.min(100,ssnGalleryZoom*factor));
+  if(ssnGalleryZoom<=1){ ssnGalleryPanX=0; ssnGalleryPanY=0; }
+  renderGalleryLightbox();
+}
+function resetGalleryZoom(){
+  ssnGalleryZoom=1;
+  ssnGalleryPanX=0;
+  ssnGalleryPanY=0;
+  renderGalleryLightbox();
+}
+function closeGalleryLightbox(event){
+  if(event) event.stopPropagation();
   document.getElementById('g-lightbox').classList.remove('open');
   document.body.style.overflow = '';
 }
+document.getElementById('g-lb-img').addEventListener('wheel', function(e){
+  if(!document.getElementById('g-lightbox').classList.contains('open')) return;
+  e.preventDefault();
+  zoomGallery(e.deltaY<0 ? 1 : -1);
+},{passive:false});
+document.getElementById('g-lb-img').addEventListener('mousedown', function(e){
+  if(ssnGalleryZoom<=1) return;
+  e.preventDefault();
+  ssnGalleryDragging=true;
+  ssnGalleryDragStartX=e.clientX;
+  ssnGalleryDragStartY=e.clientY;
+  ssnGalleryDragOriginX=ssnGalleryPanX;
+  ssnGalleryDragOriginY=ssnGalleryPanY;
+  this.classList.add('is-panning');
+});
+document.addEventListener('mousemove', function(e){
+  if(!ssnGalleryDragging) return;
+  ssnGalleryPanX=ssnGalleryDragOriginX+(e.clientX-ssnGalleryDragStartX);
+  ssnGalleryPanY=ssnGalleryDragOriginY+(e.clientY-ssnGalleryDragStartY);
+  renderGalleryLightbox();
+});
+document.addEventListener('mouseup', function(){
+  ssnGalleryDragging=false;
+  var image=document.getElementById('g-lb-img');
+  if(image) image.classList.remove('is-panning');
+});
 document.addEventListener('keydown', function(e){
+  if(!document.getElementById('g-lightbox').classList.contains('open')) return;
   if(e.key==='Escape') closeGalleryLightbox();
+  if(e.key==='ArrowLeft') galleryLightboxStep(-1);
+  if(e.key==='ArrowRight') galleryLightboxStep(1);
+  if(e.key==='+' || e.key==='=') zoomGallery(1);
+  if(e.key==='-' || e.key==='_') zoomGallery(-1);
+  if(e.key==='0') resetGalleryZoom();
 });
 </script>
 
@@ -4114,7 +4291,7 @@ function ssnGetGallery(){
   return SSN_BUILTIN_GALLERY;
 }
 
-function ssnBuildGalleryCard(p, i, total){
+function ssnBuildGalleryCard(p, i, total, lightboxIndex){
   var d = document.createElement('div');
   var isTall = (p.tall === true) || (p.tall === undefined && (i===0 || i===Math.floor(total/2)));
   d.className = 'g-frame' + (isTall ? ' g-tall' : '');
@@ -4128,7 +4305,7 @@ function ssnBuildGalleryCard(p, i, total){
       +'<span class="g-cap">'+cap+'</span>';
   } else if(p.src){
     d.style.cursor = 'pointer';
-    d.onclick = function(){ openGalleryLightbox(p.src, cap); };
+    d.onclick = function(){ openGalleryLightbox(p.src, cap, lightboxIndex); };
     d.innerHTML = '<img src="'+p.src+'" alt="'+cap+'" loading="lazy">'
       +'<span class="g-cap">'+cap+'</span>';
   }
@@ -4139,6 +4316,13 @@ function ssnRenderGallery(){
   var grid = document.getElementById('gallery-grid');
   if(!grid) return;
   var items = ssnGetGallery();
+  SSN_GALLERY_LIGHTBOX_ITEMS = [];
+  for(var photoIndex=0;photoIndex<items.length;photoIndex++){
+    var photo=items[photoIndex];
+    if(photo && photo.src && photo.type!=='video' && photo.type!=='youtube'){
+      SSN_GALLERY_LIGHTBOX_ITEMS.push({src:photo.src,cap:photo.caption||''});
+    }
+  }
   grid.innerHTML = '';
   if(!items.length){
     grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:70px 20px;">'
@@ -4149,8 +4333,11 @@ function ssnRenderGallery(){
       + '</div>';
     return;
   }
+  var lightboxIndex=0;
   for(var i=0;i<items.length;i++){
-    grid.appendChild(ssnBuildGalleryCard(items[i], i, items.length));
+    var item=items[i];
+    var itemLightboxIndex=(item && item.src && item.type!=='video' && item.type!=='youtube') ? lightboxIndex++ : -1;
+    grid.appendChild(ssnBuildGalleryCard(item, i, items.length, itemLightboxIndex));
   }
 }
 
@@ -4429,6 +4616,27 @@ document.addEventListener('DOMContentLoaded', function(){
       }
     }
   }catch(e){}
+  function syncDeferredPublished(){
+    if(!window.SSN_PUBLISHED || typeof window.SSN_PUBLISHED !== 'object') return;
+    var changed=false;
+    for(var _dk in window.SSN_PUBLISHED){
+      if(!window.SSN_PUBLISHED.hasOwnProperty(_dk)) continue;
+      if(window.SSN_MEDIA[_dk] !== window.SSN_PUBLISHED[_dk]){
+        window.SSN_MEDIA[_dk] = window.SSN_PUBLISHED[_dk];
+        changed=true;
+      }
+    }
+    if(changed){
+      setTimeout(function(){
+        ['ssnRenderGallery','ssnRenderVideos','ssnRenderStats','ssnRenderHeroPhoto',
+         'ssnRenderHeritagePhoto','ssnRenderStoryPhoto','ssnRenderChapterPhotos',
+         'ssnRenderAboutPhoto','ssnApplyCardPhotos'].forEach(function(fn){
+          try{ if(typeof window[fn]==='function') window[fn](); }catch(e){}
+        });
+      },0);
+    }
+  }
+  document.addEventListener('DOMContentLoaded', syncDeferredPublished);
 
   // GitHub Pages caches files aggressively, so a freshly published
   // site-content.js can sit unseen for hours. Re-fetch it with the
@@ -4463,35 +4671,6 @@ document.addEventListener('DOMContentLoaded', function(){
       })
       .catch(function(){ return false; });
   })();
-
-  window.__ssnSyncInterval = setInterval(function(){
-    if(location.protocol === 'file:') return;
-    fetch('data/site-content.js?t=' + Date.now(), {cache:'no-store'})
-      .then(function(r){ return r.ok ? r.text() : null; })
-      .then(function(txt){
-        if(!txt) return;
-        var m = txt.match(/window\.SSN_PUBLISHED\s*=\s*([\s\S]*);\s*$/);
-        if(!m) return;
-        var fresh; try{ fresh = JSON.parse(m[1]); }catch(e){ return; }
-        if(!fresh || typeof fresh !== 'object') return;
-        var changed = false;
-        for(var k in fresh){
-          if(!fresh.hasOwnProperty(k)) continue;
-          if(JSON.stringify(window.SSN_MEDIA[k]) !== JSON.stringify(fresh[k])){
-            window.SSN_MEDIA[k] = fresh[k];
-            changed = true;
-          }
-        }
-        if(changed){
-          ['ssnRenderGallery','ssnRenderVideos','ssnRenderStats','ssnRenderHeroPhoto',
-           'ssnRenderHeritagePhoto','ssnRenderStoryPhoto','ssnRenderChapterPhotos',
-           'ssnRenderAboutPhoto','ssnApplyCardPhotos','renderAll'].forEach(function(fn){
-            try{ if(typeof window[fn]==='function') window[fn](); }catch(e){}
-          });
-        }
-      })
-      .catch(function(){ });
-  }, 12000);
 
   window.ssnMediaReady=Promise.all(KEYS.map(function(k){
     return window.ssnLoadMedia(k).then(function(v){
@@ -4778,7 +4957,7 @@ document.addEventListener('keydown', function(e){
 // ── Show uploaded photos on catalog cards ───────────────────
 function ssnApplyCardPhotos(){
   try{
-    var photos = (window.SSN_MEDIA && window.SSN_MEDIA['ssn_plant_photos']) || null;
+    var photos = (window.SSN_MEDIA && window.SSN_MEDIA['ssn_plant_photos']) || {};
     var cards = document.querySelectorAll('.plant-card[data-key], .related-card[data-key]');
     for(var i=0;i<cards.length;i++){
       var key = cards[i].getAttribute('data-key');
@@ -4851,7 +5030,7 @@ if(window.ssnMediaReady) window.ssnMediaReady.then(function(){ ssnApplyCardPhoto
 
 <!-- Mobile navigation drawer -->
 <div class="m-backdrop" id="m-backdrop" onclick="mDrawerClose()"></div>
-<aside class="m-drawer" id="m-drawer">
+<aside class="m-drawer" id="m-drawer" aria-label="Mobile navigation" aria-hidden="true">
   <div class="m-drawer-head">
     <img loading="lazy" decoding="async" src="images/gallery-e92598cf.png" alt="Gangumalla Nursery">
     <div>
@@ -4887,6 +5066,8 @@ function mDrawerOpen(){
   if(d) d.classList.add('open');
   if(b) b.classList.add('open');
   if(t) t.classList.add('open');
+  if(t) { t.setAttribute('aria-expanded','true'); t.setAttribute('aria-label','Close menu'); }
+  if(d) d.setAttribute('aria-hidden','false');
   mSyncActive();
   if(navigator.vibrate){ try{ navigator.vibrate(8); }catch(e){} }
 }
@@ -4897,6 +5078,8 @@ function mDrawerClose(){
   if(d) d.classList.remove('open');
   if(b) b.classList.remove('open');
   if(t) t.classList.remove('open');
+  if(t) { t.setAttribute('aria-expanded','false'); t.setAttribute('aria-label','Open menu'); }
+  if(d) d.setAttribute('aria-hidden','true');
 }
 function mGo(page){
   mDrawerClose();

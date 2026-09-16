@@ -124,6 +124,11 @@ section{padding:90px 0;}
 .fsel option{background:var(--green-deep);}
 .bsub{width:100%;background:var(--gold);color:var(--green-deep);padding:12px;font-size:.86rem;font-weight:600;letter-spacing:.04em;border-radius:var(--radius);transition:background .2s;margin-top:5px;}
 .bsub:hover{background:var(--gold-l);}
+.vip-enquiry-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:5px;}
+.vip-enquiry-actions button{flex:1;min-width:170px;padding:13px 18px;border-radius:4px;
+  font-size:.86rem;font-weight:600;cursor:pointer;}
+.vip-email-btn{background:var(--gold);color:var(--green-deep);}
+.vip-wa-btn{background:#25D366;color:#fff;}
 .cib{margin-bottom:28px;}
 .cib .cl{font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:7px;display:block;}
 .cib .cv{font-size:.88rem;color:rgba(248,243,232,.6);font-weight:300;line-height:1.62;}
@@ -820,18 +825,21 @@ section{padding:90px 0;}
         <div class="eq-card reveal">
           <h3>Send Your Enquiry</h3>
           <p>Tell us what you&rsquo;re interested in and we&rsquo;ll be in touch promptly.</p>
-          <div class="frow"><label class="flbl">Your Name</label><input class="finp" placeholder="Full name"></div>
-          <div class="frow"><label class="flbl">Phone / WhatsApp</label><input class="finp" placeholder="+91 "></div>
-          <div class="frow"><label class="flbl">Plant(s) of Interest</label><input class="finp" id="enq-plant" placeholder="e.g. Bismarck Palm..."></div>
-          <div class="frow"><label class="flbl">Quantity &amp; Purpose</label>
-            <select class="fsel">
+          <div class="frow"><label class="flbl" for="vip-enq-name">Your Name</label><input class="finp" id="vip-enq-name" name="name" placeholder="Full name" autocomplete="name" required></div>
+          <div class="frow"><label class="flbl" for="vip-enq-phone">Phone / WhatsApp</label><input class="finp" id="vip-enq-phone" name="phone" type="tel" placeholder="+91 " autocomplete="tel" required></div>
+          <div class="frow"><label class="flbl" for="enq-plant">Plant(s) of Interest</label><input class="finp" id="enq-plant" name="plants" placeholder="e.g. Bismarck Palm..." required></div>
+          <div class="frow"><label class="flbl" for="vip-enq-purpose">Quantity &amp; Purpose</label>
+            <select class="fsel" id="vip-enq-purpose" name="purpose">
               <option>Single specimen — home garden</option>
               <option>Multiple specimens — landscape project</option>
               <option>Large bulk — commercial / estate</option>
               <option>Gift / special occasion</option>
             </select></div>
-          <div class="frow"><label class="flbl">Additional Notes</label><textarea class="fta" rows="3" placeholder="Delivery location, timing…"></textarea></div>
-          <button style="background:#b9893f;color:#142319;border:none;border-radius:4px;padding:13px 28px;font-size:.9rem;font-weight:600;cursor:pointer;" class="bsub" onclick="alert('Thank you — connect a form handler to receive live submissions.')">Send Private Enquiry</button>
+          <div class="frow"><label class="flbl" for="vip-enq-notes">Additional Notes</label><textarea class="fta" id="vip-enq-notes" name="notes" rows="3" placeholder="Delivery location, timing…"></textarea></div>
+          <div class="vip-enquiry-actions">
+            <button type="button" class="vip-email-btn" onclick="sendVipEnquiry('email')">&#9993; Send Email Enquiry</button>
+            <button type="button" class="vip-wa-btn" onclick="sendVipEnquiry('whatsapp')">&#128172; WhatsApp Us</button>
+          </div>
         </div>
         <div class="reveal">
           <div class="cib"><span class="cl">Our Nursery</span><div class="cv">Gangumalla Satyanarayana &amp; Bros<br>Kadiyapulanka Village, Kadiyam Mandal<br>East Godavari District, Andhra Pradesh &ndash; 533126</div></div>
@@ -1039,6 +1047,40 @@ function closeMod(e){
   if(e&&e.target!==document.getElementById('mb-ov')) return;
   document.getElementById('mb-ov').classList.remove('open');
   document.body.style.overflow='';
+}
+function vipEnquiryValue(id){
+  var el=document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+function sendVipEnquiry(channel){
+  var name=vipEnquiryValue('vip-enq-name');
+  var phone=vipEnquiryValue('vip-enq-phone');
+  var plants=vipEnquiryValue('enq-plant');
+  var purpose=vipEnquiryValue('vip-enq-purpose');
+  var notes=vipEnquiryValue('vip-enq-notes');
+  if(!name || !phone || !plants){
+    var missing=!name ? 'vip-enq-name' : (!phone ? 'vip-enq-phone' : 'enq-plant');
+    var field=document.getElementById(missing);
+    if(field){ field.focus(); field.setCustomValidity('Please complete this field.'); field.reportValidity(); field.setCustomValidity(''); }
+    return;
+  }
+  var body=[
+    'Hello, I would like to enquire about the private collection at Gangumalla\'s Sri Satyanarayana Nursery.',
+    '',
+    'Name: '+name,
+    'Phone / WhatsApp: '+phone,
+    'Plant(s) of interest: '+plants,
+    'Quantity & purpose: '+purpose,
+    'Additional notes: '+(notes || 'None')
+  ].join('\n');
+  if(channel==='email'){
+    window.location.href='mailto:srisatyanarayananursery@yahoo.co.in?subject='
+      +encodeURIComponent('VIP private enquiry - '+name)+'&body='+encodeURIComponent(body);
+    return;
+  }
+  if(channel==='whatsapp'){
+    window.open('https://wa.me/919440179027?text='+encodeURIComponent(body),'_blank','noopener,noreferrer');
+  }
 }
 function enqAbout(){closeMod();document.getElementById('enq-plant').value=curName;document.getElementById('eq-sec').scrollIntoView({behavior:'smooth'});}
 document.addEventListener('keydown',function(e){if(e.key==='Escape') closeMod();});
