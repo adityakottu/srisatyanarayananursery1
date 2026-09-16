@@ -4380,6 +4380,26 @@ var PUB_KEYS = ['ssn_gallery','ssn_plant_photos','ssn_custom_plants','ssn_overri
   'ssn_categories','ssn_vip_plants','ssn_vip_visitors','ssn_videos','ssn_stats',
   'ssn_hero_portrait','ssn_heritage_photo','ssn_story_photo','ssn_chapter_photos','ssn_logo'];
 
+function pubNormalize(data){
+  var photos=data.ssn_plant_photos || {};
+  var overrides=data.ssn_overrides || {};
+  var cleaned=Object.assign({}, data);
+  var cleanedOverrides=Object.assign({}, overrides);
+  var changed=false;
+  for(var key in cleanedOverrides){
+    if(!cleanedOverrides.hasOwnProperty(key)) continue;
+    var override=cleanedOverrides[key];
+    var plantPhotos=photos[key];
+    if(!override || !override.image || !Array.isArray(plantPhotos) || plantPhotos.indexOf(override.image)<0) continue;
+    var copy=Object.assign({}, override);
+    delete copy.image;
+    cleanedOverrides[key]=copy;
+    changed=true;
+  }
+  if(changed) cleaned.ssn_overrides=cleanedOverrides;
+  return cleaned;
+}
+
 function pubCollect(){
   return new Promise(function(resolve){
     // Make sure every key is loaded from whichever store holds it
@@ -4396,7 +4416,7 @@ function pubGather(resolve){
       function finish(v){
         if(settled) return; settled = true;
         if(v != null) out[k] = v;
-        if(--pending === 0) resolve(out);
+        if(--pending === 0) resolve(pubNormalize(out));
       }
       // Prefer exactly what the admin is showing right now
       try{

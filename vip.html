@@ -585,9 +585,17 @@ section{padding:90px 0;}
   background:rgba(10,18,12,.72);border:1px solid rgba(185,137,63,.3);
   color:#e3c88a;border-radius:13px;padding:3px 10px;font-size:.65rem;letter-spacing:.08em;
 }
+.vpg-controls{grid-column:2;display:flex;justify-content:center;align-items:center;gap:8px;margin-top:2px;}
+.vpg-tool,.vpg-next-below{background:rgba(185,137,63,.14);border:1px solid rgba(185,137,63,.42);
+  color:#e3c88a;border-radius:4px;min-width:38px;height:34px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:.95rem;}
+.vpg-tool:hover,.vpg-next-below:hover{background:rgba(185,137,63,.28);}
+.vpg-next-below{padding:0 14px;font-size:.76rem;letter-spacing:.04em;}
+@media(max-width:700px){.vpg-controls{grid-column:1;}}
 .vdet-gallery.single .vpg-rail,
 .vdet-gallery.single .vpg-arrow,
-.vdet-gallery.single .vpg-count{display:none;}
+.vdet-gallery.single .vpg-count,
+.vdet-gallery.single .vpg-next-below{display:none;}
 .vdet-gallery.single{grid-template-columns:1fr;}
 
 
@@ -605,7 +613,8 @@ section{padding:90px 0;}
 #vdet-gallery.single{grid-template-columns:1fr;}
 #vdet-gallery.single .vpg-rail,
 #vdet-gallery.single .vpg-arrow,
-#vdet-gallery.single .vpg-count{display:none !important;}
+#vdet-gallery.single .vpg-count,
+#vdet-gallery.single .vpg-next-below{display:none !important;}
 
 #vdet-gallery .vpg-stage{
   position:relative;width:100%;aspect-ratio:4/5;
@@ -1327,13 +1336,13 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 
 // ── VIP gallery — Amazon-style with magnifier ───────────────
-var _vpgPhotos=[], _vpgCur=0;
+var _vpgPhotos=[], _vpgCur=0, _vpgZoomScale=1;
 
 function vpgRender(images, name){
   var gal=document.getElementById('vdet-gallery');
   var hero=document.getElementById('vdet-hero');
   if(!gal) return;
-  _vpgPhotos=(images||[]).slice(0,5); _vpgCur=0;
+  _vpgPhotos=(images||[]).slice(0,5); _vpgCur=0; _vpgZoomScale=1;
   if(!_vpgPhotos.length){
     gal.style.display='none';
     if(hero) hero.style.display='';
@@ -1356,6 +1365,7 @@ function vpgRender(images, name){
 function vpgGo(i){
   if(!_vpgPhotos.length) return;
   _vpgCur=(i+_vpgPhotos.length)%_vpgPhotos.length;
+  _vpgZoomScale=1;
   var t=document.getElementById('vpg-track');
   if(t) t.style.transform='translateX(-'+(_vpgCur*100)+'%)';
   var ths=document.querySelectorAll('.vpg-thumb');
@@ -1369,8 +1379,18 @@ function vpgGo(i){
   if(c) c.textContent=(_vpgCur+1)+' / '+_vpgPhotos.length;
   var z=document.getElementById('vpg-zoom');
   if(z) z.style.backgroundImage='url("'+_vpgPhotos[_vpgCur]+'")';
+  vpgApplyZoom();
 }
 function vpgNav(d){ vpgGo(_vpgCur+d); }
+function vpgApplyZoom(){
+  var images=document.querySelectorAll('#vdet-gallery .vpg-slide img');
+  for(var i=0;i<images.length;i++) images[i].style.transform=i===_vpgCur?'scale('+_vpgZoomScale+')':'';
+}
+function vpgZoom(direction){
+  _vpgZoomScale=Math.max(.5,Math.min(4,_vpgZoomScale*(direction>0?1.25:.8)));
+  if(_vpgZoomScale<=1) _vpgZoomScale=1;
+  vpgApplyZoom();
+}
 
 document.addEventListener('mouseover', function(e){
   var th=e.target.closest ? e.target.closest('.vpg-thumb') : null;
@@ -1583,6 +1603,11 @@ function vipResolveImages(p){
       <button class="vpg-arrow vpg-next" onclick="vpgNav(1)" aria-label="Next">&#8250;</button>
       <div class="vpg-count" id="vpg-count"></div>
     </div>
+    <div class="vpg-controls">
+      <button class="vpg-tool" onclick="vpgZoom(-1)" aria-label="Zoom out" title="Zoom out">&#128269;</button>
+      <button class="vpg-tool" onclick="vpgZoom(1)" aria-label="Zoom in" title="Zoom in">&#128270;</button>
+      <button class="vpg-next-below" onclick="vpgNav(1)" aria-label="Next VIP plant image" title="Next VIP plant image">&#8594; Next image</button>
+    </div>
   </div>
   <div style="padding:22px 18px 0;max-width:700px;margin:0 auto;">
     <div id="vdet-bot" style="font-size:.75rem;color:rgba(248,243,232,.38);font-style:italic;margin-bottom:5px;"></div>
@@ -1650,60 +1675,8 @@ function vipResolveImages(p){
     }
   }catch(e){}
 
-  // GitHub Pages caches files aggressively, so a freshly published
-  // site-content.js can sit unseen for hours. Re-fetch it with the
-  // cache bypassed and re-render if it differs.
-  window.ssnPublishedReady = (function(){
-    if(location.protocol === 'file:') return Promise.resolve(false);
-    var url = 'data/site-content.js?t=' + Date.now();
-    return fetch(url, {cache:'no-store'})
-      .then(function(r){ return r.ok ? r.text() : null; })
-      .then(function(txt){
-        if(!txt) return false;
-        var m = txt.match(/window\.SSN_PUBLISHED\s*=\s*([\s\S]*);\s*$/);
-        if(!m) return false;
-        var fresh;
-        try{ fresh = JSON.parse(m[1]); }catch(e){ return false; }
-        if(!fresh || typeof fresh !== 'object') return false;
-        var changed = false;
-        for(var k in fresh){
-          if(!fresh.hasOwnProperty(k)) continue;
-          var a = JSON.stringify(fresh[k]);
-          var b = JSON.stringify(window.SSN_MEDIA[k]);
-          if(a !== b){ window.SSN_MEDIA[k] = fresh[k]; changed = true; }
-        }
-        if(changed){
-          ['ssnRenderGallery','ssnRenderVideos','ssnRenderStats','ssnRenderHeroPhoto',
-           'ssnRenderHeritagePhoto','ssnRenderStoryPhoto','ssnRenderChapterPhotos',
-           'ssnRenderAboutPhoto','ssnApplyCardPhotos','renderAll'].forEach(function(fn){
-            try{ if(typeof window[fn]==='function') window[fn](); }catch(e){}
-          });
-        }
-        return changed;
-      })
-      .catch(function(){ return false; });
-  })();
-
-  window.__ssnSyncInterval = setInterval(function(){
-    if(location.protocol === 'file:') return;
-    fetch('data/site-content.js?t=' + Date.now(), {cache:'no-store'})
-      .then(function(r){ return r.ok ? r.text() : null; })
-      .then(function(txt){
-        if(!txt) return;
-        var m = txt.match(/window\.SSN_PUBLISHED\s*=\s*([\s\S]*);\s*$/);
-        if(!m) return;
-        var fresh; try{ fresh = JSON.parse(m[1]); }catch(e){ return; }
-        if(!fresh || typeof fresh !== 'object') return;
-        for(var k in fresh){
-          if(!fresh.hasOwnProperty(k)) continue;
-          if(JSON.stringify(window.SSN_MEDIA[k]) !== JSON.stringify(fresh[k])){
-            window.SSN_MEDIA[k] = fresh[k];
-            try{ if(typeof renderAll === 'function') renderAll(); }catch(e){}
-          }
-        }
-      })
-      .catch(function(){ });
-  }, 12000);
+  // The script tag above is the single published-content request.
+  window.ssnPublishedReady = Promise.resolve(false);
 
   window.ssnMediaReady=Promise.all(
     ['ssn_plant_photos','ssn_vip_plants','ssn_vip_visitors'].map(function(k){

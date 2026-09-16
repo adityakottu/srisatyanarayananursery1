@@ -1823,6 +1823,11 @@ nav{
 .pg-arrow:hover{transform:translateY(-50%) scale(1.08);}
 .pg-prev{left:9px;} .pg-next{right:9px;}
 @media(hover:none){.pg-arrow{opacity:.9;}}
+.pg-next-below{display:none;margin:12px auto 0;background:var(--green);color:var(--cream);
+  border:1px solid rgba(185,137,63,.55);border-radius:var(--radius);padding:8px 18px;
+  font-size:.76rem;letter-spacing:.05em;cursor:pointer;}
+.pg-next-below:hover{background:var(--green-deep);}
+.plant-gallery:not(.single) .pg-next-below{display:block;}
 
 .pg-count{
   position:absolute;top:10px;right:10px;z-index:3;
@@ -2978,6 +2983,7 @@ nav.m-drawer-nav,
             <button class="pg-arrow pg-next" onclick="pgNav(1)" aria-label="Next">&#8250;</button>
             <div class="pg-count" id="pg-count"></div>
           </div>
+          <button class="pg-next-below" onclick="pgNav(1)" aria-label="Next plant image" title="Next plant image">&#8594; Next image</button>
         </div>
       </div>
       <div>
@@ -4131,8 +4137,8 @@ document.addEventListener('DOMContentLoaded', function(){
   <button class="g-lightbox-nav g-lightbox-next" onclick="galleryLightboxStep(1,event)" aria-label="Next gallery photo">&#8250;</button>
   <div class="g-lightbox-cap" id="g-lb-cap"></div>
   <div class="g-lightbox-tools" onclick="event.stopPropagation()">
-    <button class="g-lightbox-tool" onclick="zoomGallery(-.25)" aria-label="Zoom out" title="Zoom out">&minus;</button>
-    <button class="g-lightbox-tool" onclick="zoomGallery(.25)" aria-label="Zoom in" title="Zoom in">&plus;</button>
+    <button class="g-lightbox-tool" onclick="zoomGallery(-1)" aria-label="Zoom out" title="Zoom out">&#128269;</button>
+    <button class="g-lightbox-tool" onclick="zoomGallery(1)" aria-label="Zoom in" title="Zoom in">&#128270;</button>
   </div>
 </div>
 
@@ -4638,39 +4644,8 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   document.addEventListener('DOMContentLoaded', syncDeferredPublished);
 
-  // GitHub Pages caches files aggressively, so a freshly published
-  // site-content.js can sit unseen for hours. Re-fetch it with the
-  // cache bypassed and re-render if it differs.
-  window.ssnPublishedReady = (function(){
-    if(location.protocol === 'file:') return Promise.resolve(false);
-    var url = 'data/site-content.js?t=' + Date.now();
-    return fetch(url, {cache:'no-store'})
-      .then(function(r){ return r.ok ? r.text() : null; })
-      .then(function(txt){
-        if(!txt) return false;
-        var m = txt.match(/window\.SSN_PUBLISHED\s*=\s*([\s\S]*);\s*$/);
-        if(!m) return false;
-        var fresh;
-        try{ fresh = JSON.parse(m[1]); }catch(e){ return false; }
-        if(!fresh || typeof fresh !== 'object') return false;
-        var changed = false;
-        for(var k in fresh){
-          if(!fresh.hasOwnProperty(k)) continue;
-          var a = JSON.stringify(fresh[k]);
-          var b = JSON.stringify(window.SSN_MEDIA[k]);
-          if(a !== b){ window.SSN_MEDIA[k] = fresh[k]; changed = true; }
-        }
-        if(changed){
-          ['ssnRenderGallery','ssnRenderVideos','ssnRenderStats','ssnRenderHeroPhoto',
-           'ssnRenderHeritagePhoto','ssnRenderStoryPhoto','ssnRenderChapterPhotos',
-           'ssnRenderAboutPhoto','ssnApplyCardPhotos','renderAll'].forEach(function(fn){
-            try{ if(typeof window[fn]==='function') window[fn](); }catch(e){}
-          });
-        }
-        return changed;
-      })
-      .catch(function(){ return false; });
-  })();
+  // The script tag above is the single published-content request.
+  window.ssnPublishedReady = Promise.resolve(false);
 
   window.ssnMediaReady=Promise.all(KEYS.map(function(k){
     return window.ssnLoadMedia(k).then(function(v){
