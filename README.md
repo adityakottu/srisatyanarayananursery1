@@ -37,4 +37,19 @@ pages from the shared source:
 The generator also refreshes `data/plant-routes.js`; commit both the generated
 `plants/` directory and that route map when publishing.
 
+## Release checks
+
+Run the static contract test before publishing:
+
+	ruby tools/test-site.rb
+
+To include the deployed GitHub Pages smoke checks:
+
+	LIVE_BASE_URL=https://adityakottu.github.io/srisatyanarayananursery1/ ruby tools/test-site.rb
+
+Admin changes are synchronized to the public and VIP pages through the shared
+`data/site-content.js` payload when **Publish Now** completes. Changes to the
+catalogue source still require regenerating and committing the static `plants/`
+pages separately.
+
 Contact: +91 94401 79027 · srisatyanarayananursery@yahoo.co.in
