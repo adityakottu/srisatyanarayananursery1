@@ -201,11 +201,19 @@ section{padding:108px 0;}
 
 /* ─── Who We Supply ───────────────────────────────────────── */
 .supply-section{background:var(--cream3);}
-.supply-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
-.supply-card{background:var(--cream3);padding:28px 24px;min-height:178px;}
-.supply-icon{font-size:1.65rem;line-height:1;margin-bottom:18px;}
-.supply-card h3{font-size:1.08rem;font-weight:500;margin-bottom:7px;}
-.supply-card p{font-size:.86rem;color:rgba(27,42,32,.68);font-weight:300;line-height:1.55;}
+.supply-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;}
+.supply-card{background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:28px 24px 25px;min-height:218px;position:relative;overflow:hidden;transition:transform .28s ease,box-shadow .28s ease,border-color .28s;}
+.supply-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green-deep),var(--gold));opacity:0;transition:opacity .28s;}
+.supply-card:hover,.supply-card:focus-within{transform:translateY(-5px);box-shadow:0 16px 40px rgba(20,35,25,.1);border-color:rgba(185,137,63,.3);}
+.supply-card:hover::after,.supply-card:focus-within::after{opacity:1;}
+.supply-card:nth-child(2){transition-delay:.04s}.supply-card:nth-child(3){transition-delay:.08s}
+.supply-card:nth-child(4){transition-delay:.12s}.supply-card:nth-child(5){transition-delay:.16s}
+.supply-card:nth-child(6){transition-delay:.2s}.supply-card:nth-child(7){transition-delay:.24s}
+.supply-card:nth-child(8){transition-delay:.28s}.supply-card:nth-child(9){transition-delay:.32s}
+.supply-icon{width:64px;height:64px;border-radius:50%;border:2px solid var(--gold);background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:1.65rem;line-height:1;margin:0 auto 18px;transition:transform .32s ease,background .28s;}
+.supply-card:hover .supply-icon,.supply-card:focus-within .supply-icon{transform:scale(1.08) rotate(-4deg);background:#f4ead5;}
+.supply-card h3{font-size:1.08rem;font-weight:500;margin-bottom:7px;text-align:center;line-height:1.25;}
+.supply-card p{font-size:.86rem;color:rgba(27,42,32,.68);font-weight:300;line-height:1.55;text-align:center;}
 .supply-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px;}
 
 /* ─── Testimonial ─────────────────────────────────────────── */
@@ -528,7 +536,7 @@ section{padding:108px 0;}
   .plant-hero-art{width:200px;height:200px;margin-bottom:24px;}
   .cred-grid,.related-grid{grid-template-columns:repeat(2,1fr);}
   .preview-grid,.gallery-grid{grid-template-columns:repeat(2,1fr);}
-    .supply-grid{grid-template-columns:repeat(2,1fr);}
+    .supply-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
   .process-row{grid-template-columns:1fr;gap:26px;}
   .care-bar-inner{gap:0;}
 }
@@ -630,6 +638,7 @@ footer{background:var(--green-deep);color:rgba(248,243,232,.5);padding:0;overflo
 }
 @media(max-width:900px){
   .ft-main{grid-template-columns:1fr;gap:32px;padding:44px 0 36px;}
+  .supply-card{min-height:0;padding:24px 20px 23px;}
   .ft-tree-wrap{display:none;}
 }
 
