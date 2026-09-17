@@ -4446,6 +4446,16 @@ function pubBuildFile(){
     a.href = URL.createObjectURL(blob);
     a.download = 'site-content.js';
     a.click();
+    // Second file: the freshness marker
+    setTimeout(function(){
+      var vBlob = new Blob([JSON.stringify({v: String(Date.now()), at:new Date().toISOString()}) + '\n'],
+                           {type:'application/json'});
+      var vA = document.createElement('a');
+      vA.href = URL.createObjectURL(vBlob);
+      vA.download = 'version.json';
+      vA.click();
+      setTimeout(function(){ URL.revokeObjectURL(vA.href); }, 1500);
+    }, 900);
     setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1500);
 
     var counts = [];
@@ -4534,6 +4544,29 @@ function ghRefreshStatus(){
   }
 }
 
+
+// Commit a single file to the repository
+function ghPutFile(c, path, text){
+  var api = 'https://api.github.com/repos/' + c.owner + '/' + c.repo + '/contents/' + path;
+  var headers = {
+    'Authorization': 'Bearer ' + c.token,
+    'Accept': 'application/vnd.github+json',
+    'Content-Type': 'application/json'
+  };
+  var b64 = btoa(unescape(encodeURIComponent(text)));
+  return fetch(api + '?ref=' + encodeURIComponent(c.branch), {headers:headers})
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(existing){
+      var body = {
+        message: 'Publish — ' + new Date().toLocaleString(),
+        content: b64,
+        branch: c.branch
+      };
+      if(existing && existing.sha) body.sha = existing.sha;
+      return fetch(api, {method:'PUT', headers:headers, body:JSON.stringify(body)});
+    });
+}
+
 function ghPublish(silent){
   var c = ghCfg();
   if(!c.token){
@@ -4551,7 +4584,9 @@ function ghPublish(silent){
   }
   if(!silent) say('Gathering your content&hellip;');
 
+  var pubVersion = String(Date.now());
   return pubCollect().then(function(data){
+    data.__v = pubVersion;          // lets visitors detect a new publish cheaply
     var js = '// Gangumalla\u2019s Sri Satyanarayana Nursery — published content\n'
            + '// Published ' + new Date().toLocaleString() + '\n'
            + 'window.SSN_PUBLISHED = ' + JSON.stringify(data) + ';\n';
@@ -4584,6 +4619,13 @@ function ghPublish(silent){
           if(r.status === 404) m = 'Repository or path not found. Check the owner and repository name.';
           throw new Error(m);
         });
+      })
+      .then(function(){
+        // Tiny marker so visitors can tell a new publish happened
+        // without downloading the whole content file.
+        return ghPutFile(c, 'data/version.json',
+          JSON.stringify({v: pubVersion, at: new Date().toISOString()}) + '\n')
+          .catch(function(e){ console.warn('version.json:', e); });
       })
       .then(function(){
         try{ localStorage.setItem('ssn_gh_last', new Date().toLocaleString()); }catch(e){}

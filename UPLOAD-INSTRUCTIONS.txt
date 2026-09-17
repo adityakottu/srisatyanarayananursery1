@@ -1,18 +1,30 @@
 UPLOADING TO GITHUB
 
-FIRST TIME
-  1  github.com/adityakottu/srisatyanarayananursery1
-  2  Add file > Upload files
-  3  Select EVERYTHING inside this folder (Ctrl+A / Cmd+A) and drag
-     the CONTENTS onto the page — not the folder itself
-  4  Commit changes
+Re-upload:
+   index.html
+   vip.html
+   admin.html
+   data/version.json
 
-THEN SET UP ONE-CLICK PUBLISHING (once)
-  1  github.com/settings/tokens > Fine-grained tokens > Generate new
-  2  Repository access: Only select repositories > srisatyanarayananursery1
-  3  Repository permissions > Contents: Read and write
-  4  Copy the token
-  5  Admin > Import & Export > Connection settings > paste > Save & Connect
+Do NOT upload data/site-content.js — your next "Publish Now" rewrites it.
 
-  From then on, just press "Publish Now" after making changes.
-  Your photos appear on every device within a minute.
+
+WHAT WAS CAUSING "Uncaught Error: Script error."
+
+Six <img> tags had src="" (an empty value). A browser treats that as
+"fetch the current page as an image", which always fails. Some browsers
+report that failure as an opaque "Script error." with no detail.
+
+Those placeholders now carry no src attribute at all. The page sets a
+real one when a photo exists, and leaves the tag empty when it does not.
+
+
+IF YOU EVER SEE IT AGAIN
+
+Open the site with ?debug=1 on the end, like:
+
+  https://adityakottu.github.io/srisatyanarayananursery1/?debug=1
+
+A red panel appears at the bottom listing exactly what failed — the file,
+the line, and the message. Send me a photo of it and I can fix the real
+cause instead of guessing. Without ?debug=1 nothing is shown to visitors.

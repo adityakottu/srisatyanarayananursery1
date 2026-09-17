@@ -2,6 +2,66 @@
 <html lang="en">
 <head>
 <script>
+// ── Error reporting ─────────────────────────────────────────
+// "Script error." is what a browser shows when it refuses to reveal
+// details of a cross-origin failure. This records what it can and,
+// with ?debug=1 in the address, shows it on screen.
+(function(){
+  var c = window.console = window.console || {};
+  ['log','info','warn','error','debug'].forEach(function(m){
+    if(typeof c[m] !== 'function') c[m] = function(){};
+  });
+
+  var DEBUG = /[?&]debug=1/.test(location.search);
+  window.SSN_ERRORS = [];
+
+  function record(kind, detail){
+    window.SSN_ERRORS.push(detail);
+    if(!DEBUG) return;
+    var box = document.getElementById('ssn-debug');
+    if(!box){
+      box = document.createElement('div');
+      box.id = 'ssn-debug';
+      box.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:99999;max-height:45vh;'
+        + 'overflow:auto;background:#1a0f0f;color:#ffd9d9;font:12px/1.5 monospace;'
+        + 'padding:10px 12px;border-top:2px solid #b84040;';
+      (document.body||document.documentElement).appendChild(box);
+    }
+    var row = document.createElement('div');
+    row.style.cssText = 'padding:5px 0;border-bottom:1px solid rgba(255,255,255,.12);';
+    row.textContent = kind + ' — ' + detail;
+    box.appendChild(row);
+  }
+
+  window.addEventListener('error', function(e){
+    // A failed resource (stylesheet, image, script file)
+    if(e.target && e.target !== window && e.target.tagName){
+      var url = e.target.src || e.target.href || '(unknown)';
+      record('RESOURCE FAILED', e.target.tagName + ' ' + String(url).slice(0, 120));
+      e.stopImmediatePropagation();
+      if(e.preventDefault) e.preventDefault();
+      return true;
+    }
+    // A genuine script error
+    var where = (e.filename ? e.filename.split('/').pop() : '?') + ':' + (e.lineno||'?') + ':' + (e.colno||'?');
+    var stack = (e.error && e.error.stack) ? String(e.error.stack).split('\n').slice(0,3).join(' | ') : '';
+    record('SCRIPT ERROR', (e.message||'(no message)') + '  @' + where + (stack ? '  ' + stack : ''));
+  }, true);
+
+  window.addEventListener('unhandledrejection', function(e){
+    var r = e.reason;
+    var msg = String((r && (r.message || r)) || 'unknown');
+    if(/Failed to fetch|NetworkError|Load failed/i.test(msg)){
+      if(e.preventDefault) e.preventDefault();   // optional content, harmless
+      record('FETCH FAILED (ignored)', msg.slice(0,120));
+      return;
+    }
+    record('PROMISE REJECTED', msg.slice(0,160));
+  });
+})();
+</script>
+
+<script>
 // Some browsers lack parts of the console API — make every call safe
 (function(){
   var c = window.console = window.console || {};
@@ -2516,8 +2576,8 @@ nav.m-drawer-nav,
 .m-drawer-foot a{width:100% !important;box-sizing:border-box;}
 
 </style>
-  <script src="data/plants.js"></script>
-  <script src="data/site-content.js" defer onerror="window.SSN_PUBLISHED=window.SSN_PUBLISHED||null"></script>
+  <script src="data/plants.js" crossorigin="anonymous"></script>
+  <script src="data/site-content.js" crossorigin="anonymous" defer onerror="window.SSN_PUBLISHED=window.SSN_PUBLISHED||null"></script>
 </head>
 <body>
 <noscript><div style="padding:14px 20px;background:#142319;color:#f8f3e8;text-align:center;font:500 .85rem/1.5 Inter,sans-serif;">Please enable JavaScript to browse the full catalog and gallery. Call or WhatsApp us at <a href="tel:+919440179027" style="color:#e3c88a;">+91 94401 79027</a>.</div></noscript>
@@ -2598,7 +2658,7 @@ nav.m-drawer-nav,
       </div>
         </div>
         <div class="hero-portrait" id="hero-portrait">
-          <img id="hero-portrait-img" src="" alt="Sri Satyanarayana Nursery, Kadiyapulanka">
+          <img id="hero-portrait-img" alt="Sri Satyanarayana Nursery, Kadiyapulanka">
           <div class="hero-portrait-frame"></div>
           <div class="hero-portrait-badge" id="hero-portrait-badge">&#9670; Since 1963</div>
           <div class="hero-portrait-cap">
@@ -2622,7 +2682,7 @@ nav.m-drawer-nav,
       </div>
       <div class="heritage-art reveal">
         <div class="heritage-photo" id="heritage-photo">
-          <img id="heritage-photo-img" src="" alt="Gangumalla Satyanarayana &amp; Bros at the nursery">
+          <img id="heritage-photo-img" alt="Gangumalla Satyanarayana &amp; Bros at the nursery">
           <div class="heritage-photo-frame"></div>
           <div class="heritage-photo-cap">
             <div class="hp-label" id="heritage-photo-label">The Family</div>
@@ -2775,7 +2835,7 @@ nav.m-drawer-nav,
 <div id="page-about" class="page">
   <div class="page-hero">
     <div class="story-photo-layer">
-      <img id="story-photo-img" src="" alt="Sri Satyanarayana Nursery, Kadiyapulanka">
+      <img id="story-photo-img" alt="Sri Satyanarayana Nursery, Kadiyapulanka">
     </div>
     <div class="story-scrim"></div>
     <div class="story-badge" id="story-badge">&#9670; Est. 1963</div>
@@ -2797,7 +2857,7 @@ nav.m-drawer-nav,
       </div>
       <div class="heritage-art reveal">
         <div class="heritage-photo" id="about-photo">
-          <img id="about-photo-img" src="" alt="Gangumalla Satyanarayana &amp; Bros">
+          <img id="about-photo-img" alt="Gangumalla Satyanarayana &amp; Bros">
           <div class="heritage-photo-frame"></div>
           <div class="heritage-photo-cap">
             <div class="hp-label" id="about-photo-label">The Family</div>
@@ -4424,7 +4484,7 @@ function ssnRenderHeroPhoto(){
   var p = ssnGetHeroPhoto();
   if(!p || !p.src){ wrap.style.display='none'; return; }
   wrap.style.display='';
-  img.src = p.src;
+  if(p.src) img.src = p.src;
   var lb = document.getElementById('hero-portrait-label');
   var tx = document.getElementById('hero-portrait-text');
   var bd = document.getElementById('hero-portrait-badge');
@@ -4469,7 +4529,7 @@ function ssnRenderHeritagePhoto(){
   var p = ssnGetHeritagePhoto();
   if(!p || !p.src){ wrap.style.display='none'; return; }
   wrap.style.display='';
-  img.src = p.src;
+  if(p.src) img.src = p.src;
   var lb=document.getElementById('heritage-photo-label');
   var tx=document.getElementById('heritage-photo-text');
   if(lb) lb.innerHTML = p.label || '';
@@ -4516,7 +4576,7 @@ function ssnRenderAboutPhoto(){
   var wrap=document.getElementById('about-photo');
   if(!p || !p.src){ if(wrap) wrap.style.display='none'; return; }
   if(wrap) wrap.style.display='';
-  img.src=p.src;
+  if(p.src) img.src = p.src;
   var lb=document.getElementById('about-photo-label');
   var tx=document.getElementById('about-photo-text');
   if(lb) lb.innerHTML=p.label||'';
@@ -4552,7 +4612,7 @@ function ssnRenderStoryPhoto(){
   var layer=img.parentElement;
   if(!p || !p.src){ if(layer) layer.style.display='none'; return; }
   if(layer) layer.style.display='';
-  img.src=p.src;
+  if(p.src) img.src = p.src;
   var bd=document.getElementById('story-badge');
   if(bd){
     if(p.badge){ bd.innerHTML=p.badge; bd.style.display=''; }
@@ -4645,7 +4705,59 @@ document.addEventListener('DOMContentLoaded', function(){
   document.addEventListener('DOMContentLoaded', syncDeferredPublished);
 
   // The script tag above is the single published-content request.
-  window.ssnPublishedReady = Promise.resolve(false);
+  // ── Published-content freshness check ─────────────────────
+  // site-content.js is cached by GitHub Pages, so a fresh publish can
+  // sit unseen. Fetch a tiny version file with the cache bypassed and
+  // only re-download the big file when the version has actually moved.
+  window.ssnPublishedReady = (function(){
+    if(location.protocol === 'file:') return Promise.resolve(false);
+
+    function currentVersion(){
+      try{
+        if(window.SSN_PUBLISHED && window.SSN_PUBLISHED.__v) return String(window.SSN_PUBLISHED.__v);
+      }catch(e){}
+      return null;
+    }
+
+    return fetch('data/version.json?t=' + Date.now(), {cache:'no-store'})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(info){
+        if(!info || !info.v) return false;
+        var loaded = currentVersion();
+        if(loaded && String(info.v) === loaded) return false;   // already current
+
+        // Version moved — pull the published file, bypassing the cache
+        return fetch('data/site-content.js?v=' + encodeURIComponent(info.v), {cache:'no-store'})
+          .then(function(r){ return r.ok ? r.text() : null; })
+          .then(function(txt){
+            if(!txt) return false;
+            var m = txt.match(/window\.SSN_PUBLISHED\s*=\s*([\s\S]*?);\s*$/);
+            if(!m) return false;
+            var fresh;
+            try{ fresh = JSON.parse(m[1]); }catch(e){ return false; }
+            if(!fresh || typeof fresh !== 'object') return false;
+
+            var changed = false;
+            for(var k in fresh){
+              if(!fresh.hasOwnProperty(k) || k === '__v') continue;
+              if(JSON.stringify(fresh[k]) !== JSON.stringify(window.SSN_MEDIA[k])){
+                window.SSN_MEDIA[k] = fresh[k];
+                changed = true;
+              }
+            }
+            window.SSN_PUBLISHED = fresh;
+            if(changed){
+              ['ssnRenderGallery','ssnRenderVideos','ssnRenderStats','ssnRenderHeroPhoto',
+               'ssnRenderHeritagePhoto','ssnRenderStoryPhoto','ssnRenderChapterPhotos',
+               'ssnRenderAboutPhoto','ssnApplyCardPhotos','renderAll'].forEach(function(fn){
+                try{ if(typeof window[fn] === 'function') window[fn](); }catch(e){}
+              });
+            }
+            return changed;
+          });
+      })
+      .catch(function(){ return false; });
+  })();
 
   window.ssnMediaReady=Promise.all(KEYS.map(function(k){
     return window.ssnLoadMedia(k).then(function(v){
@@ -4687,7 +4799,7 @@ function paintHeroCircle(art, photos, name){
     old.className = 'pha-img';
     art.insertBefore(old, art.firstChild);
   }
-  old.src = photos[0];
+  if(photos[0]) old.src = photos[0];
   old.alt = name || '';
   art.classList.add('has-photo');
   if(photos.length > 1){

@@ -2,6 +2,34 @@
 <html lang="en">
 <head>
 <script>
+// Some console tools report a failed stylesheet or image as an opaque
+// "Script error." Resource failures are harmless here — the site has
+// fallback fonts and every image is optional — so swallow those and
+// let genuine script errors through with their real detail.
+(function(){
+  var c = window.console = window.console || {};
+  ['log','info','warn','error','debug'].forEach(function(m){
+    if(typeof c[m] !== 'function') c[m] = function(){};
+  });
+  window.addEventListener('error', function(e){
+    // e.target is an element when a resource (link, img, script) failed
+    if(e.target && e.target !== window && e.target.tagName){
+      e.stopImmediatePropagation();
+      if(e.preventDefault) e.preventDefault();
+      return true;
+    }
+  }, true);
+  window.addEventListener('unhandledrejection', function(e){
+    // A failed fetch for optional content should not surface as an error
+    var r = e.reason;
+    if(r && /Failed to fetch|NetworkError|Load failed/i.test(String(r.message || r))){
+      if(e.preventDefault) e.preventDefault();
+    }
+  });
+})();
+</script>
+
+<script>
 // Some browsers lack parts of the console API — make every call safe
 (function(){
   var c = window.console = window.console || {};
@@ -585,13 +613,11 @@ section{padding:90px 0;}
   background:rgba(10,18,12,.72);border:1px solid rgba(185,137,63,.3);
   color:#e3c88a;border-radius:13px;padding:3px 10px;font-size:.65rem;letter-spacing:.08em;
 }
-.vpg-controls{grid-column:2;display:flex;justify-content:center;align-items:center;gap:8px;margin-top:2px;}
-.vpg-tool,.vpg-next-below{background:rgba(185,137,63,.14);border:1px solid rgba(185,137,63,.42);
-  color:#e3c88a;border-radius:4px;min-width:38px;height:34px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;font-size:.95rem;}
-.vpg-tool:hover,.vpg-next-below:hover{background:rgba(185,137,63,.28);}
+
+
+
 .vpg-next-below{padding:0 14px;font-size:.76rem;letter-spacing:.04em;}
-@media(max-width:700px){.vpg-controls{grid-column:1;}}
+@media(max-width:700px){}
 .vdet-gallery.single .vpg-rail,
 .vdet-gallery.single .vpg-arrow,
 .vdet-gallery.single .vpg-count,
@@ -758,6 +784,55 @@ section{padding:90px 0;}
   font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;
   color:rgba(248,243,232,.6);text-shadow:0 1px 6px rgba(0,0,0,.9);pointer-events:none;}
 
+
+/* ══ VIP zoom — magnify inside the frame, never beside it ══ */
+#vdet-gallery .vpg-stage{
+  overflow:hidden !important;      /* nothing escapes the frame now */
+  cursor:zoom-in;
+}
+#vdet-gallery .vpg-stage.zooming{cursor:crosshair;}
+/* The side panel and lens are retired */
+#vdet-gallery .vpg-zoom,
+#vdet-gallery .vpg-lens{display:none !important;}
+
+/* The zoomed view sits over the image, filling the frame */
+#vdet-gallery .vpg-inner-zoom{
+  position:absolute;inset:0;z-index:8;
+  background-repeat:no-repeat;
+  background-color:#0a1208;
+  opacity:0;pointer-events:none;
+  transition:opacity .18s ease;
+  border-radius:12px;
+}
+#vdet-gallery .vpg-stage.zooming .vpg-inner-zoom{opacity:1;}
+#vdet-gallery .vpg-hint{
+  position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+  z-index:9;pointer-events:none;
+  background:rgba(10,18,12,.72);border:1px solid rgba(185,137,63,.3);
+  color:rgba(248,243,232,.8);border-radius:14px;padding:4px 12px;
+  font-size:.66rem;letter-spacing:.06em;
+  opacity:0;transition:opacity .22s;
+}
+#vdet-gallery .vpg-stage:hover .vpg-hint{opacity:1;}
+#vdet-gallery .vpg-stage.zooming .vpg-hint{opacity:0;}
+@media(hover:none){#vdet-gallery .vpg-hint{display:none;}}
+
+
+/* ══ VIP zoom controls — inside the frame, always centred ══ */
+#vdet-gallery{position:relative;}
+
+/* Show on hover, and always on touch where hovering is impossible */
+
+@media(hover:none){
+  
+}
+
+
+/* Stage must clip so the buttons and zoom stay within the frame */
+#vdet-gallery .vpg-stage{position:relative;overflow:hidden !important;}
+/* On a single-photo plant nothing should stray into a second column */
+#vdet-gallery.single > *{grid-column:1 !important;}
+
 </style>
   <script src="data/site-content.js" onerror="window.SSN_PUBLISHED=window.SSN_PUBLISHED||null"></script>
 </head>
@@ -792,7 +867,7 @@ section{padding:90px 0;}
   <div class="vip-sect" id="vip-main-sects">
   <section class="vip-hero">
     <svg class="hero-orn" viewBox="0 0 600 700">
-      <path d="M300 60C300 60 500 170 500 360 500 510 300 620 300 620 300 620 100 510 100 360 100 170 300 60Z"/>
+      <path d="M300 60C300 60 500 170 500 360 500 510 300 620 300 620 300 620 100 510 100 360 100 170 200 90 300 60Z"/>
       <path d="M300 60V620M300 180C300 180 390 230 400 320M300 280C300 280 210 330 200 420M300 400C300 400 390 450 395 520"/>
     </svg>
     <div class="wrap hero-inner">
@@ -1377,8 +1452,8 @@ function vpgGo(i){
   }
   var c=document.getElementById('vpg-count');
   if(c) c.textContent=(_vpgCur+1)+' / '+_vpgPhotos.length;
-  var z=document.getElementById('vpg-zoom');
-  if(z) z.style.backgroundImage='url("'+_vpgPhotos[_vpgCur]+'")';
+  var st=document.getElementById('vpg-stage');
+  if(st) st.classList.remove('zooming');
   vpgApplyZoom();
 }
 function vpgNav(d){ vpgGo(_vpgCur+d); }
@@ -1405,56 +1480,64 @@ document.addEventListener('click', function(e){
 });
 
 (function(){
-  var ZOOM=2.6;
+  var ZOOM = 2.4;
   document.addEventListener('DOMContentLoaded', function(){
-    var stage=document.getElementById('vpg-stage');
-    var lens=document.getElementById('vpg-lens');
-    var zoom=document.getElementById('vpg-zoom');
-    if(!stage||!lens||!zoom) return;
+    var stage = document.getElementById('vpg-stage');
+    var pane  = document.getElementById('vpg-inner-zoom');
+    if(!stage || !pane) return;
+
+    function painted(){
+      // Where the contained image is actually drawn inside the frame
+      var img = stage.querySelector('.vpg-slide img');
+      if(!img || !img.naturalWidth) return null;
+      var r  = img.getBoundingClientRect();
+      var s  = Math.min(r.width/img.naturalWidth, r.height/img.naturalHeight);
+      var pw = img.naturalWidth*s, ph = img.naturalHeight*s;
+      return {src:img.currentSrc||img.src, left:r.left+(r.width-pw)/2, top:r.top+(r.height-ph)/2, w:pw, h:ph};
+    }
+
     stage.addEventListener('mouseenter', function(){
-      if(window.innerWidth<1150 || !_vpgPhotos.length) return;
-      zoom.style.backgroundImage='url("'+_vpgPhotos[_vpgCur]+'")';
-      var r=stage.getBoundingClientRect();
-      zoom.style.backgroundSize=(r.width*ZOOM)+'px '+(r.height*ZOOM)+'px';
+      if(window.matchMedia('(hover:none)').matches) return;
+      if(!_vpgPhotos || !_vpgPhotos.length) return;
+      var p = painted();
+      if(!p) return;
+      var sr = stage.getBoundingClientRect();
+      pane.style.backgroundImage = 'url("' + p.src + '")';
+      pane.style.backgroundSize  = (p.w*ZOOM) + 'px ' + (p.h*ZOOM) + 'px';
       stage.classList.add('zooming');
     });
+
     stage.addEventListener('mouseleave', function(){ stage.classList.remove('zooming'); });
+
     stage.addEventListener('mousemove', function(e){
       if(!stage.classList.contains('zooming')) return;
-      var img=stage.querySelector('.vpg-slide img');
-      if(!img) return;
-      var ir=img.getBoundingClientRect();
-      // The painted area inside a contained image
-      var natW=img.naturalWidth||ir.width, natH=img.naturalHeight||ir.height;
-      var scale=Math.min(ir.width/natW, ir.height/natH);
-      var pw=natW*scale, ph=natH*scale;
-      var px=ir.left+(ir.width-pw)/2, py=ir.top+(ir.height-ph)/2;
-      var x=e.clientX-px, y=e.clientY-py;
-      if(x<0||y<0||x>pw||y>ph){ stage.classList.remove('zooming'); return; }
-      var lw=lens.offsetWidth, lh=lens.offsetHeight;
-      var sr=stage.getBoundingClientRect();
-      var lx=Math.max(0, Math.min(e.clientX-sr.left-lw/2, sr.width-lw));
-      var ly=Math.max(0, Math.min(e.clientY-sr.top-lh/2, sr.height-lh));
-      lens.style.left=lx+'px'; lens.style.top=ly+'px';
-      var zr=zoom.getBoundingClientRect();
-      zoom.style.backgroundSize=(pw*ZOOM)+'px '+(ph*ZOOM)+'px';
-      var bx=(x*ZOOM)-(zr.width/2), by=(y*ZOOM)-(zr.height/2);
-      zoom.style.backgroundPosition='-'+Math.max(0,bx)+'px -'+Math.max(0,by)+'px';
+      var p = painted();
+      if(!p) return;
+      var sr = stage.getBoundingClientRect();
+      // Pointer position within the painted image, 0..1
+      var fx = (e.clientX - p.left) / p.w;
+      var fy = (e.clientY - p.top)  / p.h;
+      fx = Math.max(0, Math.min(1, fx));
+      fy = Math.max(0, Math.min(1, fy));
+      // Pan the enlarged image so that point sits under the cursor
+      var bx = fx * (p.w*ZOOM - sr.width);
+      var by = fy * (p.h*ZOOM - sr.height);
+      pane.style.backgroundPosition = (-Math.max(0,bx)) + 'px ' + (-Math.max(0,by)) + 'px';
     });
+
+    // Touch: swipe between photos, tap opens the full-page view
     var sx=0, sy=0, moved=false;
-    stage.addEventListener('touchstart',function(e){sx=e.touches[0].clientX;sy=e.touches[0].clientY;moved=false;},{passive:true});
-    stage.addEventListener('touchmove',function(e){
-      if(Math.abs(e.touches[0].clientX-sx)>Math.abs(e.touches[0].clientY-sy)) moved=true;
-    },{passive:true});
-    stage.addEventListener('touchend',function(e){
-      var d=sx-e.changedTouches[0].clientX;
-      if(moved && Math.abs(d)>45){ vpgNav(d>0?1:-1); return; }
+    stage.addEventListener('touchstart', function(e){
+      sx=e.touches[0].clientX; sy=e.touches[0].clientY; moved=false;
+    }, {passive:true});
+    stage.addEventListener('touchmove', function(e){
+      if(Math.abs(e.touches[0].clientX-sx) > Math.abs(e.touches[0].clientY-sy)) moved=true;
+    }, {passive:true});
+    stage.addEventListener('touchend', function(e){
+      var d = sx - e.changedTouches[0].clientX;
+      if(moved && Math.abs(d) > 45){ vpgNav(d>0?1:-1); return; }
       if(!moved) vipFsOpen(_vpgCur);
-    },{passive:true});
-    stage.addEventListener('click', function(e){
-      if(e.target.closest && e.target.closest('.vpg-arrow')) return;
-      vipFsOpen(_vpgCur);
-    });
+    }, {passive:true});
   });
 })();
 
@@ -1558,7 +1641,7 @@ function vipResolveImages(p){
       </div>
       <button class="vdp-close" onclick="closeVipDetail()">&#10005;</button>
     </div>
-    <img class="vdp-img" id="vdp-img" src="" alt="" style="display:none;">
+    <img class="vdp-img" id="vdp-img" alt="" style="display:none;">
     <div class="vdp-body">
       <div class="vdp-tagline" id="vdp-tagline"></div>
       <div class="vdp-care" id="vdp-care"></div>
@@ -1596,18 +1679,15 @@ function vipResolveImages(p){
     <div class="vpg-stage" id="vpg-stage">
       <div class="vpg-viewport"><div class="vpg-track" id="vpg-track"></div></div>
       <span class="vpg-wm">Sri Satyanarayana Nursery</span>
+      <div class="vpg-inner-zoom" id="vpg-inner-zoom"></div>
       <div class="vpg-lens" id="vpg-lens"></div>
       <div class="vpg-zoom" id="vpg-zoom"></div>
-      <span class="vpg-hint">Hover to zoom</span>
+      <span class="vpg-hint">Hover to zoom &middot; click to enlarge</span>
       <button class="vpg-arrow vpg-prev" onclick="vpgNav(-1)" aria-label="Previous">&#8249;</button>
       <button class="vpg-arrow vpg-next" onclick="vpgNav(1)" aria-label="Next">&#8250;</button>
       <div class="vpg-count" id="vpg-count"></div>
-    </div>
-    <div class="vpg-controls">
-      <button class="vpg-tool" onclick="vpgZoom(-1)" aria-label="Zoom out" title="Zoom out">&#128269;</button>
-      <button class="vpg-tool" onclick="vpgZoom(1)" aria-label="Zoom in" title="Zoom in">&#128270;</button>
-      <button class="vpg-next-below" onclick="vpgNav(1)" aria-label="Next VIP plant image" title="Next VIP plant image">&#8594; Next image</button>
-    </div>
+      </div>
+    
   </div>
   <div style="padding:22px 18px 0;max-width:700px;margin:0 auto;">
     <div id="vdet-bot" style="font-size:.75rem;color:rgba(248,243,232,.38);font-style:italic;margin-bottom:5px;"></div>
@@ -1638,7 +1718,7 @@ function vipResolveImages(p){
 <div id="img-viewer" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9000;background:rgba(0,0,0,.97);align-items:center;justify-content:center;flex-direction:column;">
   <button onclick="closeImgViewer()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,.12);border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">&#10005;</button>
   <button id="iv-prev" onclick="ivNav(-1)" style="display:none;position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.12);border:none;color:#fff;width:44px;height:44px;border-radius:50%;font-size:1.4rem;cursor:pointer;">&#8249;</button>
-  <img id="iv-img" src="" alt="" style="max-width:96vw;max-height:82vh;object-fit:contain;border-radius:3px;">
+  <img id="iv-img" alt="" style="max-width:96vw;max-height:82vh;object-fit:contain;border-radius:3px;">
   <button id="iv-next" onclick="ivNav(1)" style="display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.12);border:none;color:#fff;width:44px;height:44px;border-radius:50%;font-size:1.4rem;cursor:pointer;">&#8250;</button>
   <div id="iv-dots" style="display:flex;gap:8px;margin-top:14px;"></div>
 </div>
@@ -1676,7 +1756,59 @@ function vipResolveImages(p){
   }catch(e){}
 
   // The script tag above is the single published-content request.
-  window.ssnPublishedReady = Promise.resolve(false);
+  // ── Published-content freshness check ─────────────────────
+  // site-content.js is cached by GitHub Pages, so a fresh publish can
+  // sit unseen. Fetch a tiny version file with the cache bypassed and
+  // only re-download the big file when the version has actually moved.
+  window.ssnPublishedReady = (function(){
+    if(location.protocol === 'file:') return Promise.resolve(false);
+
+    function currentVersion(){
+      try{
+        if(window.SSN_PUBLISHED && window.SSN_PUBLISHED.__v) return String(window.SSN_PUBLISHED.__v);
+      }catch(e){}
+      return null;
+    }
+
+    return fetch('data/version.json?t=' + Date.now(), {cache:'no-store'})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(info){
+        if(!info || !info.v) return false;
+        var loaded = currentVersion();
+        if(loaded && String(info.v) === loaded) return false;   // already current
+
+        // Version moved — pull the published file, bypassing the cache
+        return fetch('data/site-content.js?v=' + encodeURIComponent(info.v), {cache:'no-store'})
+          .then(function(r){ return r.ok ? r.text() : null; })
+          .then(function(txt){
+            if(!txt) return false;
+            var m = txt.match(/window\.SSN_PUBLISHED\s*=\s*([\s\S]*?);\s*$/);
+            if(!m) return false;
+            var fresh;
+            try{ fresh = JSON.parse(m[1]); }catch(e){ return false; }
+            if(!fresh || typeof fresh !== 'object') return false;
+
+            var changed = false;
+            for(var k in fresh){
+              if(!fresh.hasOwnProperty(k) || k === '__v') continue;
+              if(JSON.stringify(fresh[k]) !== JSON.stringify(window.SSN_MEDIA[k])){
+                window.SSN_MEDIA[k] = fresh[k];
+                changed = true;
+              }
+            }
+            window.SSN_PUBLISHED = fresh;
+            if(changed){
+              ['ssnRenderGallery','ssnRenderVideos','ssnRenderStats','ssnRenderHeroPhoto',
+               'ssnRenderHeritagePhoto','ssnRenderStoryPhoto','ssnRenderChapterPhotos',
+               'ssnRenderAboutPhoto','ssnApplyCardPhotos','renderAll'].forEach(function(fn){
+                try{ if(typeof window[fn] === 'function') window[fn](); }catch(e){}
+              });
+            }
+            return changed;
+          });
+      })
+      .catch(function(){ return false; });
+  })();
 
   window.ssnMediaReady=Promise.all(
     ['ssn_plant_photos','ssn_vip_plants','ssn_vip_visitors'].map(function(k){
