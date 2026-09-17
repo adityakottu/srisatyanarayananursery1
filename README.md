@@ -23,6 +23,18 @@ Build `site-content.js`, then upload it to the `data` folder here.
 | `vip.html` | Private client portal |
 | `data/plants.js` | 390 varieties across 8 categories |
 | `data/site-content.js` | Published photos and content |
+| `data/plant-routes.js` | Generated permanent URL map for plant profiles |
 | `images/` | Hero, family and story photographs |
+
+## Plant pages
+
+The public catalogue has a permanent static page under `plants/` for every
+record in `data/plants.js`. After changing the catalogue, regenerate those
+pages from the shared source:
+
+	ruby tools/generate-plant-pages.rb
+
+The generator also refreshes `data/plant-routes.js`; commit both the generated
+`plants/` directory and that route map when publishing.
 
 Contact: +91 94401 79027 · srisatyanarayananursery@yahoo.co.in

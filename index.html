@@ -199,6 +199,15 @@ section{padding:108px 0;}
 .process-item h3{font-size:1.08rem;font-weight:500;margin-bottom:9px;}
 .process-item p{font-size:.9rem;color:rgba(27,42,32,.68);font-weight:300;}
 
+/* ─── Who We Supply ───────────────────────────────────────── */
+.supply-section{background:var(--cream3);}
+.supply-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+.supply-card{background:var(--cream3);padding:28px 24px;min-height:178px;}
+.supply-icon{font-size:1.65rem;line-height:1;margin-bottom:18px;}
+.supply-card h3{font-size:1.08rem;font-weight:500;margin-bottom:7px;}
+.supply-card p{font-size:.86rem;color:rgba(27,42,32,.68);font-weight:300;line-height:1.55;}
+.supply-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px;}
+
 /* ─── Testimonial ─────────────────────────────────────────── */
 .testimonial{background:var(--green);text-align:center;}
 .testimonial blockquote{
@@ -519,6 +528,7 @@ section{padding:108px 0;}
   .plant-hero-art{width:200px;height:200px;margin-bottom:24px;}
   .cred-grid,.related-grid{grid-template-columns:repeat(2,1fr);}
   .preview-grid,.gallery-grid{grid-template-columns:repeat(2,1fr);}
+    .supply-grid{grid-template-columns:repeat(2,1fr);}
   .process-row{grid-template-columns:1fr;gap:26px;}
   .care-bar-inner{gap:0;}
 }
@@ -988,6 +998,7 @@ footer{background:var(--green-deep);color:rgba(248,243,232,.5);padding:0;overflo
   font-style:italic;letter-spacing:.03em;
 }
 @media(max-width:600px){
+    .supply-grid{grid-template-columns:1fr;}
   .ft-social-inner{justify-content:center;text-align:center;}
   .ft-social-copy,.ft-social-tagline{display:none;}
 }
@@ -2577,6 +2588,7 @@ nav.m-drawer-nav,
 
 </style>
   <script src="data/plants.js" crossorigin="anonymous"></script>
+  <script src="data/plant-routes.js" crossorigin="anonymous"></script>
   <script src="data/site-content.js" crossorigin="anonymous" defer onerror="window.SSN_PUBLISHED=window.SSN_PUBLISHED||null"></script>
 </head>
 <body>
@@ -2744,6 +2756,31 @@ nav.m-drawer-nav,
         <div class="process-item reveal"><span class="eyebrow">Step One</span><h3>Propagation &amp; Supervision</h3><p>Every plant is grown under direct supervision in a clean, protected environment from day one.</p></div>
         <div class="process-item reveal"><span class="eyebrow">Step Two</span><h3>Loading &amp; Observation</h3><p>Plants are moved to dedicated loading sheds for a final health check before transport.</p></div>
         <div class="process-item reveal"><span class="eyebrow">Step Three</span><h3>Packing &amp; Transport</h3><p>Careful packing and our own transport arrangements protect every plant anywhere in the country.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="supply-section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">For Every Kind Of Grower</span>
+        <h2>Who we <em>supply</em>.</h2>
+        <p style="margin-top:16px;color:rgba(27,42,32,.68);font-weight:300;max-width:570px;">From a single terrace garden to a technology campus or large commercial project, we help customers choose the right plants, quantities and sizes for the job.</p>
+      </div>
+      <div class="supply-grid">
+        <article class="supply-card reveal"><div class="supply-icon">&#127795;</div><h3>Landscapers</h3><p>Bulk plants for residential, commercial and institutional landscaping projects.</p></article>
+        <article class="supply-card reveal"><div class="supply-icon">&#127969;</div><h3>Home &amp; Garden</h3><p>Plants for homes, villas, terraces and private gardens.</p></article>
+        <article class="supply-card reveal"><div class="supply-icon">&#127963;</div><h3>Institutions</h3><p>Plant solutions for schools, colleges, hospitals, offices and campuses.</p></article>
+        <article class="supply-card reveal"><div class="supply-icon">&#127976;</div><h3>Resorts &amp; Hotels</h3><p>Ornamental plants, palms, avenue trees and landscaping stock for hospitality projects.</p></article>
+        <article class="supply-card reveal"><div class="supply-icon">&#127807;</div><h3>Retail Nurseries</h3><p>Wholesale plant sourcing for nursery owners and garden centres.</p></article>
+        <article class="supply-card reveal"><div class="supply-icon">&#127806;</div><h3>Farmers</h3><p>Fruit plants and plantation varieties for farms, orchards and plantations.</p></article>
+        <article class="supply-card reveal"><div class="supply-icon">&#128187;</div><h3>IT Companies &amp; Tech Parks</h3><p>Low-maintenance greens, palms and indoor plants for offices, campuses and employee spaces.</p></article>
+        <article class="supply-card reveal"><div class="supply-icon">&#127970;</div><h3>Corporate Offices</h3><p>Professional planting solutions for reception areas, workspaces, terraces and corporate campuses.</p></article>
+        <article class="supply-card reveal"><div class="supply-icon">&#127959;</div><h3>Builders &amp; Developers</h3><p>Landscape stock for gated communities, apartments, villas, commercial sites and new developments.</p></article>
+      </div>
+      <div class="supply-actions reveal">
+        <button class="btn btn-green" onclick="showPage('catalog')">Explore Plants &rarr;</button>
+        <button class="btn btn-outline" onclick="showPage('contact')">Plan Your Project</button>
       </div>
     </div>
   </section>
@@ -3020,6 +3057,7 @@ nav.m-drawer-nav,
         </button>
         <span class="back-btn-sep"></span>
         <span class="plant-breadcrumb" id="plant-breadcrumb"></span>
+        <a class="plant-share-link" id="plant-share-link" target="_blank" rel="noopener">Open shareable page</a>
       </div>
     </div>
   </div>
@@ -3333,6 +3371,12 @@ const DIFF_COLOR = {
   'Moderate':'#b9893f','Hard':'#b8643f'
 };
 
+function escapeHTML(value) {
+  return String(value == null ? '' : value).replace(/[&<>"']/g, function(ch) {
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];
+  });
+}
+
 // ── Page state ────────────────────────────────────────────────────
 let prevPage = 'catalog';
 let prevCat  = 'all';
@@ -3351,7 +3395,7 @@ function initHoverFacts() {
       ['⭐', data.care.difficulty],
     ];
     el.innerHTML = facts.map(([icon,txt]) =>
-      `<div class="hover-fact"><span class="fi">${icon}</span><span>${txt}</span></div>`
+      `<div class="hover-fact"><span class="fi">${icon}</span><span>${escapeHTML(txt)}</span></div>`
     ).join('');
   });
 }
@@ -3412,6 +3456,11 @@ function _showPlant(key) {
   setEl('plant-detail-botanical','textContent', data.botanical !== '—' ? data.botanical : '');
   setEl('plant-detail-tagline','textContent', data.tagline);
   setEl('plant-breadcrumb','textContent', (data.catLabel?data.catLabel+' / ':'') + data.name);
+  var shareLink = document.getElementById('plant-share-link');
+  if(shareLink && window.PLANT_ROUTES && window.PLANT_ROUTES[key]){
+    shareLink.href = window.PLANT_ROUTES[key];
+    shareLink.style.display = 'inline-block';
+  }
   setEl('enquire-plant-name','textContent', 'Interested in ' + data.name + '?');
   window.curPlantKey = key; window.curPlantName = data.name;
   try{
@@ -3434,8 +3483,8 @@ function _showPlant(key) {
     const isBadge = label === 'Difficulty';
     const color = DIFF_COLOR[val] || '#b9893f';
     const valHTML = isBadge
-      ? `<span class="diff-badge" style="background:${color}22;color:${color};border:1px solid ${color}40;">${val}</span>`
-      : `<span class="care-stat-value">${val}</span>`;
+      ? `<span class="diff-badge" style="background:${color}22;color:${color};border:1px solid ${color}40;">${escapeHTML(val)}</span>`
+      : `<span class="care-stat-value">${escapeHTML(val)}</span>`;
     return `<div class="care-stat">
       <div class="care-stat-icon">${icon}</div>
       <div class="care-stat-label">${label}</div>
@@ -3447,12 +3496,12 @@ function _showPlant(key) {
   setEl('plant-detail-desc','textContent', data.description);
 
   // uses
-  setEl('plant-uses-list','innerHTML', data.uses.map(function(u){ return '<li>'+u+'</li>'; }).join(''));
+  setEl('plant-uses-list','innerHTML', data.uses.map(function(u){ return '<li>'+escapeHTML(u)+'</li>'; }).join(''));
 
   // tips
   setEl('plant-tips-grid','innerHTML', data.tips.map(function(tip,i){ return `<div class="tip-card">
       <div class="tip-num">Tip ${String(i+1).padStart(2,'0')}</div>
-      <div class="tip-text">${tip}</div>
+      <div class="tip-text">${escapeHTML(tip)}</div>
     </div>`; }).join(''));
 
   // related plants
@@ -3470,17 +3519,17 @@ function _showPlant(key) {
         </div>
         <div class="card-hover-overlay">
           <div class="hover-quick-facts">
-            <div class="hover-fact"><span class="fi">💧</span><span>${wF}</span></div>
-            <div class="hover-fact"><span class="fi">☀️</span><span>${lF}</span></div>
-            <div class="hover-fact"><span class="fi">⭐</span><span>${dF}</span></div>
+            <div class="hover-fact"><span class="fi">💧</span><span>${escapeHTML(wF)}</span></div>
+              <div class="hover-fact"><span class="fi">☀️</span><span>${escapeHTML(lF)}</span></div>
+              <div class="hover-fact"><span class="fi">⭐</span><span>${escapeHTML(dF)}</span></div>
           </div>
           <span class="hover-cta">View Full Details →</span>
         </div>
         <div class="related-body">
-          <div class="related-name">${r.name}</div>
-          ${r.botanical!=='—'?`<div class="related-bot">${r.botanical}</div>`:''}
-          <div class="related-cat">${r.catLabel}</div>
-          <p class="card-tagline">${r.tagline||''}</p>
+          <div class="related-name">${escapeHTML(r.name)}</div>
+          ${r.botanical!=='—'?`<div class="related-bot">${escapeHTML(r.botanical)}</div>`:''}
+          <div class="related-cat">${escapeHTML(r.catLabel)}</div>
+          <p class="card-tagline">${escapeHTML(r.tagline||'')}</p>
         </div>
       </div>`;
     }).join(''));
@@ -4320,6 +4369,7 @@ function ssnGetVideos(){
   return SSN_DEFAULT_VIDEOS;
 }
 function ssnPlayVideo(el, ytId){
+  if(!/^[A-Za-z0-9_-]{11}$/.test(ytId)) return;
   el.innerHTML='<iframe src="https://www.youtube.com/embed/'+ytId
     +'?autoplay=1&rel=0&modestbranding=1&playsinline=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen title="Nursery video"></iframe>';
 }
@@ -4328,15 +4378,15 @@ function ssnRenderVideos(){
   if(!grid) return;
   var v=ssnGetVideos(), h='';
   for(var i=0;i<v.length;i++){
-    if(!v[i].ytId) continue;
+    if(!v[i].ytId || !/^[A-Za-z0-9_-]{11}$/.test(v[i].ytId)) continue;
     h+='<div class="video-card">'
       +'<div class="video-thumb" onclick="ssnPlayVideo(this,\''+v[i].ytId+'\')">'
-      +'<img src="https://img.youtube.com/vi/'+v[i].ytId+'/hqdefault.jpg" alt="'+(v[i].title||'')+'" loading="lazy">'
+      +'<img src="https://img.youtube.com/vi/'+v[i].ytId+'/hqdefault.jpg" alt="'+escapeHTML(v[i].title||'')+'" loading="lazy">'
       +'<div class="video-play">&#9654;</div></div>'
       +'<div class="video-body">'
-      +(v[i].year?'<div class="video-year">'+v[i].year+'</div>':'')
-      +'<div class="video-title">'+(v[i].title||'Nursery Video')+'</div>'
-      +(v[i].desc?'<div class="video-desc">'+v[i].desc+'</div>':'')
+      +(v[i].year?'<div class="video-year">'+escapeHTML(v[i].year)+'</div>':'')
+      +'<div class="video-title">'+escapeHTML(v[i].title||'Nursery Video')+'</div>'
+      +(v[i].desc?'<div class="video-desc">'+escapeHTML(v[i].desc)+'</div>':'')
       +'</div></div>';
   }
   grid.innerHTML=h;
@@ -4365,15 +4415,15 @@ function ssnBuildGalleryCard(p, i, total, lightboxIndex){
   if(p.type === 'youtube' && p.ytId){
     d.innerHTML = '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/'+p.ytId
       +'?rel=0&playsinline=1" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="display:block;border:0;"></iframe>'
-      +'<span class="g-cap">'+cap+'</span>';
+      +'<span class="g-cap">'+escapeHTML(cap)+'</span>';
   } else if(p.type === 'video' && p.src){
     d.innerHTML = '<video src="'+p.src+'" controls playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video>'
-      +'<span class="g-cap">'+cap+'</span>';
+      +'<span class="g-cap">'+escapeHTML(cap)+'</span>';
   } else if(p.src){
     d.style.cursor = 'pointer';
     d.onclick = function(){ openGalleryLightbox(p.src, cap, lightboxIndex); };
-    d.innerHTML = '<img src="'+p.src+'" alt="'+cap+'" loading="lazy">'
-      +'<span class="g-cap">'+cap+'</span>';
+    d.innerHTML = '<img src="'+p.src+'" alt="'+escapeHTML(cap)+'" loading="lazy">'
+      +'<span class="g-cap">'+escapeHTML(cap)+'</span>';
   }
   return d;
 }
@@ -4560,8 +4610,8 @@ function ssnRenderChapterPhotos(){
     if(!wrap) return;
     var p = ph[k];
     if(p && p.src){
-      wrap.innerHTML = '<div class="t-photo"><img src="'+p.src+'" alt="'+(p.caption||'')+'"></div>'
-        + (p.caption ? '<div class="t-photo-cap">'+p.caption+'</div>' : '');
+      wrap.innerHTML = '<div class="t-photo"><img src="'+p.src+'" alt="'+escapeHTML(p.caption||'')+'"></div>'
+        + (p.caption ? '<div class="t-photo-cap">'+escapeHTML(p.caption)+'</div>' : '');
       wrap.style.display='';
     } else {
       wrap.innerHTML=''; wrap.style.display='none';
@@ -5310,7 +5360,7 @@ function csRender(items, q){
   var box = document.getElementById('cat-suggest');
   if(!box) return;
   if(!items.length){
-    box.innerHTML = '<div class="cs-empty">No variety matches &ldquo;' + q + '&rdquo;.<br>'
+    box.innerHTML = '<div class="cs-empty">No variety matches &ldquo;' + escapeHTML(q) + '&rdquo;.<br>'
       + '<span style="font-size:.78rem;">We carry far more than is listed &mdash; '
       + '<a href="#" onclick="showPage(\'contact\');return false;" style="color:var(--green-deep);">ask us</a>.</span></div>';
     box.classList.add('open');
@@ -5320,16 +5370,16 @@ function csRender(items, q){
   for(var i=0;i<items.length;i++){
     var it = items[i];
     var ph = csPhoto(it.key);
-    var nm = it.name;
+    var nm = escapeHTML(it.name);
     if(q){
       var idx = it.low.indexOf(q.toLowerCase());
-      if(idx >= 0) nm = nm.slice(0,idx) + '<b>' + nm.slice(idx, idx+q.length) + '</b>' + nm.slice(idx+q.length);
+      if(idx >= 0) nm = escapeHTML(it.name.slice(0,idx)) + '<b>' + escapeHTML(it.name.slice(idx, idx+q.length)) + '</b>' + escapeHTML(it.name.slice(idx+q.length));
     }
     h += '<div class="cs-item' + (i===_csActive?' active':'') + '" data-key="' + it.key + '" onclick="csPick(\'' + it.key + '\')">'
       + (ph ? '<img class="cs-thumb" src="' + ph + '" alt="">' : '<div class="cs-ph">&#127807;</div>')
       + '<div class="cs-txt"><div class="cs-name">' + nm + '</div>'
-      + (it.bot ? '<div class="cs-bot">' + it.bot + '</div>' : '') + '</div>'
-      + '<span class="cs-cat">' + it.cat + '</span></div>';
+      + (it.bot ? '<div class="cs-bot">' + escapeHTML(it.bot) + '</div>' : '') + '</div>'
+      + '<span class="cs-cat">' + escapeHTML(it.cat) + '</span></div>';
   }
   box.innerHTML = h;
   box.classList.add('open');
