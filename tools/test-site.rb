@@ -4,6 +4,9 @@ require 'json'
 require 'net/http'
 require 'uri'
 
+Encoding.default_external = Encoding::UTF_8
+Encoding.default_internal = Encoding::UTF_8
+
 ROOT = File.expand_path('..', __dir__)
 errors = []
 
@@ -19,14 +22,44 @@ routes_source = read.call('data/plant-routes.js')
 routes_json = routes_source[/window\.PLANT_ROUTES\s*=\s*(\{.*\});?\s*\z/m, 1]
 routes = routes_json ? JSON.parse(routes_json) : {}
 expect.call(plants.length == 390, "expected 390 plant records, found #{plants.length}")
-expect.call(routes.length == plants.length, "route count #{routes.length} does not match plant count #{plants.length}")
-expect.call(Dir.glob(File.join(ROOT, 'plants', '*', 'index.html')).length == plants.length, 'generated plant pages do not match plant records')
+
+# Custom plants published from the admin also get pages
+published_src = File.exist?(File.join(ROOT, 'data', 'site-content.js')) ? read.call('data/site-content.js') : ''
+published_json = published_src[/window\.SSN_PUBLISHED\s*=\s*(\{.*\});?\s*\z/m, 1]
+published = (JSON.parse(published_json) rescue {}) if published_json
+custom = ((published || {})['ssn_custom_plants'] || {}).select { |_, p| p.is_a?(Hash) && p['name'].to_s.strip != '' }
+expected_keys = plants.keys | custom.keys
+expect.call(routes.keys.sort == expected_keys.sort, "routes (#{routes.length}) do not match base + published plants (#{expected_keys.length})")
+page_dirs = Dir.glob(File.join(ROOT, 'plants', '*', 'index.html')).map { |f| File.basename(File.dirname(f)) }.sort
+expect.call(page_dirs == routes.values.map { |r| r.split('/')[1] }.sort, 'plant page folders do not match the route map')
+
+# Site address lives in one place, and every generated file uses it
+config = read.call('data/site-config.js')
+site_url = config[/"baseUrl"\s*:\s*"([^"]+)"/, 1].to_s.sub(%r{/+\z}, '')
+expect.call(site_url.start_with?('https://'), 'data/site-config.js baseUrl must be an https address')
+sample = page_dirs.first(25) + page_dirs.last(5)
+sample.each do |slug|
+  page = read.call("plants/#{slug}/index.html")
+  expect.call(page.include?(%(<link rel="canonical" href="#{site_url}/plants/#{slug}/">)), "#{slug}: canonical does not use the configured site address")
+  expect.call(!page.include?('"@type":"Product"'), "#{slug}: Product schema without offers is invalid for Google")
+end
+sitemap = read.call('sitemap.xml') rescue ''
+expect.call(sitemap.scan('<loc>').length == routes.length + 1, 'sitemap.xml does not list every plant page plus the home page')
+expect.call(sitemap.include?("<loc>#{site_url}/</loc>"), 'sitemap.xml does not use the configured site address')
+robots = read.call('robots.txt') rescue ''
+expect.call(robots.include?("Sitemap: #{site_url}/sitemap.xml"), 'robots.txt does not point at the sitemap')
+expect.call(File.exist?(File.join(ROOT, 'data', 'page-builder.js')), 'data/page-builder.js is missing — publish cannot rebuild pages')
+home = read.call('index.html')
+expect.call(home.include?(%(<link rel="canonical" href="#{site_url}/">)), 'index.html canonical does not use the configured site address')
+expect.call(home.include?('"@type":"GardenStore"'), 'index.html is missing its local business details')
 
 index = read.call('index.html')
 admin = read.call('admin.html')
 vip = read.call('vip.html')
 expect.call(index.include?('data/site-content.js'), 'public page does not load published content')
-expect.call(admin.include?("path:'data/site-content.js'"), 'Admin publish path is not data/site-content.js')
+expect.call(admin.include?("GH_CONTENT_PATH = 'data/site-content.js'"), 'Admin publish path is not data/site-content.js')
+expect.call(admin.include?('data/page-builder.js'), 'Admin does not load the shared page builder')
+expect.call(admin.include?('ghConflict'), 'Admin publish has no conflict protection')
 expect.call(admin.include?('window.SSN_PUBLISHED'), 'Admin does not build the published payload')
 expect.call(vip.include?('window.SSN_PUBLISHED'), 'VIP page does not consume published content')
 expect.call(index.include?('Who we <em>supply</em>'), 'Who We Supply section is missing')
@@ -45,7 +78,7 @@ if base_url
 end
 
 if errors.empty?
-  puts "PASS: #{plants.length} plants, #{routes.length} routes, generated pages, shared publish wiring#{base_url ? ', and live endpoints' : ''}."
+  puts "PASS: #{plants.length} base plants, #{routes.length} routes and pages, sitemap, robots, site address, shared publish wiring#{base_url ? ', and live endpoints' : ''}."
 else
   warn errors.map { |error| "FAIL: #{error}" }
   exit 1

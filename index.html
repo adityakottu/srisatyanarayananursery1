@@ -2330,9 +2330,22 @@ nav{
   padding:9px 18px;border-radius:22px;font-size:.82rem;font-weight:600;
   transition:transform .2s,box-shadow .2s;
 }
+.map-frame-street{position:relative;}
+.map-frame-street iframe{height:420px;}
+.sv-badge{position:absolute;top:14px;left:14px;display:inline-flex;align-items:center;gap:8px;
+  padding:7px 14px;border-radius:20px;background:rgba(14,26,18,.78);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  border:1px solid rgba(185,137,63,.45);color:#f3e7c9;font-family:'Inter',sans-serif;font-size:.72rem;letter-spacing:.06em;
+  pointer-events:none;box-shadow:0 6px 18px rgba(0,0,0,.25);}
+.sv-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 3px rgba(185,137,63,.25);}
+.sv-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);padding:5px 13px;border-radius:16px;
+  background:rgba(14,26,18,.6);color:rgba(243,231,201,.85);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;
+  pointer-events:none;animation:svHint 5s ease 1.5s forwards;}
+@keyframes svHint{0%,70%{opacity:1}100%{opacity:0}}
 .map-go:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(185,137,63,.35);}
 @media(max-width:600px){
   .map-frame iframe{height:280px;}
+  .map-frame-street iframe{height:340px;}
+  .sv-badge{top:10px;left:10px;font-size:.66rem;padding:6px 11px;}
   .map-tab{font-size:.74rem;padding:10px 5px;}
   .map-foot{flex-direction:column;align-items:flex-start;}
 }
@@ -2451,6 +2464,7 @@ nav{
   .contact-actions{flex-direction:column;align-items:stretch;gap:9px;}
   .contact-actions .btn{width:100%;justify-content:center;text-align:center;}
   .map-frame iframe{height:260px;}
+  .map-frame-street iframe{height:320px;}
   .map-tab{font-size:.72rem;padding:10px 4px;letter-spacing:0;}
   .map-foot{padding:12px 14px;gap:10px;}
   .map-go{width:100%;justify-content:center;}
@@ -2595,10 +2609,102 @@ nav.m-drawer-nav,
 .m-drawer-foot{display:block !important;}
 .m-drawer-foot a{width:100% !important;box-sizing:border-box;}
 
+
+/* ══ Enquiry form — plant picker ═════════════════════════ */
+.form-row select{appearance:none;-webkit-appearance:none;cursor:pointer;
+  background-image:linear-gradient(45deg,transparent 50%,var(--gold-l) 50%),linear-gradient(135deg,var(--gold-l) 50%,transparent 50%);
+  background-position:calc(100% - 17px) 50%,calc(100% - 12px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:34px;}
+.form-row select option,.form-row select optgroup{color:#1b2a20;background:#f8f3e8;}
+.form-row input,.form-row select,.form-row textarea{font-size:16px;}   /* stops iOS zooming on focus */
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{outline:none;border-color:var(--gold-l);background-color:rgba(248,243,232,.1);}
+.enq-opt{color:rgba(248,243,232,.45);letter-spacing:0;text-transform:none;margin-left:4px;}
+.enq-add{display:grid;grid-template-columns:minmax(0,1fr) 72px minmax(0,.7fr) auto;gap:8px;align-items:stretch;}
+.enq-field{position:relative;min-width:0;}
+.enq-field input{width:100%;}
+.enq-field-qty input{text-align:center;padding-left:6px;padding-right:6px;}
+.enq-add-btn{background:var(--gold);color:#142319;border:none;border-radius:2px;padding:0 16px;font:600 .84rem 'Inter',sans-serif;cursor:pointer;white-space:nowrap;min-height:44px;}
+.enq-add-btn:hover{background:var(--gold-l);}
+.enq-suggest{display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:30;max-height:240px;overflow-y:auto;
+  background:#f8f3e8;border:1px solid rgba(31,58,45,.18);border-radius:6px;box-shadow:0 14px 34px rgba(0,0,0,.35);padding:4px;}
+.enq-suggest.open{display:block;}
+.enq-opt-item{padding:9px 11px;border-radius:4px;cursor:pointer;color:#1b2a20;font-size:.88rem;display:flex;justify-content:space-between;gap:10px;}
+.enq-opt-item small{color:#6b6457;font-size:.72rem;white-space:nowrap;}
+.enq-opt-item:hover,.enq-opt-item.active{background:rgba(185,137,63,.18);}
+.enq-opt-item b{color:#8a6520;}
+.enq-hint{margin:7px 0 0!important;font-size:.76rem!important;color:rgba(248,243,232,.55)!important;min-height:1em;}
+.enq-hint.err{color:#f2b8a8!important;}
+.enq-list{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px;}
+.enq-list:empty{display:none;}
+.enq-item{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:8px;align-items:center;
+  background:rgba(248,243,232,.06);border:1px solid rgba(248,243,232,.14);border-radius:4px;padding:7px 8px 7px 12px;}
+.enq-item-name{font-size:.88rem;color:var(--cream);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.enq-item-name small{display:block;color:rgba(248,243,232,.5);font-size:.72rem;}
+.enq-item input{background:rgba(248,243,232,.08);border:1px solid rgba(248,243,232,.2);color:var(--cream);border-radius:2px;font:16px 'Inter',sans-serif;padding:5px 6px;}
+.enq-item .enq-q{width:64px;text-align:center;}
+.enq-item .enq-s{width:92px;}
+.enq-rm{background:none;border:1px solid rgba(242,184,168,.35);color:#f2b8a8;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:.8rem;line-height:1;display:flex;align-items:center;justify-content:center;}
+.enq-rm:hover{background:#b84040;color:#fff;border-color:#b84040;}
+.enq-preview{margin:14px 0 4px;border:1px solid rgba(248,243,232,.14);border-radius:4px;}
+.enq-preview summary{cursor:pointer;padding:9px 12px;font-size:.78rem;color:var(--gold-l);list-style:none;}
+.enq-preview summary::-webkit-details-marker{display:none;}
+.enq-preview summary::before{content:'\25B8  ';}
+.enq-preview[open] summary::before{content:'\25BE  ';}
+.enq-preview pre{margin:0;padding:4px 12px 12px;white-space:pre-wrap;word-break:break-word;font:.8rem/1.55 'Inter',sans-serif;color:rgba(248,243,232,.8);}
+/* Desktop: suggestions span the whole row so long names stay on one line */
+@media(min-width:601px){
+  .enq-add{position:relative;}
+  .enq-field-plant{position:static;}
+  .enq-suggest{top:calc(100% + 4px);}
+}
+.enq-opt-item span{min-width:0;}
+.plant-supply{margin:18px 0 0;padding:14px 16px 14px 18px;border-left:3px solid var(--gold);background:rgba(185,137,63,.08);border-radius:0 6px 6px 0;font-size:.9rem;line-height:1.7;color:var(--muted);}
+.plant-supply strong{color:var(--green-deep);font-weight:600;}
+.plant-supply em{font-family:'Fraunces',serif;}
+.plant-supply a{color:var(--gold);font-weight:600;text-decoration:underline;text-underline-offset:3px;}
+.plant-supply:empty{display:none;}
+.enq-inwrap{position:relative;}
+.enq-field-plant input{padding-right:40px;}
+.enq-browse{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:none;border-radius:4px;background:none;color:var(--gold-l);cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;}
+.enq-browse:hover,.enq-browse[aria-expanded="true"]{background:rgba(185,137,63,.18);}
+.enq-group{padding:10px 11px 4px;font:600 .66rem 'Inter',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#8a6520;position:sticky;top:-4px;background:#f8f3e8;z-index:1;}
+.enq-new{border:1px dashed rgba(138,101,32,.45);margin:2px 0 4px;}
+.enq-new span{color:#8a6520;font-weight:600;}
+@media(min-width:601px){.enq-suggest{max-height:320px;}}
+@media(max-width:600px){
+  .contact-card{padding:26px 18px;}
+  .enq-add{grid-template-columns:minmax(0,1fr) 78px;}
+  .enq-field-plant{grid-column:1 / -1;}
+  .enq-add-btn{grid-column:1 / -1;}
+  .enq-item{grid-template-columns:minmax(0,1fr) auto auto;}
+  .enq-item .enq-s{grid-column:1 / 3;width:100%;}
+  .enq-item .enq-rm{grid-row:1;grid-column:3;}
+}
+
+
+/* ══ Plant quick facts ═══════════════════════════════════ */
+.plant-facts{margin:22px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden;}
+.plant-facts:empty{display:none;}
+.plant-facts > div{background:var(--cream);padding:11px 14px;min-width:0;}
+.plant-facts dt{font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
+.plant-facts dd{margin:0;font-size:.9rem;color:var(--green-deep);line-height:1.45;overflow-wrap:anywhere;}
+.plant-facts > div:last-child:nth-child(odd){grid-column:1 / -1;}
+@media(max-width:560px){.plant-facts{grid-template-columns:1fr;}.plant-facts > div:last-child:nth-child(odd){grid-column:auto;}}
+
 </style>
   <script src="data/plants.js" crossorigin="anonymous"></script>
   <script src="data/plant-routes.js" crossorigin="anonymous"></script>
   <script src="data/site-content.js" crossorigin="anonymous" defer onerror="window.SSN_PUBLISHED=window.SSN_PUBLISHED||null"></script>
+  <!-- SSN:SEO START — generated from data/site-config.js, do not edit -->
+  <link rel="canonical" href="https://adityakottu.github.io/srisatyanarayananursery1/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Gangumalla’s Sri Satyanarayana Nursery">
+  <meta property="og:title" content="Gangumalla’s Sri Satyanarayana Nursery — Kadiyam, Andhra Pradesh">
+  <meta property="og:description" content="Family-run wholesale and retail plant nursery at Kadiyapulanka, Kadiyam, Andhra Pradesh. Avenue trees, palms, fruit plants, shrubs and rare specimens since 1963.">
+  <meta property="og:url" content="https://adityakottu.github.io/srisatyanarayananursery1/">
+  <meta property="og:image" content="https://adityakottu.github.io/srisatyanarayananursery1/images/hero-f34e7a95.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"GardenStore","@id":"https://adityakottu.github.io/srisatyanarayananursery1/#nursery","name":"Gangumalla’s Sri Satyanarayana Nursery","alternateName":"Sri Satyanarayana Nursery","url":"https://adityakottu.github.io/srisatyanarayananursery1/","image":"https://adityakottu.github.io/srisatyanarayananursery1/images/hero-f34e7a95.jpg","description":"Family-run wholesale and retail plant nursery at Kadiyapulanka, Kadiyam, Andhra Pradesh. Avenue trees, palms, fruit plants, shrubs and rare specimens since 1963.","telephone":"+91 94401 79027","email":"srisatyanarayananursery@yahoo.co.in","foundingDate":"1963","address":{"@type":"PostalAddress","streetAddress":"Kadiyapulanka Village, Kadiyam Mandal","addressLocality":"Kadiyam","addressRegion":"Andhra Pradesh","postalCode":"533126","addressCountry":"IN"},"sameAs":["https://www.instagram.com/srisatyanarayananursery","https://www.facebook.com/share/1HbxtGuQ4Y/","https://youtube.com/@srisatyanarayananursery3690"]}</script>
+  <!-- SSN:SEO END -->
 </head>
 <body>
 <noscript><div style="padding:14px 20px;background:#142319;color:#f8f3e8;text-align:center;font:500 .85rem/1.5 Inter,sans-serif;">Please enable JavaScript to browse the full catalog and gallery. Call or WhatsApp us at <a href="tel:+919440179027" style="color:#e3c88a;">+91 94401 79027</a>.</div></noscript>
@@ -3114,6 +3220,8 @@ nav.m-drawer-nav,
         <div class="plant-desc-section detail-section">
           <h3><span class="sec-icon">📖</span> About This Plant</h3>
           <p class="plant-desc-full" id="plant-detail-desc"></p>
+          <dl class="plant-facts" id="plant-detail-facts"></dl>
+          <p class="plant-supply" id="plant-detail-supply"></p>
         </div>
         <div class="detail-section">
           <h3><span class="sec-icon">🌿</span> Where to Use It</h3>
@@ -3212,7 +3320,7 @@ nav.m-drawer-nav,
           <div class="map-tabs">
             <button type="button" class="map-tab active" data-map="road" onclick="showMap('road')">&#128506; Map</button>
             <button type="button" class="map-tab" data-map="sat" onclick="showMap('sat')">&#128760; Satellite</button>
-            <button type="button" class="map-tab" data-map="street" onclick="showMap('street')">&#128694; Street View</button>
+            <button type="button" class="map-tab" data-map="street" onclick="showMap('street')">&#128694; 360&deg; Street View</button>
           </div>
 
           <div class="map-frame active" id="map-road">
@@ -3227,10 +3335,12 @@ nav.m-drawer-nav,
               src="https://maps.google.com/maps?q=Gangumalla%27s+Sri+Satyanarayana+Nursery%2C+Kadiyapulanka%2C+Kadiyam&output=embed&z=18&t=k"></iframe>
           </div>
 
-          <div class="map-frame" id="map-street">
-            <iframe loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"
-              title="Nursery street view"
-              src="https://maps.google.com/maps?q=Gangumalla%27s+Sri+Satyanarayana+Nursery%2C+Kadiyapulanka%2C+Kadiyam&output=embed&layer=c&cbp=11,0,0,0,0"></iframe>
+          <div class="map-frame map-frame-street" id="map-street">
+            <iframe loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"
+              title="360&deg; street view of the nursery entrance"
+              src="https://www.google.com/maps/embed?pb=!4v1789815743541!6m8!1m7!1sI8XhVsZG9BhhNj21liFw3A!2m2!1d16.8806463165628!2d81.80831364336548!3f65.9303727785261!4f5.751774268167395!5f2.1735690103208687"></iframe>
+            <div class="sv-badge"><span class="sv-dot"></span>360&deg; Street View &middot; Nursery entrance</div>
+            <div class="sv-hint">Drag to look around</div>
           </div>
 
           <div class="map-foot">
@@ -3247,11 +3357,62 @@ nav.m-drawer-nav,
           <div class="form-row"><label class="form-label" for="enquiry-name">Your Name</label><input id="enquiry-name" name="name" type="text" placeholder="Full name" autocomplete="name" required></div>
           <div class="form-row"><label class="form-label" for="enquiry-phone">Phone / WhatsApp</label><input id="enquiry-phone" name="phone" type="tel" placeholder="+91 " autocomplete="tel" required></div>
           <div class="form-row"><label class="form-label" for="enquiry-type">I am a&hellip;</label>
-            <select id="enquiry-type" name="customerType" style="background:rgba(248,243,232,.07);border:1px solid rgba(248,243,232,.2);color:var(--cream);padding:10px 13px;width:100%;border-radius:2px;">
-              <option>Home gardener</option><option>Landscaper / Contractor</option>
-              <option>Retail nursery</option><option>Estate / Resort</option><option>Other</option>
+            <select id="enquiry-type" name="customerType">
+              <option value="" disabled selected>Select one&hellip;</option>
+              <optgroup label="Individuals">
+                <option>Home gardener</option>
+                <option>Farmhouse / villa owner</option>
+                <option>Plant collector / hobbyist</option>
+                <option>Terrace / balcony gardener</option>
+              </optgroup>
+              <optgroup label="Trade &amp; design">
+                <option>Landscape architect / designer</option>
+                <option>Landscaper / contractor</option>
+                <option>Retail nursery / reseller</option>
+                <option>Wholesale buyer</option>
+                <option>Interior designer</option>
+                <option>Builder / real estate developer</option>
+              </optgroup>
+              <optgroup label="Organisations">
+                <option>Hotel / resort</option>
+                <option>Estate / plantation / farm</option>
+                <option>Corporate office / IT park</option>
+                <option>School / college / university</option>
+                <option>Hospital / healthcare</option>
+                <option>Temple / religious trust</option>
+                <option>Government department / municipality</option>
+                <option>Event / wedding planner</option>
+                <option>Film / media production</option>
+              </optgroup>
+              <option>Other</option>
             </select></div>
-          <div class="form-row"><label class="form-label" for="enquiry-message">What are you looking for?</label><textarea id="enquiry-message" name="message" rows="4" placeholder="Plant types, quantity, delivery location..." required></textarea></div>
+          <div class="form-row enq-plants" id="enq-plants">
+            <span class="form-label" id="enq-plants-label">Plants you&rsquo;re interested in <span class="enq-opt">optional</span></span>
+            <div class="enq-add" role="group" aria-labelledby="enq-plants-label">
+              <div class="enq-field enq-field-plant">
+                <div class="enq-inwrap">
+                  <input id="enq-plant" type="text" placeholder="Search plants" autocomplete="off"
+                    role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="enq-plant-list" aria-label="Plant name">
+                  <button type="button" class="enq-browse" id="enq-browse" aria-label="Browse the full plant catalogue" aria-expanded="false" title="Browse catalogue">&#9662;</button>
+                </div>
+                <div class="enq-suggest" id="enq-plant-list" role="listbox"></div>
+              </div>
+              <div class="enq-field enq-field-qty">
+                <input id="enq-qty" type="number" inputmode="numeric" min="1" max="100000" value="1" aria-label="Quantity">
+              </div>
+              <div class="enq-field enq-field-size">
+                <input id="enq-size" type="text" placeholder="Size, e.g. 6 ft" aria-label="Size (optional)" maxlength="40">
+              </div>
+              <button type="button" class="enq-add-btn" id="enq-add-btn" onclick="enqAdd()">&#43; Add</button>
+            </div>
+            <p class="enq-hint" id="enq-hint" aria-live="polite"></p>
+            <ul class="enq-list" id="enq-list" aria-live="polite" aria-label="Selected plants"></ul>
+          </div>
+          <div class="form-row"><label class="form-label" for="enquiry-message">What are you looking for?</label><textarea id="enquiry-message" name="message" rows="4" placeholder="Delivery location, timeline, anything else we should know&hellip;"></textarea></div>
+          <details class="enq-preview" id="enq-preview">
+            <summary>Preview your message</summary>
+            <pre id="enq-preview-text"></pre>
+          </details>
           <div class="enquiry-options" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;">
           <button type="button" class="btn btn-green" onclick="sendEnquiry('email')" style="flex:1;justify-content:center;min-width:160px;">&#9993; Send Email Enquiry</button>
           <button type="button" class="btn" onclick="sendEnquiry('whatsapp')" style="background:#25D366;color:#fff;flex:1;justify-content:center;min-width:160px;">&#128172; WhatsApp Us</button>
@@ -3362,7 +3523,10 @@ var PLANT_DATA = window.PLANT_DATA_RAW || {};
       if(ov) for(var k in ov){
         if(!ov.hasOwnProperty(k) || !ov[k] || !ov[k].name) continue;
         var b = PLANT_DATA[k] || {};
-        PLANT_DATA[k] = Object.assign({}, b, ov[k], {related: b.related || []});
+        var edit = Object.assign({}, ov[k]);
+        // An old stock sentence saved with a photo is not a real edit
+        if(edit.description && /is grown and supplied by Gangumalla.s Sri Satyanarayana Nursery at Kadiyapulanka, Kadiyam\.\s*Available wholesale and retail in a range of sizes\./.test(edit.description)) delete edit.description;
+        PLANT_DATA[k] = Object.assign({}, b, edit, {related: b.related || []});
       }
       var cu = M['ssn_custom_plants'];
       if(cu) for(var c in cu){ if(cu.hasOwnProperty(c)) PLANT_DATA[c] = cu[c]; }
@@ -3440,7 +3604,8 @@ function _showPlant(key) {
     care: raw.care || {},
     uses: Array.isArray(raw.uses) ? raw.uses : [],
     tips: Array.isArray(raw.tips) ? raw.tips : [],
-    related: Array.isArray(raw.related) ? raw.related : []
+    related: Array.isArray(raw.related) ? raw.related : [],
+    facts: (raw.facts && typeof raw.facts === 'object') ? raw.facts : {}
   };
   // No related list? Suggest others from the same category
   if (!data.related.length) {
@@ -3503,6 +3668,15 @@ function _showPlant(key) {
 
   // description
   setEl('plant-detail-desc','textContent', data.description);
+  // quick facts — only rows that have a value
+  var FACT_ROWS = [['family','Family'],['origin','Native to'],['size','Mature size'],['season','Season'],['highlight','Known for']];
+  setEl('plant-detail-facts','innerHTML', FACT_ROWS.filter(function(r){ return String(data.facts[r[0]]||'').trim(); })
+    .map(function(r){ return '<div><dt>' + r[1] + '</dt><dd>' + escapeHTML(data.facts[r[0]]) + '</dd></div>'; }).join(''));
+
+  // supply note
+  setEl('plant-detail-supply','innerHTML', '<strong>' + escapeHTML(data.name||'') + '</strong>' + (data.botanical ? ' (<em>' + escapeHTML(data.botanical) + '</em>)' : '')
+    + ' is grown and supplied by Gangumalla&rsquo;s Sri Satyanarayana Nursery at Kadiyapulanka, Kadiyam. Available wholesale and retail in a range of sizes. '
+    + '<a href="#" onclick="showPage(\'contact\');return false;">Contact us</a> for current stock, sizing and pricing.');
 
   // uses
   setEl('plant-uses-list','innerHTML', data.uses.map(function(u){ return '<li>'+escapeHTML(u)+'</li>'; }).join(''));
@@ -3588,34 +3762,294 @@ function enquiryValue(id){
   return el ? el.value.trim() : '';
 }
 
+// ── Enquiry: optional plant list, kept in sync with the message ──
+var ENQ_ITEMS = [];            // [{name, qty, size}]
+var ENQ_STORE = 'ssn_enquiry_plants';
+var _enqActive = -1;
+
+function enqSave(){ try{ sessionStorage.setItem(ENQ_STORE, JSON.stringify(ENQ_ITEMS)); }catch(e){} }
+function enqLoad(){
+  try{
+    var v = JSON.parse(sessionStorage.getItem(ENQ_STORE) || '[]');
+    if(Array.isArray(v)) ENQ_ITEMS = v.filter(function(x){ return x && x.name; }).slice(0, 60);
+  }catch(e){}
+}
+function enqEsc(v){
+  return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function enqQty(v){
+  var n = parseInt(String(v).replace(/[^\d]/g, ''), 10);
+  if(!n || n < 1) n = 1;
+  return Math.min(n, 100000);
+}
+function enqHint(msg, err){
+  var h = document.getElementById('enq-hint');
+  if(!h) return;
+  h.textContent = msg || '';
+  h.classList.toggle('err', !!err);
+}
+
+// Every catalogue plant, for the suggestions
+function enqCatalogue(){
+  var out = [], seen = {};
+  try{
+    var pd = (typeof PLANT_DATA === 'object' && PLANT_DATA) ? PLANT_DATA : {};
+    Object.keys(pd).forEach(function(k){
+      var p = pd[k] || {};
+      if(!p.name || seen[p.name.toLowerCase()]) return;
+      seen[p.name.toLowerCase()] = 1;
+      out.push({ name: p.name, cat: p.catLabel || '' });
+    });
+  }catch(e){}
+  out.sort(function(a, b){ return a.name.localeCompare(b.name); });
+  return out;
+}
+var _enqBrowse = false;
+function enqBrowseBtn(open){ var b = document.getElementById('enq-browse'); if(b) b.setAttribute('aria-expanded', open ? 'true' : 'false'); }
+function enqToggleBrowse(){
+  var inp = document.getElementById('enq-plant'), box = document.getElementById('enq-plant-list');
+  if(box && box.classList.contains('open')){ _enqBrowse = false; box.classList.remove('open'); enqBrowseBtn(false); return; }
+  _enqBrowse = true; if(inp){ inp.focus(); } enqSuggest();
+}
+function enqSuggest(){
+  var inp = document.getElementById('enq-plant'), box = document.getElementById('enq-plant-list');
+  if(!inp || !box) return;
+  var q = inp.value.trim().toLowerCase();
+  _enqActive = -1;
+  var all = enqCatalogue(), starts = [], contains = [];
+  if(!q){
+    if(!_enqBrowse){ box.classList.remove('open'); inp.setAttribute('aria-expanded','false'); enqBrowseBtn(false); return; }
+    var groups = {}, order = [];
+    all.forEach(function(p){ var c = p.cat || 'Other'; if(!groups[c]){ groups[c] = []; order.push(c); } groups[c].push(p); });
+    order.sort();
+    var bi = 0;
+    var bh = '<div class="enq-opt-item enq-new" role="option" data-new="1"><span>&#43; Add a plant that isn&rsquo;t listed</span><small>type its name</small></div>';
+    order.forEach(function(c){
+      bh += '<div class="enq-group" role="presentation">' + enqEsc(c) + ' &middot; ' + groups[c].length + '</div>';
+      groups[c].forEach(function(p){ bh += '<div class="enq-opt-item" role="option" data-name="' + enqEsc(p.name) + '" id="enq-opt-' + (bi++) + '"><span>' + enqEsc(p.name) + '</span></div>'; });
+    });
+    box.innerHTML = bh; box.scrollTop = 0;
+    box.classList.add('open'); inp.setAttribute('aria-expanded','true'); enqBrowseBtn(true);
+    return;
+  }
+  all.forEach(function(p){
+    var n = p.name.toLowerCase();
+    if(n.indexOf(q) === 0) starts.push(p); else if(n.indexOf(q) > 0) contains.push(p);
+  });
+  var list = starts.concat(contains).slice(0, 40);
+  var h = list.map(function(p, i){
+    var n = p.name, at = n.toLowerCase().indexOf(q);
+    var label = enqEsc(n.slice(0, at)) + '<b>' + enqEsc(n.slice(at, at + q.length)) + '</b>' + enqEsc(n.slice(at + q.length));
+    return '<div class="enq-opt-item" role="option" data-name="' + enqEsc(n) + '" id="enq-opt-' + i + '">'
+         + '<span>' + label + '</span><small>' + enqEsc(p.cat) + '</small></div>';
+  }).join('');
+  // Anything not in the list can still be added as typed
+  var exact = list.some(function(p){ return p.name.toLowerCase() === q; });
+  if(!exact){
+    var addNew = '<div class="enq-opt-item enq-new" role="option" data-name="' + enqEsc(inp.value.trim()) + '" data-add="1"><span>&#43; Add &ldquo;' + enqEsc(inp.value.trim()) + '&rdquo; as a new plant</span><small>not in catalogue</small></div>';
+    h = list.length ? h + addNew : addNew;
+  }
+  enqBrowseBtn(true);
+  box.innerHTML = h;
+  box.classList.add('open');
+  inp.setAttribute('aria-expanded','true');
+}
+function enqPick(name){
+  _enqBrowse = false; enqBrowseBtn(false);
+  var inp = document.getElementById('enq-plant');
+  if(inp) inp.value = name;
+  var box = document.getElementById('enq-plant-list');
+  if(box) box.classList.remove('open');
+  var q = document.getElementById('enq-qty');
+  if(q){ q.focus(); q.select(); }
+}
+
+function enqAdd(){
+  var inp = document.getElementById('enq-plant');
+  var qEl = document.getElementById('enq-qty');
+  var sEl = document.getElementById('enq-size');
+  var name = inp ? inp.value.trim().replace(/\s+/g, ' ') : '';
+  if(!name){ enqHint('Type or pick a plant name first.', true); if(inp) inp.focus(); return; }
+  if(name.length > 80) name = name.slice(0, 80);
+  var qty = enqQty(qEl ? qEl.value : 1);
+  var size = sEl ? sEl.value.trim().slice(0, 40) : '';
+  // Same plant and size again: add to the quantity rather than duplicating
+  var match = ENQ_ITEMS.filter(function(x){
+    return x.name.toLowerCase() === name.toLowerCase() && (x.size || '').toLowerCase() === size.toLowerCase();
+  })[0];
+  if(match){ match.qty = Math.min(match.qty + qty, 100000); enqHint(name + ' — quantity updated to ' + match.qty + '.'); }
+  else {
+    if(ENQ_ITEMS.length >= 60){ enqHint('That is the most plants one message can hold. Please send, then start another.', true); return; }
+    ENQ_ITEMS.push({ name: name, qty: qty, size: size });
+    enqHint(name + ' added.');
+  }
+  if(inp) inp.value = '';
+  if(qEl) qEl.value = 1;
+  if(sEl) sEl.value = '';
+  var box = document.getElementById('enq-plant-list'); if(box) box.classList.remove('open');
+  enqRender(); enqSave();
+  if(inp) inp.focus();
+}
+function enqUpdate(i, field, value){
+  var it = ENQ_ITEMS[i];
+  if(!it) return;
+  if(field === 'qty') it.qty = enqQty(value);
+  if(field === 'size') it.size = String(value || '').trim().slice(0, 40);
+  enqSave(); enqPreview();
+}
+function enqRemove(i){
+  var it = ENQ_ITEMS[i];
+  if(!it) return;
+  ENQ_ITEMS.splice(i, 1);
+  enqHint(it.name + ' removed.');
+  enqRender(); enqSave();
+}
+function enqRender(){
+  var ul = document.getElementById('enq-list');
+  if(!ul) return;
+  ul.innerHTML = ENQ_ITEMS.map(function(it, i){
+    return '<li class="enq-item">'
+      + '<span class="enq-item-name" title="' + enqEsc(it.name) + '">' + enqEsc(it.name) + '</span>'
+      + '<input class="enq-q" type="number" inputmode="numeric" min="1" max="100000" value="' + it.qty + '" aria-label="Quantity of ' + enqEsc(it.name) + '" data-i="' + i + '" data-f="qty">'
+      + '<input class="enq-s" type="text" placeholder="Size" maxlength="40" value="' + enqEsc(it.size || '') + '" aria-label="Size of ' + enqEsc(it.name) + '" data-i="' + i + '" data-f="size">'
+      + '<button type="button" class="enq-rm" aria-label="Remove ' + enqEsc(it.name) + '" data-rm="' + i + '">&#10005;</button>'
+      + '</li>';
+  }).join('');
+  enqPreview();
+}
+
+// One builder feeds email, WhatsApp and the preview — they can never disagree
+function enquiryMessage(){
+  var name = enquiryValue('enquiry-name');
+  var phone = enquiryValue('enquiry-phone');
+  var type = enquiryValue('enquiry-type');
+  var note = enquiryValue('enquiry-message');
+  var lines = ['Hello, I would like to enquire about plants from Gangumalla\'s Sri Satyanarayana Nursery.', ''];
+  if(name)  lines.push('Name: ' + name);
+  if(phone) lines.push('Phone / WhatsApp: ' + phone);
+  if(type)  lines.push('I am a: ' + type);
+  if(ENQ_ITEMS.length){
+    var total = ENQ_ITEMS.reduce(function(s, x){ return s + x.qty; }, 0);
+    lines.push('', 'Plants required (' + ENQ_ITEMS.length + ' ' + (ENQ_ITEMS.length === 1 ? 'variety' : 'varieties') + ', ' + total + ' in total):');
+    ENQ_ITEMS.forEach(function(x, i){
+      lines.push((i + 1) + '. ' + x.name + ' — Qty ' + x.qty + (x.size ? ' — Size: ' + x.size : ''));
+    });
+  }
+  if(note) lines.push('', 'Details: ' + note);
+  return lines.join('\n');
+}
+function enqPreview(){
+  var pre = document.getElementById('enq-preview-text');
+  if(pre) pre.textContent = enquiryMessage();
+}
+
 function sendEnquiry(channel){
-  var name=enquiryValue('enquiry-name');
-  var phone=enquiryValue('enquiry-phone');
-  var customerType=enquiryValue('enquiry-type');
-  var message=enquiryValue('enquiry-message');
-  if(!name || !phone || !message){
-    var firstMissing=!name ? 'enquiry-name' : (!phone ? 'enquiry-phone' : 'enquiry-message');
-    var field=document.getElementById(firstMissing);
-    if(field){ field.focus(); field.setCustomValidity('Please complete this field.'); field.reportValidity(); field.setCustomValidity(''); }
+  var name = enquiryValue('enquiry-name');
+  var phone = enquiryValue('enquiry-phone');
+  var message = enquiryValue('enquiry-message');
+  // A pending plant typed but not yet added is almost always meant to be included
+  var pending = document.getElementById('enq-plant');
+  if(pending && pending.value.trim()) enqAdd();
+
+  var missing = !name ? 'enquiry-name' : (!phone ? 'enquiry-phone' : null);
+  if(!missing && !message && !ENQ_ITEMS.length) missing = 'enquiry-message';
+  if(missing){
+    var field = document.getElementById(missing);
+    if(field){
+      field.focus();
+      field.setCustomValidity(missing === 'enquiry-message'
+        ? 'Add at least one plant above, or tell us what you are looking for.'
+        : 'Please complete this field.');
+      field.reportValidity();
+      setTimeout(function(){ field.setCustomValidity(''); }, 0);
+    }
     return;
   }
-  var body=[
-    'Hello, I would like to enquire about plants from Gangumalla\'s Sri Satyanarayana Nursery.',
-    '',
-    'Name: '+name,
-    'Phone / WhatsApp: '+phone,
-    'Customer type: '+customerType,
-    'Requirements: '+message
-  ].join('\n');
-  if(channel==='email'){
-    window.location.href='mailto:srisatyanarayananursery@yahoo.co.in?subject='
-      +encodeURIComponent('Plant enquiry - '+name)+'&body='+encodeURIComponent(body);
+  var body = enquiryMessage();
+  try{ if(typeof ssnTrack === 'function') ssnTrack('enquiry_' + channel); }catch(e){}
+  if(channel === 'email'){
+    var subject = 'Plant enquiry - ' + name + (ENQ_ITEMS.length ? ' (' + ENQ_ITEMS.length + ' plant' + (ENQ_ITEMS.length === 1 ? '' : 's') + ')' : '');
+    window.location.href = 'mailto:srisatyanarayananursery@yahoo.co.in?subject='
+      + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
     return;
   }
-  if(channel==='whatsapp'){
-    window.open('https://wa.me/919440179027?text='+encodeURIComponent(body),'_blank','noopener,noreferrer');
+  if(channel === 'whatsapp'){
+    window.open('https://wa.me/919440179027?text=' + encodeURIComponent(body), '_blank', 'noopener,noreferrer');
   }
 }
+
+// Wiring
+(function(){
+  function init(){
+    var inp = document.getElementById('enq-plant');
+    if(!inp || inp.__enqReady) return;
+    inp.__enqReady = true;
+    enqLoad();
+    inp.addEventListener('input', function(){ if(!inp.value.trim()) _enqBrowse = false; enqSuggest(); });
+    inp.addEventListener('click', function(){ var bx = document.getElementById('enq-plant-list'); if(!inp.value.trim() && !(bx && bx.classList.contains('open'))){ _enqBrowse = true; enqSuggest(); } });
+    var bb = document.getElementById('enq-browse');
+    if(bb){ bb.addEventListener('mousedown', function(e){ e.preventDefault(); }); bb.addEventListener('click', enqToggleBrowse); }
+    inp.addEventListener('keydown', function(e){
+      var box = document.getElementById('enq-plant-list');
+      var items = box ? box.querySelectorAll('.enq-opt-item') : [];
+      if(e.key === 'ArrowDown' && !inp.value.trim() && !(box && box.classList.contains('open'))){
+        e.preventDefault(); _enqBrowse = true; enqSuggest(); return;
+      }
+      if(e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+        if(!items.length) return;
+        e.preventDefault();
+        _enqActive = (_enqActive + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
+        items.forEach(function(el, i){ el.classList.toggle('active', i === _enqActive); });
+        inp.setAttribute('aria-activedescendant', items[_enqActive].id || '');
+        try{ items[_enqActive].scrollIntoView({block:'nearest'}); }catch(_){}
+      } else if(e.key === 'Enter'){
+        e.preventDefault();
+        if(box && box.classList.contains('open') && _enqActive >= 0 && items[_enqActive]){
+          var ai = items[_enqActive];
+          if(ai.getAttribute('data-new')){ box.classList.remove('open'); _enqBrowse = false; enqBrowseBtn(false); }
+          else if(ai.getAttribute('data-add')){ enqPick(ai.getAttribute('data-name')); enqAdd(); }
+          else enqPick(ai.getAttribute('data-name'));
+        }
+        else enqAdd();
+      } else if(e.key === 'Escape'){
+        if(box) box.classList.remove('open'); _enqBrowse = false; enqBrowseBtn(false);
+      }
+    });
+    var box = document.getElementById('enq-plant-list');
+    // mousedown fires before the input loses focus, so the pick is never lost
+    box.addEventListener('mousedown', function(e){
+      var it = e.target.closest('.enq-opt-item');
+      if(!it) return;
+      e.preventDefault();
+      if(it.getAttribute('data-new')){ _enqBrowse = false; box.classList.remove('open'); enqBrowseBtn(false); inp.focus(); enqHint('Type the plant name, set quantity, then press Add.'); return; }
+      if(it.getAttribute('data-add')){ enqPick(it.getAttribute('data-name')); enqAdd(); return; }
+      enqPick(it.getAttribute('data-name'));
+    });
+    inp.addEventListener('blur', function(){ setTimeout(function(){ box.classList.remove('open'); _enqBrowse = false; enqBrowseBtn(false); }, 150); });
+    ['enq-qty','enq-size'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ e.preventDefault(); enqAdd(); } });
+    });
+    var ul = document.getElementById('enq-list');
+    ul.addEventListener('input', function(e){
+      var t = e.target; if(!t.dataset || t.dataset.i == null) return;
+      enqUpdate(+t.dataset.i, t.dataset.f, t.value);
+    });
+    ul.addEventListener('change', function(e){
+      var t = e.target; if(!t.dataset || t.dataset.f !== 'qty') return;
+      t.value = ENQ_ITEMS[+t.dataset.i] ? ENQ_ITEMS[+t.dataset.i].qty : 1;   // normalise 0 / blanks
+    });
+    ul.addEventListener('click', function(e){
+      var b = e.target.closest('[data-rm]'); if(b) enqRemove(+b.getAttribute('data-rm'));
+    });
+    ['enquiry-name','enquiry-phone','enquiry-type','enquiry-message'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el){ el.addEventListener('input', enqPreview); el.addEventListener('change', enqPreview); }
+    });
+    enqRender();
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
 
 function routeFromLocation(){
   var route=(location.hash||'#home').slice(1).split('/');
@@ -3779,7 +4213,7 @@ function initCatBadges() {
         catLabel:p.catLabel||p.cat||'',slug:p.slug||k,tagline:p.tagline||'',
         description:p.description||'',uses:p.uses||[],
         care:p.care||{water:'',light:'',soil:'',difficulty:'',growth:''},
-        tips:p.tips||[],related:p.related||[],image:p.image||null,isCustom:true};
+        tips:p.tips||[],related:p.related||[],image:p.image||null,facts:p.facts||{},isCustom:true};
     });
   }
 
