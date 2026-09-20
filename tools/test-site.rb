@@ -49,7 +49,7 @@ canon_pages = page_dirs.select { |slug| read.call("plants/#{slug}/index.html").i
 expect.call(sitemap.scan('<loc>').length == canon_pages.length + 2, "sitemap.xml should list #{canon_pages.length} canonical plant pages, the directory and the home page")
 expect.call(sitemap.include?("<loc>#{site_url}/plants/</loc>") && File.exist?(File.join(ROOT, 'plants', 'index.html')), 'plant directory page missing or not in the sitemap')
 dir = read.call('plants/index.html')
-expect.call(dir.scan('<li><a href=').length == routes.length, 'plant directory does not link every plant')
+expect.call(dir.scan('<a class="pcard"').length == routes.length, 'plant directory does not link every plant')
 expect.call(sitemap.include?("<loc>#{site_url}/</loc>"), 'sitemap.xml does not use the configured site address')
 robots = read.call('robots.txt') rescue ''
 expect.call(robots.include?("Sitemap: #{site_url}/sitemap.xml"), 'robots.txt does not point at the sitemap')

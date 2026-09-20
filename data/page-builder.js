@@ -154,58 +154,153 @@
     return '';
   }
 
-  // ── Shared look: the same header, fonts and footer as the main site ──
+  // ── Shared look: the same palette, type and motion as the main site ──
   var FONTS = '  <link rel="preconnect" href="https://fonts.googleapis.com">\n' +
     '  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n' +
-    '  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">\n';
-  var CSS =
-    ':root{color-scheme:light;--ink:#1b2a20;--green:#1f3a2d;--green-deep:#142319;--gold:#b9893f;--gold-l:#e3c88a;--cream:#f8f3e8;--cream2:#efe7d6;--muted:#6b6457;--line:rgba(27,42,32,.14)}\n' +
-    '*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.7 Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif}\n' +
-    'a{color:var(--green)}img{max-width:100%;display:block}h1,h2,h3,.serif{font-family:Fraunces,Georgia,serif;font-weight:400}\n' +
-    '.top{position:sticky;top:0;z-index:10;background:rgba(248,243,232,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}\n' +
-    '.top-in{max-width:1180px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:20px}\n' +
-    '.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--green);min-width:0}.brand img{width:34px;height:34px;object-fit:contain}\n' +
-    '.brand b{display:block;font:500 1rem/1.2 Fraunces,Georgia,serif}.brand small{display:block;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#8d6724}\n' +
-    '.links{margin-left:auto;display:flex;align-items:center;gap:22px;font-size:.86rem}.links a{position:relative;text-decoration:none;color:var(--muted);transition:color .2s}.links a:hover{color:var(--green)}.links a::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:1.5px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .35s cubic-bezier(.22,1,.36,1)}.links a:hover::after{transform:scaleX(1)}\n' +
-    '.cta{background:var(--green);color:var(--cream)!important;padding:9px 18px;border-radius:2px;text-decoration:none;font-size:.8rem;letter-spacing:.04em;font-weight:500;white-space:nowrap;transition:background .2s}.cta:hover{background:var(--green-deep)}.cta::after{display:none}\n' +
-    '.wrap{max-width:1180px;margin:0 auto;padding:0 24px}\n' +
-    '.crumbs{font-size:.8rem;color:var(--muted);padding:22px 0 0}.crumbs a{color:var(--muted)}\n' +
-    '.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:48px;align-items:center;padding:26px 0 40px}\n' +
-    '.hero.noimg{grid-template-columns:1fr}.eyebrow{color:#8d6724;font-size:.74rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase}\n' +
-    'h1{font-size:clamp(2.2rem,5.5vw,3.8rem);line-height:1.05;margin:12px 0 6px;color:var(--green-deep)}.botanical{font-family:Fraunces,Georgia,serif;font-style:italic;color:var(--gold);font-size:1.15rem}\n' +
-    '.tagline{font-size:1.08rem;color:var(--muted);margin:16px 0 22px;max-width:560px}\n' +
-    '.photo{border-radius:10px;overflow:hidden;box-shadow:0 18px 44px rgba(20,35,25,.18);aspect-ratio:4/5;background:var(--cream2)}.photo img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s cubic-bezier(.22,1,.36,1)}.photo:hover img{transform:scale(1.04)}\n' +
-    '.actions{display:flex;flex-wrap:wrap;gap:10px}.button{display:inline-flex;align-items:center;gap:8px;background:var(--gold);color:var(--green-deep);padding:13px 26px;text-decoration:none;font-weight:500;font-size:.86rem;letter-spacing:.04em;border-radius:2px;border:1px solid var(--gold);transition:all .22s}.button:hover{background:var(--gold-l);border-color:var(--gold-l)}.button.ghost{background:transparent;color:var(--green);border-color:var(--green)}.button.ghost:hover{background:var(--green);color:var(--cream)}\n' +
-    '.care{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));background:var(--green-deep);color:var(--cream);border-radius:8px;overflow:hidden;margin:0 0 44px}\n' +
-    '.care div{padding:18px 18px;border-right:1px solid rgba(248,243,232,.1)}.care div:last-child{border:0}.care dt{font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-l);margin-bottom:6px}.care dd{margin:0;font-size:.9rem;line-height:1.5}\n' +
-    '.body{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:44px;padding-bottom:56px}\n' +
-    '.card{background:#fbf8f1;border:1px solid var(--line);border-radius:10px;padding:26px 28px}.card h2{font-size:1.35rem;margin:0 0 14px;color:var(--green-deep)}\n' +
-    '.facts{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:20px 0 0}\n' +
-    '.facts div{background:#fbf8f1;padding:11px 14px}.facts dt{font-size:.66rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:3px}.facts dd{margin:0;font-size:.92rem}\n' +
-    '.facts div:last-child:nth-child(odd){grid-column:1/-1}\n' +
-    '.supply{margin:20px 0 0;padding:14px 16px 14px 18px;border-left:3px solid var(--gold);background:rgba(185,137,63,.08);border-radius:0 6px 6px 0;font-size:.92rem;color:var(--muted)}.supply strong{color:var(--green-deep)}.supply a{color:var(--gold);font-weight:600}\n' +
-    '.side{display:flex;flex-direction:column;gap:20px}ul.clean{list-style:none;padding:0;margin:0}ul.clean li{padding:7px 0;border-bottom:1px solid var(--line)}ul.clean li:last-child{border:0}\n' +
-    '.foot{background:var(--green-deep);color:rgba(248,243,232,.72);font-size:.86rem}.foot-in{max-width:1180px;margin:0 auto;padding:40px 24px;display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:30px}\n' +
-    '.foot-copy{border-top:1px solid rgba(248,243,232,.1);text-align:center;padding:16px 24px;font-size:.76rem;color:rgba(248,243,232,.6)}\n' +
-    '.foot h3{color:var(--cream);font-size:1.1rem;margin:0 0 10px}.foot a{color:var(--gold-l);text-decoration:none}.foot p{margin:0 0 6px}\n' +
-    '.dir-cat{margin:0 0 40px}.dir-cat h2{font-size:1.6rem;color:var(--green-deep);margin:0 0 4px}.dir-cat p{color:var(--muted);margin:0 0 14px;font-size:.9rem}\n' +
-    '.dir-list{columns:3 220px;column-gap:30px;list-style:none;padding:0;margin:0}.dir-list li{break-inside:avoid;padding:5px 0;border-bottom:1px solid var(--line)}.dir-list a{text-decoration:none}.dir-list a:hover{text-decoration:underline}.dir-list i{display:block;font-size:.78rem;color:var(--muted)}\n' +
-    '@media(max-width:900px){.links a:not(.cta){display:none}.hero,.body{grid-template-columns:1fr;gap:26px}.photo{aspect-ratio:4/3}.care{grid-template-columns:1fr 1fr}.care div{border-bottom:1px solid rgba(248,243,232,.1)}.foot-in{grid-template-columns:1fr}}\n' +
-    '@media(max-width:560px){.top-in{padding:10px 16px;gap:10px}.wrap{padding:0 16px}.brand b{font-size:.86rem}.brand small{display:none}.facts{grid-template-columns:1fr}.facts div:last-child:nth-child(odd){grid-column:auto}.card{padding:20px 18px}.cta{padding:8px 12px;font-size:.78rem}}\n';
+    '  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">\n';
 
-  function chromeTop(rel) {
+  var CSS = [
+  ':root{color-scheme:light;--ink:#1b2a20;--green:#1f3a2d;--green-deep:#142319;--green-mid:#2f6647;--gold:#b9893f;--gold-l:#e3c88a;--gold-text:#8d6724;--cream:#f8f3e8;--cream2:#efe7d6;--cream3:#faf6ed;--muted:#6b6457;--line:rgba(27,42,32,.13);--radius:4px}',
+  '*{box-sizing:border-box;margin:0;padding:0}html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}',
+  'body{background:var(--cream);color:var(--ink);font:300 16px/1.7 Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif}',
+  'img{max-width:100%;display:block}a{color:var(--green)}h1,h2,h3,h4{font-family:Fraunces,Georgia,serif;font-weight:400}',
+  '.wrap{max-width:1180px;margin:0 auto;padding:0 32px}',
+  /* top bar */
+  '.top{position:sticky;top:0;z-index:100;background:rgba(248,243,232,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}',
+  '.top-in{max-width:1180px;margin:0 auto;padding:11px 32px;display:flex;align-items:center;gap:20px;min-height:62px}',
+  '.brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--green);min-width:0}.brand img{width:34px;height:auto}',
+  '.brand b{display:block;font:500 1rem/1.2 Fraunces,Georgia,serif;color:var(--green-deep)}',
+  '.brand small{display:block;font-size:.58rem;letter-spacing:.07em;text-transform:uppercase;color:var(--gold-text);margin-top:2px}',
+  '.links{margin-left:auto;display:flex;align-items:center;gap:26px;font-size:.86rem}',
+  '.links a{position:relative;text-decoration:none;color:var(--ink);opacity:.68;transition:opacity .2s,color .2s}.links a:hover{opacity:1;color:var(--green)}',
+  '.links a::after{content:"";position:absolute;left:0;right:0;bottom:-5px;height:1.5px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .35s cubic-bezier(.22,1,.36,1)}',
+  '.links a:hover::after,.links a[aria-current]::after{transform:scaleX(1)}',
+  '.cta{background:var(--green);color:var(--cream)!important;opacity:1!important;padding:9px 20px;border-radius:var(--radius);font-size:.78rem;letter-spacing:.04em;white-space:nowrap;transition:background .2s}',
+  '.cta:hover{background:var(--green-deep)}.cta::after{display:none!important}',
+  /* back bar */
+  '.backbar{background:var(--green-deep);border-bottom:1px solid rgba(185,137,63,.25);position:sticky;top:62px;z-index:90}',
+  '.backbar-in{max-width:1180px;margin:0 auto;padding:13px 32px;display:flex;align-items:center;gap:18px}',
+  '.backbar a{color:var(--gold-l);text-decoration:none;font-size:.82rem;letter-spacing:.03em;white-space:nowrap;transition:gap .2s,color .2s}',
+  '.backbar .crumb{font-size:.76rem;color:rgba(248,243,232,.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}',
+  '.backbar .pill{border:1px solid rgba(217,184,119,.35);padding:6px 13px;border-radius:16px}.backbar .pill:hover{background:rgba(217,184,119,.12)}',
+  /* hero */
+  '.phero{background:radial-gradient(120% 80% at 50% -5%,#234433 0%,var(--green-deep) 60%,#0e1810 100%);padding:60px 0 54px;color:var(--cream)}',
+  '.phero-in{display:grid;grid-template-columns:300px 1fr;gap:60px;align-items:center}',
+  '.phero-in.noimg{grid-template-columns:1fr;text-align:left}',
+  '.pframe{width:280px;height:280px;border-radius:50%;overflow:hidden;border:2px solid var(--gold);background:rgba(248,243,232,.06);margin:0 auto;box-shadow:0 20px 50px rgba(0,0,0,.35)}',
+  '.pframe img{width:100%;height:100%;object-fit:cover;transition:transform 1.3s cubic-bezier(.22,1,.36,1)}.pframe:hover img{transform:scale(1.07)}',
+  '.pframe.empty{display:flex;align-items:center;justify-content:center}.pframe.empty svg{width:96px;height:96px;opacity:.55}',
+  '.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(185,137,63,.18);border:1px solid rgba(185,137,63,.4);color:var(--gold-l);padding:5px 14px;border-radius:20px;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px;text-decoration:none}',
+  '.phero h1{font-size:clamp(2.2rem,5.2vw,3.7rem);font-weight:300;line-height:1.05;letter-spacing:-.01em}',
+  '.bot{font-family:Fraunces,Georgia,serif;font-style:italic;font-size:1.05rem;color:var(--gold-l);margin-top:8px}',
+  '.ptag{color:rgba(248,243,232,.72);font-size:1rem;margin-top:14px;max-width:520px}',
+  '.pacts{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}',
+  '.btn{display:inline-block;padding:13px 28px;font-size:.85rem;letter-spacing:.04em;font-weight:500;border-radius:var(--radius);text-decoration:none;transition:all .22s;border:1px solid transparent;cursor:pointer}',
+  '.btn-gold{background:var(--gold);color:var(--green-deep)}.btn-gold:hover{background:var(--gold-l)}',
+  '.btn-line{border-color:rgba(248,243,232,.45);color:var(--cream)}.btn-line:hover{border-color:var(--cream);background:rgba(248,243,232,.07)}',
+  '.btn-green{background:var(--green);color:var(--cream)}.btn-green:hover{background:var(--green-deep)}',
+  /* care bar */
+  '.carebar{background:var(--green);border-bottom:2px solid var(--gold);padding:20px 0}',
+  '.carebar-in{display:flex;flex-wrap:wrap}',
+  '.cstat{flex:1;min-width:160px;padding:12px 24px;border-right:1px solid rgba(248,243,232,.12)}.cstat:last-child{border-right:none}',
+  '.cstat .ic{font-size:1.3rem;margin-bottom:4px}',
+  '.cstat dt{font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-l);margin-bottom:4px}',
+  '.cstat dd{font-size:.88rem;color:var(--cream)}',
+  /* body */
+  '.content{padding:64px 0}',
+  '.pgrid{display:grid;grid-template-columns:1.55fr 1fr;gap:36px;margin-bottom:52px;align-items:start}',
+  '.sec{background:var(--cream3);border:1px solid var(--line);border-radius:6px;padding:30px}',
+  '.sec h2{font-size:1.12rem;font-weight:500;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;color:var(--green-deep)}',
+  '.sec p{font-size:.96rem;color:rgba(27,42,32,.78);line-height:1.75}',
+  '.ulist{list-style:none;display:flex;flex-direction:column;gap:10px}',
+  '.ulist li{display:flex;gap:10px;font-size:.9rem;color:rgba(27,42,32,.76)}.ulist li::before{content:"◆";color:var(--gold);font-size:.6rem;line-height:1.9}',
+  '.facts{margin:22px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}',
+  '.facts div{background:var(--cream3);padding:13px 16px}',
+  '.facts dt{font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-text);margin-bottom:3px}',
+  '.facts dd{font-size:.9rem;color:var(--green-deep);line-height:1.5}',
+  '.facts div:last-child:nth-child(odd){grid-column:1/-1}',
+  '.supply{margin-top:22px;padding:15px 18px;border-left:3px solid var(--gold);background:rgba(185,137,63,.08);border-radius:0 6px 6px 0;font-size:.9rem;color:var(--muted)}',
+  '.supply strong{color:var(--green-deep);font-weight:500}.supply a{color:var(--gold-text);font-weight:500}',
+  '.h-rule{font-size:1.18rem;font-weight:500;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--line);color:var(--green-deep)}',
+  '.tips{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;margin-bottom:10px}',
+  '.tip{background:var(--cream3);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:6px;padding:20px 22px;font-size:.9rem;color:rgba(27,42,32,.76)}',
+  /* enquire + related */
+  '.enq{background:var(--green-deep);padding:46px 0;text-align:center;color:var(--cream)}',
+  '.enq h2{font-weight:300;font-size:1.6rem;margin-bottom:8px}.enq p{color:rgba(248,243,232,.6);font-size:.92rem;margin-bottom:22px}',
+  '.rel{background:var(--cream2);padding:60px 0}',
+  '.rel h2{font-size:1.5rem;font-weight:300;color:var(--green-deep);margin-bottom:6px}',
+  '.rel .sub{font-size:.85rem;color:var(--muted);margin-bottom:26px}',
+  '.pcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}',
+  '.pcard{display:block;background:var(--cream);border:1px solid var(--line);border-radius:6px;padding:20px 22px;text-decoration:none;transition:transform .25s,box-shadow .25s,border-color .25s}',
+  '.pcard:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(20,35,25,.1);border-color:var(--gold)}',
+  '.pcard b{display:block;font:500 1rem/1.3 Fraunces,Georgia,serif;color:var(--green-deep)}',
+  '.pcard i{display:block;font-size:.78rem;color:var(--muted);margin-top:4px}',
+  '.pcard span{display:block;font-size:.74rem;color:var(--gold-text);margin-top:10px;letter-spacing:.05em}',
+  /* directory */
+  '.dhero{background:radial-gradient(120% 80% at 50% -5%,#234433 0%,var(--green-deep) 60%,#0e1810 100%);padding:70px 0 60px;color:var(--cream)}',
+  '.dhero .eyebrow{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-l);margin-bottom:14px;display:block}',
+  '.dhero h1{font-size:clamp(2.2rem,5.6vw,4rem);font-weight:300;line-height:1.05}.dhero h1 em{font-style:italic;color:var(--gold-l)}',
+  '.dhero p{color:rgba(248,243,232,.7);max-width:620px;margin-top:16px}',
+  '.dsearch{margin-top:28px;max-width:520px;position:relative}',
+  '.dsearch input{width:100%;background:rgba(248,243,232,.08);border:1px solid rgba(185,137,63,.45);border-radius:var(--radius);padding:14px 18px 14px 44px;color:var(--cream);font:300 .95rem Inter,sans-serif}',
+  '.dsearch input::placeholder{color:rgba(248,243,232,.45)}.dsearch input:focus{outline:none;border-color:var(--gold-l);background:rgba(248,243,232,.12)}',
+  '.dsearch svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:17px;height:17px;stroke:rgba(248,243,232,.5);fill:none;stroke-width:2}',
+  '.dcount{margin-top:12px;font-size:.8rem;color:rgba(248,243,232,.55)}',
+  '.chipbar{position:sticky;top:62px;z-index:80;background:var(--cream2);border-bottom:1px solid var(--line)}',
+  '.chipbar-in{max-width:1180px;margin:0 auto;padding:12px 32px;display:flex;gap:9px;overflow-x:auto;-webkit-overflow-scrolling:touch}',
+  '.chip{white-space:nowrap;border:1px solid var(--line);background:var(--cream);color:var(--muted);border-radius:18px;padding:7px 15px;font-size:.78rem;text-decoration:none;transition:all .2s}',
+  '.chip:hover,.chip.on{background:var(--green);border-color:var(--green);color:var(--cream)}',
+  '.catsec{padding:52px 0 8px}.catsec:nth-child(even){background:var(--cream3)}',
+  '.cathead{margin-bottom:26px}',
+  '.cathead .eyebrow{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-text);display:block;margin-bottom:8px}',
+  '.cathead h2{font-size:1.9rem;font-weight:300;color:var(--green-deep)}',
+  '.cathead p{font-size:.88rem;color:var(--muted);margin-top:6px}',
+  '.empty-note{display:none;text-align:center;padding:60px 20px;color:var(--muted)}',
+  /* footer */
+  '.foot{background:var(--green-deep);color:rgba(248,243,232,.72);font-size:.88rem}',
+  '.foot-in{max-width:1180px;margin:0 auto;padding:46px 32px;display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:34px}',
+  '.foot h3{color:var(--cream);font-size:1.05rem;font-weight:300;margin-bottom:12px}',
+  '.foot a{color:var(--gold-l);text-decoration:none}.foot a:hover{text-decoration:underline}.foot p{margin-bottom:7px}',
+  '.foot-copy{border-top:1px solid rgba(248,243,232,.1);text-align:center;padding:16px 24px;font-size:.74rem;color:rgba(248,243,232,.5)}',
+  /* motion */
+  '.rv{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}.rv.in{opacity:1;transform:none}',
+  '@media (prefers-reduced-motion:reduce){.rv{opacity:1!important;transform:none!important;transition:none!important}*{scroll-behavior:auto!important}}',
+  /* WhatsApp button on phones */
+  '.wafab{display:none}',
+  '@media(max-width:900px){.links a:not(.cta){display:none}.phero-in{grid-template-columns:1fr;gap:30px}.pframe{width:220px;height:220px}.pgrid{grid-template-columns:1fr}.foot-in{grid-template-columns:1fr}.cstat{border-right:none;border-bottom:1px solid rgba(248,243,232,.12)}}',
+  '@media(max-width:768px){.wafab{display:flex;position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:850;width:54px;height:54px;border-radius:50%;background:#1f7a47;color:#fff;align-items:center;justify-content:center;box-shadow:0 10px 26px rgba(20,35,25,.35);text-decoration:none}}',
+  '@media(max-width:600px){.wrap,.top-in,.backbar-in,.foot-in,.chipbar-in{padding-left:18px;padding-right:18px}.brand small{display:none}.sec{padding:22px 20px}.facts{grid-template-columns:1fr}.facts div:last-child:nth-child(odd){grid-column:auto}.backbar .crumb{display:none}.content{padding:42px 0}.catsec{padding:36px 0 4px}}'
+  ].join('\n');
+
+  var REVEAL_JS = '<script>(function(){var y=new Date().getFullYear(),c=document.querySelector(".js-year");if(c&&y>+c.textContent)c.textContent=y;' +
+    'var els=[].slice.call(document.querySelectorAll(".rv"));' +
+    'if(!("IntersectionObserver" in window)||matchMedia("(prefers-reduced-motion:reduce)").matches){els.forEach(function(e){e.classList.add("in");});return;}' +
+    'var io=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting){x.target.classList.add("in");io.unobserve(x.target);}});},{rootMargin:"0px 0px -8% 0px"});' +
+    'els.forEach(function(e){io.observe(e);});})();</script>\n';
+
+  var LEAF_SVG = '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 42V20M24 20C24 20 12 18 12 8 12 8 24 8 24 20 24 8 36 8 36 8 36 18 24 20 24 20Z" stroke="#e3c88a" stroke-width="1.4" stroke-linecap="round" fill="none"/></svg>';
+
+  function chromeTop(rel, here) {
+    function link(href, label) {
+      return '<a href="' + href + '"' + (here === label ? ' aria-current="page"' : '') + '>' + label + '</a>';
+    }
     return '<header class="top"><div class="top-in">' +
-      '<a class="brand" href="' + rel + '"><img src="' + rel + 'images/gallery-e92598cf.png" alt="" width="34" height="34"><span><b>Gangumalla&rsquo;s Sri Satyanarayana Nursery</b><small>Kadiyapulanka, Andhra Pradesh</small></span></a>' +
-      '<nav class="links" aria-label="Main"><a href="' + rel + '">Home</a><a href="' + rel + 'plants/">Plant Directory</a><a href="' + rel + '#catalog">Catalogue</a><a href="' + rel + '#gallery">Gallery</a><a class="cta" href="' + rel + '#contact">Visit &amp; Enquire</a></nav>' +
+      '<a class="brand" href="' + rel + '"><img src="' + rel + 'images/gallery-e92598cf.png" alt="" width="34" height="43"><span><b>Gangumalla&rsquo;s Sri Satyanarayana Nursery</b><small>Kadiyapulanka, Andhra Pradesh</small></span></a>' +
+      '<nav class="links" aria-label="Main">' + link(rel, 'Home') + link(rel + '#catalog', 'Full Catalogue') +
+      link(rel + '#about', 'Our Heritage') + link(rel + '#gallery', 'Gallery') +
+      '<a class="cta" href="' + rel + '#contact">Visit &amp; Enquire</a></nav>' +
       '</div></header>\n';
+  }
+  function waFab() {
+    return '<a class="wafab" href="https://wa.me/' + PHONE_WA + '" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp">' +
+      '<svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.08-.3-.15-1.26-.46-2.39-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.91-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.87 1.22 3.07.15.2 2.1 3.2 5.08 4.49.7.3 1.26.49 1.69.62.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2-1.41.25-.7.25-1.29.18-1.42-.08-.12-.28-.2-.57-.35M12.05 21.79h-.01a9.87 9.87 0 01-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 01-1.51-5.26c0-5.45 4.44-9.89 9.89-9.89 2.64 0 5.12 1.03 6.99 2.9a9.83 9.83 0 012.89 6.99c0 5.45-4.43 9.89-9.88 9.89m8.41-18.3A11.82 11.82 0 0012.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 005.69 1.45c6.55 0 11.89-5.34 11.89-11.89a11.82 11.82 0 00-3.48-8.42z"/></svg></a>\n';
   }
   function chromeFoot(rel) {
     return '<footer class="foot"><div class="foot-in">' +
-      '<div><h3>Gangumalla&rsquo;s Sri Satyanarayana Nursery</h3><p>Family-run wholesale and retail nursery since 1963.</p><p>Kadiyapulanka Village, Kadiyam Mandal, East Godavari District, Andhra Pradesh &ndash; 533126</p></div>' +
-      '<div><h3>Contact</h3><p><a href="tel:+919440179027">+91 94401 79027</a></p><p><a href="https://wa.me/' + PHONE_WA + '" rel="noopener">WhatsApp &mdash; available 24/7</a></p><p><a href="mailto:srisatyanarayananursery@yahoo.co.in">srisatyanarayananursery@yahoo.co.in</a></p></div>' +
-      '<div><h3>Explore</h3><p><a href="' + rel + 'plants/">All plants A&ndash;Z</a></p><p><a href="' + rel + '#catalog">Catalogue</a></p><p><a href="' + rel + '#contact">Visit &amp; enquire</a></p></div>' +
-      '</div><div class="foot-copy">&copy; 1963&ndash;<span class="js-year">' + new Date().getFullYear() + '</span> Gangumalla&rsquo;s Sri Satyanarayana Nursery. All rights reserved. Design, text and photographs may not be copied or reused.</div></footer>\n' +
-      '<script>(function(){var y=new Date().getFullYear(),e=document.querySelector(".js-year");if(e&&y>+e.textContent)e.textContent=y;})();</script>\n';
+      '<div><h3>Gangumalla&rsquo;s Sri Satyanarayana Nursery</h3><p>Family-run wholesale and retail nursery since 1963, grown by Gangumalla Satyanarayana &amp; Bros.</p><p>Kadiyapulanka Village, Kadiyam Mandal,<br>East Godavari District, Andhra Pradesh &ndash; 533126</p></div>' +
+      '<div><h3>Contact</h3><p><a href="tel:+919440179027">+91 94401 79027</a></p><p><a href="https://wa.me/' + PHONE_WA + '" rel="noopener">WhatsApp &mdash; 24/7</a></p><p><a href="mailto:srisatyanarayananursery@yahoo.co.in">srisatyanarayananursery@yahoo.co.in</a></p></div>' +
+      '<div><h3>Explore</h3><p><a href="' + rel + '#catalog">Full catalogue</a></p><p><a href="' + rel + 'plants/">Plant index (A&ndash;Z)</a></p><p><a href="' + rel + '#gallery">Gallery</a></p><p><a href="' + rel + '#contact">Visit &amp; enquire</a></p></div>' +
+      '</div><div class="foot-copy">&copy; 1963&ndash;<span class="js-year">' + new Date().getFullYear() + '</span> Gangumalla&rsquo;s Sri Satyanarayana Nursery. All rights reserved. Design, text and photographs may not be copied or reused.</div></footer>\n';
   }
   function head(o) {
     return '<!doctype html>\n<!-- © ' + NURSERY + '. All rights reserved. Design, code, text and photographs may not be copied or reused without written permission. -->\n<html lang="en-IN">\n<head>\n' +
@@ -213,7 +308,9 @@
       '  <title>' + esc(o.title) + '</title>\n' +
       '  <meta name="description" content="' + esc(o.desc) + '">\n' +
       '  <link rel="canonical" href="' + esc(o.canonical) + '">\n' +
-      '  <link rel="icon" href="' + o.rel + 'images/gallery-e92598cf.png">\n' +
+      '  <link rel="icon" type="image/png" href="' + o.rel + 'images/gallery-e92598cf.png">\n' +
+      '  <link rel="apple-touch-icon" href="' + o.rel + 'images/gallery-e92598cf.png">\n' +
+      '  <link rel="manifest" href="' + o.rel + 'site.webmanifest">\n' +
       '  <meta name="theme-color" content="#1f3a2d">\n' +
       '  <meta name="author" content="' + esc(NURSERY) + '">\n' +
       '  <meta name="copyright" content="© ' + esc(NURSERY) + '. All rights reserved.">\n' +
@@ -226,7 +323,7 @@
       '  <meta property="og:image" content="' + esc(o.image) + '">\n' +
       '  <meta name="twitter:card" content="summary_large_image">\n' +
       FONTS +
-      '  <style>\n' + CSS + '  </style>\n' +
+      '  <style>\n' + CSS + '\n  </style>\n' +
       '  <script type="application/ld+json">' + jsonForScript(o.ld) + '</script>\n' +
       '</head>\n';
   }
@@ -239,26 +336,27 @@
     var canonKey = (ctx.canonical && ctx.canonical[key]) || key;
     var canonUrl = baseUrl + '/plants/' + ctx.slugs[canonKey] + '/';
     var name = plant.name || '';
-    var description = plant.description ||
-      (name + ' from ' + NURSERY + ', Kadiyapulanka, Kadiyam.');
+    var description = plant.description || (name + ' from ' + NURSERY + ', Kadiyapulanka, Andhra Pradesh.');
     var metaDesc = description.length > 155 ? description.slice(0, 152).replace(/\s+\S*$/, '') + '…' : description;
     var catLabel = categoryLabel(plant, ctx.categories);
     var botanical = plant.botanical && plant.botanical !== '—' ? plant.botanical : '';
     var title = name + (botanical && botanical.toLowerCase() !== name.toLowerCase() ? ' (' + botanical + ')' : '') + ' | ' + NURSERY;
-    var photo = ctx.photos && ctx.photos[key] || '';
+    var photo = (ctx.photos && ctx.photos[key]) || '';
     var image = photo ? baseUrl + '/' + photo : baseUrl + '/' + OG_IMAGE;
     var rel = '../../';
 
     var related = (Array.isArray(plant.related) ? plant.related : [])
-      .filter(function (r) { return ctx.plants[r] && ctx.slugs[r]; }).slice(0, 6);
+      .filter(function (r) { return ctx.plants[r] && ctx.slugs[r] && r !== key; }).slice(0, 4);
     var relatedHtml = related.map(function (r) {
-      return '<li><a href="../../plants/' + esc(ctx.slugs[r]) + '/">' + esc(ctx.plants[r].name) + '</a></li>';
+      var p = ctx.plants[r], b = p.botanical && p.botanical !== '—' ? p.botanical : '';
+      return '<a class="pcard" href="../' + esc(ctx.slugs[r]) + '/"><b>' + esc(p.name) + '</b>' +
+        (b ? '<i>' + esc(b) + '</i>' : '') + '<span>View plant &rarr;</span></a>';
     }).join('');
 
     var care = plant.care || {};
-    var CARE = [['water','Water'],['light','Light'],['soil','Soil'],['growth','Growth'],['difficulty','Difficulty']];
+    var CARE = [['water','Water','💧'],['light','Light','☀️'],['soil','Soil','🌱'],['growth','Growth','📈'],['difficulty','Difficulty','⭐']];
     var careHtml = CARE.filter(function (c) { return String(care[c[0]] || '').trim(); })
-      .map(function (c) { return '<div><dt>' + c[1] + '</dt><dd>' + esc(care[c[0]]) + '</dd></div>'; }).join('');
+      .map(function (c) { return '<div class="cstat"><div class="ic">' + c[2] + '</div><dt>' + c[1] + '</dt><dd>' + esc(care[c[0]]) + '</dd></div>'; }).join('');
 
     var facts = (plant.facts && typeof plant.facts === 'object') ? plant.facts : {};
     var FACT_ROWS = [['family','Family'],['origin','Native to'],['size','Mature size'],['season','Season'],['highlight','Known for']];
@@ -267,7 +365,6 @@
 
     var uses = (Array.isArray(plant.uses) ? plant.uses : []).filter(Boolean);
     var tips = (Array.isArray(plant.tips) ? plant.tips : []).filter(Boolean);
-    var list = function (a) { return '<ul class="clean">' + a.map(function (u) { return '<li>' + esc(u) + '</li>'; }).join('') + '</ul>'; };
 
     var waText = 'Hello, I found ' + name + ' on your website and would like to know its availability and sizes.';
     var waHref = 'https://wa.me/' + PHONE_WA + '?text=' + encodeURIComponent(waText);
@@ -275,54 +372,56 @@
     var ld = {
       '@context': 'https://schema.org',
       '@graph': [
-        {
-          '@type': 'WebPage', '@id': url, url: url, name: title, description: metaDesc,
-          inLanguage: 'en-IN',
+        { '@type': 'WebPage', '@id': url, url: url, name: title, description: metaDesc, inLanguage: 'en-IN',
           primaryImageOfPage: photo ? { '@type': 'ImageObject', url: image } : undefined,
           isPartOf: { '@type': 'WebSite', name: NURSERY, url: baseUrl + '/' },
           about: { '@type': 'Thing', name: name, alternateName: botanical || undefined, description: plant.tagline || undefined },
-          publisher: { '@id': baseUrl + '/#nursery' }
-        },
-        {
-          '@type': 'BreadcrumbList',
-          itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'Home', item: baseUrl + '/' },
-            { '@type': 'ListItem', position: 2, name: 'Plant Directory', item: baseUrl + '/plants/' },
-            { '@type': 'ListItem', position: 3, name: name, item: url }
-          ]
-        }
+          publisher: { '@id': baseUrl + '/#nursery' } },
+        { '@type': 'BreadcrumbList', itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: baseUrl + '/' },
+          { '@type': 'ListItem', position: 2, name: 'Plant Directory', item: baseUrl + '/plants/' },
+          { '@type': 'ListItem', position: 3, name: name, item: url } ] }
       ]
     };
 
     return head({ title: title, desc: metaDesc, canonical: canonUrl, image: image, ld: ld, rel: rel, ogTitle: name }) +
 '<body>\n' + chromeTop(rel) +
-'<main class="wrap">\n' +
-'  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../">Home</a> &rsaquo; <a href="../../plants/">Plant Directory</a> &rsaquo; <a href="../../plants/#' + esc(plant.cat || '') + '">' + esc(catLabel) + '</a> &rsaquo; ' + esc(name) + '</nav>\n' +
-'  <section class="hero' + (photo ? '' : ' noimg') + '">\n' +
-'    <div>\n' +
-'      <p class="eyebrow">' + esc(catLabel) + '</p>\n' +
-'      <h1>' + esc(name) + '</h1>\n' +
-(botanical ? '      <div class="botanical">' + esc(botanical) + '</div>\n' : '') +
-(plant.tagline ? '      <p class="tagline">' + esc(plant.tagline) + '</p>\n' : '') +
-'      <div class="actions"><a class="button wa" href="' + esc(waHref) + '" rel="noopener">Ask on WhatsApp &rarr;</a><a class="button ghost" href="../../#contact">Request a quote</a></div>\n' +
-'    </div>\n' +
-(photo ? '    <figure class="photo" style="margin:0"><img src="../../' + esc(photo) + '" alt="' + esc(name + (botanical ? ' (' + botanical + ')' : '') + ' at Gangumalla’s Sri Satyanarayana Nursery') + '" width="800" height="1000"></figure>\n' : '') +
-'  </section>\n' +
-(careHtml ? '  <dl class="care" aria-label="Care guide">' + careHtml + '</dl>\n' : '') +
-'  <div class="body">\n' +
-'    <article class="card">\n' +
-'      <h2>About this plant</h2>\n' +
-'      <p style="margin:0">' + esc(description) + '</p>\n' +
+'<div class="backbar"><div class="backbar-in">' +
+  '<a href="../../#catalog">&larr; Full catalogue</a>' +
+  '<span class="crumb">' + esc(catLabel) + ' / ' + esc(name) + '</span>' +
+  '<a class="pill" href="' + esc(waHref) + '" rel="noopener">Enquire on WhatsApp</a>' +
+'</div></div>\n' +
+'<section class="phero"><div class="wrap phero-in' + (photo ? '' : ' noimg') + '">\n' +
+(photo ? '  <div class="pframe"><img src="../../' + esc(photo) + '" alt="' + esc(name + (botanical ? ' (' + botanical + ')' : '') + ' grown at Gangumalla’s Sri Satyanarayana Nursery') + '" width="560" height="560"></div>\n'
+       : '  <div class="pframe empty">' + LEAF_SVG + '</div>\n') +
+'  <div>\n' +
+'    <a class="badge" href="../../#catalog/' + encodeURIComponent(plant.cat || '') + '">' + esc(catLabel) + '</a>\n' +
+'    <h1>' + esc(name) + '</h1>\n' +
+(botanical ? '    <div class="bot">' + esc(botanical) + '</div>\n' : '') +
+(plant.tagline ? '    <p class="ptag">' + esc(plant.tagline) + '</p>\n' : '') +
+'    <div class="pacts"><a class="btn btn-gold wa" href="' + esc(waHref) + '" rel="noopener">Ask on WhatsApp</a><a class="btn btn-line" href="../../#quote/add/' + encodeURIComponent(key) + '">&#128722; Add to quote request</a></div>\n' +
+'  </div>\n</div></section>\n' +
+(careHtml ? '<div class="carebar"><div class="wrap"><dl class="carebar-in">' + careHtml + '</dl></div></div>\n' : '') +
+'<section class="content"><div class="wrap">\n' +
+'  <div class="pgrid">\n' +
+'    <article class="sec rv"><h2><span>📖</span> About This Plant</h2>\n' +
+'      <p>' + esc(description) + '</p>\n' +
 (factsHtml ? '      <dl class="facts">' + factsHtml + '</dl>\n' : '') +
 '      <p class="supply"><strong>' + esc(name) + '</strong>' + (botanical ? ' (<em>' + esc(botanical) + '</em>)' : '') + ' is grown and supplied by Gangumalla&rsquo;s Sri Satyanarayana Nursery at Kadiyapulanka, Andhra Pradesh. Available wholesale and retail in a range of sizes. <a href="../../#contact">Contact us</a> for current stock, sizing and pricing.</p>\n' +
 '    </article>\n' +
-'    <aside class="side">\n' +
-(uses.length ? '      <section class="card"><h2>Best used for</h2>' + list(uses) + '</section>\n' : '') +
-(tips.length ? '      <section class="card"><h2>Growing tips</h2>' + list(tips) + '</section>\n' : '') +
-(relatedHtml ? '      <section class="card"><h2>Related plants</h2><ul class="clean">' + relatedHtml + '</ul></section>\n' : '') +
-'    </aside>\n' +
+(uses.length ? '    <aside class="sec rv"><h2><span>🌿</span> Where to Use It</h2><ul class="ulist">' +
+    uses.map(function (u) { return '<li>' + esc(u) + '</li>'; }).join('') + '</ul></aside>\n' : '') +
 '  </div>\n' +
-'</main>\n' + chromeFoot(rel) +
+(tips.length ? '  <h2 class="h-rule rv">💡 &nbsp;Care Tips &amp; Growing Guide</h2>\n  <div class="tips rv">' +
+  tips.map(function (t) { return '<div class="tip">' + esc(t) + '</div>'; }).join('') + '</div>\n' : '') +
+'</div></section>\n' +
+'<section class="enq"><div class="wrap">\n' +
+'  <h2>Interested in ' + esc(name) + '?</h2>\n' +
+'  <p>Available wholesale and retail &mdash; contact us for current pricing, sizes and availability.</p>\n' +
+'  <a class="btn btn-gold" href="../../#contact">Send an Enquiry</a>\n' +
+'</div></section>\n' +
+(relatedHtml ? '<section class="rel"><div class="wrap"><h2>You may also like</h2><p class="sub">More from ' + esc(catLabel) + '</p><div class="pcards rv">' + relatedHtml + '</div></div></section>\n' : '') +
+chromeFoot(rel) + waFab() + REVEAL_JS +
 '</body></html>\n';
   }
 
@@ -330,10 +429,19 @@
   function renderDirectory(ctx) {
     var baseUrl = cleanBase(ctx.baseUrl);
     var url = baseUrl + '/plants/';
+    var ICONS = { avenue:'🌳', flowering:'🌼', fruit:'🍎', palm:'🌴', shrub:'🌿',
+                  ground:'🌱', aquatic:'🌊', desert:'🌵', ficus:'🌲', indoor:'🪴', pots:'🏺' };
+    var BLURB = { avenue:'Shade and boulevard trees grown for straight trunks and full canopies.',
+      flowering:'Trees and shrubs grown for their season of colour.',
+      fruit:'Grafted and seedling fruit for orchards, farms and home gardens.',
+      palm:'Architectural palms and cycads for entrances, avenues and courtyards.',
+      shrub:'Hedging, borders, topiary and mass colour.',
+      ground:'Low spreading cover for slopes, edges and under-planting.',
+      aquatic:'Lotus, lilies and marginals for ponds and water features.',
+      desert:'Drought-hardy succulents, cacti and desert specimens.' };
     var groups = {}, order = [];
     Object.keys(ctx.plants).forEach(function (k) {
-      var p = ctx.plants[k];
-      var cat = p.cat || 'other';
+      var p = ctx.plants[k], cat = p.cat || 'other';
       if (!groups[cat]) { groups[cat] = { label: categoryLabel(p, ctx.categories), items: [] }; order.push(cat); }
       groups[cat].items.push(k);
     });
@@ -341,28 +449,56 @@
     var sections = order.map(function (cat) {
       var g = groups[cat];
       g.items.sort(function (a, b) { return String(ctx.plants[a].name).localeCompare(String(ctx.plants[b].name)); });
-      return '  <section class="dir-cat" id="' + esc(cat) + '"><h2>' + esc(g.label) + '</h2><p>' + g.items.length + ' plants</p><ul class="dir-list">' +
-        g.items.map(function (k) {
+      return '<section class="catsec" id="' + esc(cat) + '" data-cat="' + esc(cat) + '"><div class="wrap">' +
+        '<div class="cathead rv"><span class="eyebrow">Collection</span><h2>' + (ICONS[cat] ? ICONS[cat] + ' ' : '') + esc(g.label) + '</h2>' +
+        '<p>' + esc(BLURB[cat] || 'Grown and supplied from our own fields at Kadiyapulanka.') + ' &mdash; <em>' + g.items.length + ' varieties, more available on request</em></p></div>' +
+        '<div class="pcards">' + g.items.map(function (k) {
           var p = ctx.plants[k], target = (ctx.canonical && ctx.canonical[k]) || k;
-          var bot = p.botanical && p.botanical !== '—' && p.botanical.toLowerCase() !== String(p.name).toLowerCase() ? '<i>' + esc(p.botanical) + '</i>' : '';
-          return '<li><a href="' + esc(ctx.slugs[target]) + '/">' + esc(p.name) + '</a>' + bot + '</li>';
-        }).join('') + '</ul></section>\n';
+          var b = p.botanical && p.botanical !== '—' && p.botanical.toLowerCase() !== String(p.name).toLowerCase() ? p.botanical : '';
+          return '<a class="pcard" href="' + esc(ctx.slugs[target]) + '/" data-name="' + esc(String(p.name).toLowerCase() + ' ' + b.toLowerCase()) + '">' +
+            '<b>' + esc(p.name) + '</b>' + (b ? '<i>' + esc(b) + '</i>' : '') + '<span>View plant &rarr;</span></a>';
+        }).join('') + '</div>' +
+        '<p class="empty-note">No plant in this collection matches your search.</p>' +
+        '</div></section>\n';
     }).join('');
-    var jump = order.map(function (cat) { return '<a href="#' + esc(cat) + '">' + esc(groups[cat].label) + '</a>'; }).join(' &middot; ');
-    var desc = 'Browse all ' + total + ' plants grown and supplied by ' + NURSERY + ' at Kadiyapulanka, Andhra Pradesh — avenue trees, palms, fruit plants, shrubs, flowering trees, aquatic and desert plants.';
+    var chips = order.map(function (cat) {
+      return '<a class="chip" href="#' + esc(cat) + '">' + (ICONS[cat] ? ICONS[cat] + ' ' : '') + esc(groups[cat].label) + ' &middot; ' + groups[cat].items.length + '</a>';
+    }).join('');
+    var desc = 'Browse all ' + total + ' plants grown and supplied by ' + NURSERY + ' at Kadiyapulanka, Andhra Pradesh — avenue trees, flowering trees, palms, fruit plants, shrubs, ground cover, aquatic and desert plants.';
     var ld = { '@context': 'https://schema.org', '@graph': [
       { '@type': 'CollectionPage', '@id': url, url: url, name: 'Plant Directory', description: desc, inLanguage: 'en-IN',
-        isPartOf: { '@type': 'WebSite', name: NURSERY, url: baseUrl + '/' } },
+        isPartOf: { '@type': 'WebSite', name: NURSERY, url: baseUrl + '/' }, publisher: { '@id': baseUrl + '/#nursery' } },
       { '@type': 'BreadcrumbList', itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Home', item: baseUrl + '/' },
         { '@type': 'ListItem', position: 2, name: 'Plant Directory', item: url } ] } ] };
-    return head({ title: 'Plant Directory — ' + total + ' plants | ' + NURSERY, desc: desc, canonical: url, image: baseUrl + '/' + OG_IMAGE, ld: ld, rel: '../', ogTitle: 'Plant Directory' }) +
-'<body>\n' + chromeTop('../') +
-'<main class="wrap" style="padding-bottom:40px">\n' +
-'  <nav class="crumbs" aria-label="Breadcrumb"><a href="../">Home</a> &rsaquo; Plant Directory</nav>\n' +
-'  <section class="hero noimg" style="padding-bottom:20px"><div><p class="eyebrow">Plant Directory</p><h1>All ' + total + ' plants, A&ndash;Z</h1><p class="tagline">Every plant we grow and supply, by category. Open a plant for its description, care guide and quick facts, or <a href="../#contact">send us an enquiry</a>.</p><p style="font-size:.86rem;line-height:2">' + jump + '</p></div></section>\n' +
+    var searchJs = '<script>(function(){var i=document.getElementById("dq"),c=document.getElementById("dcount"),' +
+      'cards=[].slice.call(document.querySelectorAll(".pcard[data-name]")),secs=[].slice.call(document.querySelectorAll(".catsec"));' +
+      'if(!i)return;var total=cards.length;' +
+      'function run(){var q=i.value.trim().toLowerCase(),n=0;' +
+      'cards.forEach(function(a){var hit=!q||a.getAttribute("data-name").indexOf(q)>=0;a.style.display=hit?"":"none";if(hit)n++;});' +
+      'secs.forEach(function(s){var vis=[].slice.call(s.querySelectorAll(".pcard")).some(function(a){return a.style.display!=="none";});' +
+      's.style.display=(q&&!vis)?"none":"";var e=s.querySelector(".empty-note");if(e)e.style.display="none";});' +
+      'c.textContent=q?(n+" of "+total+" plants match \\u201c"+i.value.trim()+"\\u201d"):(total+" plants, in 8 collections");}' +
+      'i.addEventListener("input",run);run();})();</script>\n';
+    return head({ title: 'Plant Directory — all ' + total + ' plants | ' + NURSERY, desc: desc, canonical: url,
+                  image: baseUrl + '/' + OG_IMAGE, ld: ld, rel: '../', ogTitle: 'Plant Directory' }) +
+'<body>\n' + chromeTop('../', 'Plant Directory') +
+'<section class="dhero"><div class="wrap">\n' +
+'  <span class="eyebrow">Plant Directory</span>\n' +
+'  <h1>Every plant we grow,<br><em>all ' + total + ' of them</em>.</h1>\n' +
+'  <p>Grown, trained and supplied from our own fields at Kadiyapulanka since 1963. Open any plant for its description, care guide and quick facts.</p>\n' +
+'  <div class="dsearch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5" stroke-linecap="round"/></svg>' +
+'    <input id="dq" type="search" placeholder="Search by plant or botanical name" aria-label="Search plants" autocomplete="off"></div>\n' +
+'  <p class="dcount" id="dcount">' + total + ' plants, in ' + order.length + ' collections</p>\n' +
+'</div></section>\n' +
+'<div class="chipbar"><div class="chipbar-in">' + chips + '</div></div>\n' +
 sections +
-'</main>\n' + chromeFoot('../') +
+'<section class="enq"><div class="wrap">\n' +
+'  <h2>Cannot find what you are looking for?</h2>\n' +
+'  <p>We carry far more than is listed here, and we source to order. Tell us the plant, the size and the quantity.</p>\n' +
+'  <a class="btn btn-gold" href="../#contact">Send an Enquiry</a>\n' +
+'</div></section>\n' +
+chromeFoot('../') + waFab() + searchJs + REVEAL_JS +
 '</body></html>\n';
   }
 

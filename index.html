@@ -355,7 +355,7 @@ section{padding:108px 0;}
 .card-body{padding:16px 18px 20px;}
 .card-name{font-size:1.02rem;font-weight:500;margin-bottom:5px;color:var(--green-deep);}
 .card-link{color:inherit;text-decoration:none;}
-.plant-share-link{color:var(--gold-l);font-size:.8rem;letter-spacing:.04em;text-decoration:none;border:1px solid rgba(217,184,119,.35);padding:6px 12px;border-radius:16px;white-space:nowrap;}.plant-share-link:hover{background:rgba(217,184,119,.12);}.card-link:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+.plant-share-link{display:none!important;color:var(--gold-l);font-size:.8rem;letter-spacing:.04em;text-decoration:none;border:1px solid rgba(217,184,119,.35);padding:6px 12px;border-radius:16px;white-space:nowrap;}.plant-share-link:hover{background:rgba(217,184,119,.12);}.card-link:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
 .card-bot{display:block;font-size:.76rem;color:var(--gold);font-style:italic;margin-bottom:8px;}
 .card-hint{font-size:.75rem;color:var(--muted);font-weight:300;}
 
@@ -2755,6 +2755,98 @@ nav.m-drawer-nav,
   body.modal-open .wa-fab{opacity:0;pointer-events:none;}
 }
 @media (prefers-reduced-motion:reduce){.nav-links a::after,.card-img-wrap img,#gallery-grid img{transition:none!important;}}
+
+/* ══ Quote cart ═══════════════════════════════════════════ */
+.nav-quote{display:inline-flex;align-items:center;gap:7px;background:transparent;border:1px solid var(--line);color:var(--green);
+  border-radius:20px;padding:6px 14px;font:500 .78rem 'Inter',sans-serif;cursor:pointer;transition:all .2s;margin-left:14px;}
+.nav-quote:hover{border-color:var(--gold);background:rgba(185,137,63,.09);}
+.nav-quote .qn{background:var(--gold);color:var(--green-deep);border-radius:11px;min-width:20px;height:20px;display:inline-flex;
+  align-items:center;justify-content:center;font-size:.7rem;font-weight:600;padding:0 5px;}
+.nav-quote.empty .qn{background:var(--line);color:var(--muted);}
+.q-hero{background:radial-gradient(120% 80% at 50% -5%,#234433 0%,var(--green-deep) 60%,#0e1810 100%);padding:54px 0 46px;color:var(--cream);}
+.q-hero h1{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(2rem,5vw,3.2rem);line-height:1.08;}
+.q-hero h1 em{font-style:italic;color:var(--gold-l);}
+.q-hero p{color:rgba(248,243,232,.7);margin-top:12px;max-width:560px;font-size:.95rem;}
+.q-body{padding:44px 0 60px;}
+.q-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:34px;align-items:start;}
+.q-panel{background:var(--cream3);border:1px solid var(--line);border-radius:8px;padding:26px 28px;}
+.q-panel h2{font-size:1.12rem;font-weight:500;color:var(--green-deep);margin-bottom:6px;display:flex;align-items:center;gap:9px;}
+.q-panel .q-sub{font-size:.82rem;color:var(--muted);margin-bottom:18px;}
+.q-table{width:100%;border-collapse:collapse;font-size:.88rem;}
+.q-table th{text-align:left;font:600 .66rem 'Inter',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-text);
+  padding:0 10px 9px;border-bottom:1px solid var(--line);}
+.q-table td{padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:top;}
+.q-table tr:last-child td{border-bottom:none;}
+.q-name{font-family:'Fraunces',serif;font-size:1rem;color:var(--green-deep);}
+.q-name i{display:block;font-family:'Inter',sans-serif;font-style:normal;font-size:.74rem;color:var(--muted);margin-top:2px;}
+.q-in{width:100%;background:#fff;border:1px solid var(--line);border-radius:3px;padding:8px 10px;font:400 .85rem 'Inter',sans-serif;color:var(--ink);}
+.q-in:focus{outline:none;border-color:var(--gold);}
+.q-qty{width:74px;text-align:center;}
+.q-rm{background:none;border:1px solid rgba(184,64,64,.3);color:#a33;border-radius:50%;width:30px;height:30px;cursor:pointer;line-height:1;}
+.q-rm:hover{background:#b84040;color:#fff;border-color:#b84040;}
+.q-foot{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:2px solid var(--gold);}
+.q-total{font-size:.9rem;color:var(--green-deep);}
+.q-total b{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:500;}
+.q-empty{text-align:center;padding:40px 16px;color:var(--muted);}
+.q-empty .ic{font-size:2.6rem;opacity:.45;margin-bottom:10px;}
+.q-note-lbl{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-text);margin:0 0 6px;display:block;}
+.q-fields{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.q-fields .full{grid-column:1/-1;}
+.q-fields label{display:block;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.q-fields input,.q-fields select,.q-fields textarea{width:100%;background:#fff;border:1px solid var(--line);border-radius:3px;
+  padding:11px 13px;font:400 .9rem 'Inter',sans-serif;color:var(--ink);}
+.q-fields textarea{min-height:88px;resize:vertical;}
+.q-fields input:focus,.q-fields select:focus,.q-fields textarea:focus{outline:none;border-color:var(--gold);}
+.q-send{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px;}
+.q-send .btn{flex:1;min-width:170px;text-align:center;}
+.q-preview{margin-top:16px;border:1px solid var(--line);border-radius:4px;background:#fff;}
+.q-preview summary{cursor:pointer;padding:10px 14px;font-size:.8rem;color:var(--gold-text);list-style:none;}
+.q-preview summary::-webkit-details-marker{display:none;}
+.q-preview summary::before{content:'\25B8  ';}
+.q-preview[open] summary::before{content:'\25BE  ';}
+.q-preview pre{margin:0;padding:4px 14px 14px;white-space:pre-wrap;word-break:break-word;font:.76rem/1.6 ui-monospace,Menlo,Consolas,monospace;color:var(--ink);}
+.q-sugg{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-top:6px;}
+.q-sugg button{text-align:left;background:var(--cream);border:1px solid var(--line);border-radius:6px;padding:13px 15px;cursor:pointer;transition:all .2s;}
+.q-sugg button:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 10px 22px rgba(20,35,25,.08);}
+.q-sugg b{display:block;font:500 .92rem 'Fraunces',serif;color:var(--green-deep);}
+.q-sugg i{display:block;font-style:normal;font-size:.72rem;color:var(--muted);margin-top:3px;}
+.q-sugg span{display:block;font-size:.7rem;color:var(--gold-text);margin-top:8px;letter-spacing:.05em;}
+.q-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;}
+.q-links a{font-size:.8rem;text-decoration:none;color:var(--green);border:1px solid var(--line);border-radius:18px;padding:7px 15px;transition:all .2s;}
+.q-links a:hover{border-color:var(--gold);background:rgba(185,137,63,.08);}
+.card-quote{position:absolute;top:10px;right:10px;z-index:4;background:rgba(248,243,232,.94);border:1px solid var(--line);color:var(--green);
+  border-radius:16px;padding:5px 11px;font:600 .7rem 'Inter',sans-serif;cursor:pointer;opacity:0;transition:opacity .25s,background .2s;}
+.plant-card:hover .card-quote,.card-quote:focus{opacity:1;}
+.card-quote:hover{background:var(--gold);border-color:var(--gold);color:var(--green-deep);}
+.card-quote.added{opacity:1;background:var(--green);border-color:var(--green);color:var(--cream);}
+@media(hover:none){.card-quote{opacity:1;}}
+.q-toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--green-deep);color:var(--cream);
+  padding:12px 20px;border-radius:24px;font-size:.84rem;z-index:9600;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;
+  box-shadow:0 14px 34px rgba(0,0,0,.3);display:flex;align-items:center;gap:12px;}
+.q-toast.show{opacity:1;transform:translate(-50%,0);}
+.q-toast button{background:var(--gold);color:var(--green-deep);border:none;border-radius:14px;padding:5px 12px;font:600 .74rem 'Inter',sans-serif;cursor:pointer;}
+#page-quote .enq-field input{background:#fff;border:1px solid var(--line);color:var(--ink);border-radius:3px;padding:11px 13px;font:400 .9rem 'Inter',sans-serif;}
+#page-quote .enq-field input::placeholder{color:#9a9285;}
+#page-quote .enq-field input:focus{outline:none;border-color:var(--gold);}
+#page-quote .enq-browse{color:var(--gold-text);}
+#page-quote .enq-hint{color:var(--muted)!important;}
+#page-quote .enq-hint.err{color:#a33!important;}
+#page-quote .form-label{color:var(--gold-text);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:8px;}
+@media(max-width:900px){.q-grid{grid-template-columns:1fr;}}
+@media(max-width:640px){
+  .q-panel{padding:20px 16px;}
+  .q-table,.q-table tbody,.q-table tr,.q-table td{display:block;width:100%;}
+  .q-table thead{display:none;}
+  .q-table tr{border:1px solid var(--line);border-radius:6px;padding:12px;margin-bottom:12px;position:relative;}
+  .q-table td{border:none;padding:6px 0;}
+  .q-table td[data-l]::before{content:attr(data-l);display:block;font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-text);margin-bottom:4px;}
+  .q-table td.rm{position:absolute;top:10px;right:10px;padding:0;}
+  .q-table td[data-l="Plant"]::before{display:none;}
+  .q-table td[data-l="Plant"]{padding-right:44px;}
+  .q-qty{width:100%;}
+  .q-fields{grid-template-columns:1fr;}
+  .nav-quote{margin-left:0;}
+}
 </style>
 </head>
 <body>
@@ -2801,6 +2893,7 @@ nav.m-drawer-nav,
     <a href="#" id="nav-gallery" onclick="showPage('gallery');return false;">Gallery</a>
     <a href="#" id="nav-contact" onclick="showPage('contact');return false;">Visit &amp; Enquire</a>
   </div>
+  <button class="nav-quote empty" id="nav-quote-btn" onclick="showPage('quote')" aria-label="Open your quote request">&#128722; Quote <span class="qn" id="cart-count">0</span></button>
   <button class="btn btn-nav-cta" onclick="showPage('contact')">Enquire</button>
 </nav>
   <div class="notice-strip">
@@ -3109,7 +3202,6 @@ nav.m-drawer-nav,
       <span class="eyebrow">The Collection</span>
       <h1>Eight categories, <em>one nursery</em>.</h1>
       <p>Hover over any plant to see care details &mdash; click to explore the full profile, uses, care guide and related plants. We carry every variety: just name it.</p>
-      <p style="margin-top:10px;font-size:.9rem;"><a href="plants/" style="color:var(--gold-l);text-underline-offset:3px;">Prefer a list? Browse the A&ndash;Z plant directory &rarr;</a></p>
     </div>
   </div>
   <section class="catalog-section">
@@ -3292,7 +3384,8 @@ nav.m-drawer-nav,
     <div class="wrap">
       <h3 id="enquire-plant-name">Interested in this plant?</h3>
       <p>Available wholesale and retail &mdash; contact us for current pricing, sizes and availability.</p>
-      <button class="btn btn-gold" onclick="showPage('contact')">Send an Enquiry</button>
+      <button class="btn btn-gold" onclick="cartAdd(window.curPlantKey,1,true)">&#128722; Add to Quote Request</button>
+    <button class="btn btn-outline-light" style="margin-left:10px;" onclick="showPage('contact')">Send an Enquiry</button>
     </div>
   </section>
 
@@ -3475,6 +3568,97 @@ nav.m-drawer-nav,
   </section>
 </div>
 
+<!-- ══ PAGE: QUOTE REQUEST (cart) ═══════════════════════════ -->
+<div id="page-quote" class="page">
+  <section class="q-hero">
+    <div class="wrap">
+      <span class="eyebrow" style="color:var(--gold-l);">Your selection</span>
+      <h1>Request a <em>quote</em>.</h1>
+      <p>Add plants from the catalog, set the quantity, size and a note for each, then send the list to us on WhatsApp or by email. We reply with current prices and availability.</p>
+    </div>
+  </section>
+  <section class="q-body">
+    <div class="wrap">
+      <div class="q-grid">
+        <div>
+          <div class="q-panel">
+            <h2><span>&#128722;</span> Plants in your quote</h2>
+            <p class="q-sub" id="q-sub">Nothing added yet.</p>
+
+            <div id="q-empty" class="q-empty">
+              <div class="ic">&#127807;</div>
+              <p style="margin-bottom:6px;color:var(--green-deep);font-family:'Fraunces',serif;font-size:1.1rem;">Your quote list is empty</p>
+              <p style="font-size:.86rem;margin-bottom:18px;">Browse the catalog and press &ldquo;+ Quote&rdquo; on any plant, or search for one below.</p>
+              <button class="btn btn-green" onclick="showPage('catalog')">Browse the Full Catalog &rarr;</button>
+            </div>
+
+            <div id="q-table-wrap" style="display:none;">
+              <table class="q-table">
+                <thead><tr><th>Plant</th><th style="width:120px;">Size</th><th style="width:96px;">Qty</th><th style="width:26%;">Notes</th><th style="width:44px;"></th></tr></thead>
+                <tbody id="q-rows"></tbody>
+              </table>
+              <div class="q-foot">
+                <div class="q-total" id="q-total"></div>
+                <button class="btn btn-outline" style="padding:9px 18px;font-size:.78rem;" onclick="cartClear()">Clear the list</button>
+              </div>
+            </div>
+
+            <div class="form-row enq-plants" style="margin-top:22px;">
+              <span class="form-label" id="q-add-label" style="color:var(--gold-text);">Add another plant</span>
+              <div class="enq-add" role="group" aria-labelledby="q-add-label">
+                <div class="enq-field enq-field-plant">
+                  <div class="enq-inwrap">
+                    <input id="q-plant" type="text" placeholder="Search plants" autocomplete="off" aria-label="Plant name">
+                    <button type="button" class="enq-browse" id="q-browse" aria-label="Browse the full plant catalogue" aria-expanded="false" title="Browse catalogue">&#9662;</button>
+                  </div>
+                  <div class="enq-suggest" id="q-plant-list" role="listbox"></div>
+                </div>
+                <div class="enq-field enq-field-qty"><input id="q-qty" type="number" inputmode="numeric" min="1" max="100000" value="1" aria-label="Quantity"></div>
+                <div class="enq-field enq-field-size"><input id="q-size" type="text" placeholder="Size, e.g. 6 ft" maxlength="40" aria-label="Size (optional)"></div>
+                <button type="button" class="enq-add-btn" onclick="cartAddTyped()">&#43; Add</button>
+              </div>
+              <p class="enq-hint" id="q-hint" aria-live="polite"></p>
+            </div>
+          </div>
+
+          <div class="q-panel" style="margin-top:24px;">
+            <h2><span>&#10024;</span> You may also like</h2>
+            <p class="q-sub">Popular with landscapers and estates &mdash; add them in one tap.</p>
+            <div class="q-sugg" id="q-sugg"></div>
+            <div class="q-links">
+              <a href="#" onclick="showPage('catalog','avenue');return false;">&#127795; Avenue &amp; Shade Trees</a>
+              <a href="#" onclick="showPage('catalog','palm');return false;">&#127796; Palms &amp; Cycads</a>
+              <a href="#" onclick="showPage('catalog','fruit');return false;">&#127822; Fruit Plants</a>
+              <a href="#" onclick="showPage('catalog','flowering');return false;">&#127800; Flowering Trees</a>
+              <a href="#" onclick="showPage('catalog','shrub');return false;">&#127807; Shrubs &amp; Hedges</a>
+              <a href="#" onclick="showPage('catalog');return false;">View the full catalog &rarr;</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="q-panel" id="q-form-panel">
+          <h2><span>&#128231;</span> Send your quote request</h2>
+          <p class="q-sub">We reply on WhatsApp or email, usually the same day.</p>
+          <div class="q-fields">
+            <div class="full"><label for="q-name">Your name *</label><input id="q-name" type="text" placeholder="Full name" autocomplete="name"></div>
+            <div><label for="q-phone">Phone / WhatsApp *</label><input id="q-phone" type="tel" placeholder="+91" autocomplete="tel"></div>
+            <div><label for="q-email">Email</label><input id="q-email" type="email" placeholder="optional" autocomplete="email"></div>
+            <div class="full"><label for="q-type">I am a&hellip;</label><select id="q-type"><option value="">Select one&hellip;</option></select></div>
+            <div class="full"><label for="q-place">Delivery city / site</label><input id="q-place" type="text" placeholder="e.g. Hyderabad, or the project site"></div>
+            <div class="full"><label for="q-notes">Notes for the whole order</label><textarea id="q-notes" placeholder="Timeline, pot sizes, transport, site conditions&hellip;"></textarea></div>
+          </div>
+          <details class="q-preview"><summary>Preview the message</summary><pre id="q-preview-text"></pre></details>
+          <div class="q-send">
+            <button type="button" class="btn" style="background:#25D366;color:#fff;" onclick="cartSend('whatsapp')">&#128172; Send on WhatsApp</button>
+            <button type="button" class="btn btn-green" onclick="cartSend('email')">&#9993; Send by Email</button>
+          </div>
+          <p style="font-size:.76rem;color:var(--muted);margin-top:14px;">No payment is taken on this website. We confirm prices, sizes and transport with you directly.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
 <!-- ══ FOOTER ════════════════════════════════════════════════════ -->
 <footer id="site-footer">
   <div class="wrap">
@@ -3529,7 +3713,6 @@ nav.m-drawer-nav,
           <li><a onclick="showPage('home')">Home</a></li>
           <li><a onclick="showPage('about')">Our Heritage</a></li>
           <li><a onclick="showPage('catalog')">Full Catalog</a></li>
-          <li><a href="plants/">Plant Directory (A&ndash;Z)</a></li>
           <li><a onclick="showPage('gallery')">Gallery</a></li>
           <li><a onclick="showPage('contact')">Visit &amp; Enquire</a></li>
         </ul>
@@ -3781,7 +3964,7 @@ function goBack() {
 }
 
 // ── Page router ───────────────────────────────────────────────────
-const ALL_PAGES = ['home','about','catalog','clients','gallery','contact','plant'];
+const ALL_PAGES = ['home','about','catalog','clients','gallery','contact','plant','quote'];
 let catalogReady = false;
 
 function showPage(id, catFilter, routeOptions) {
@@ -3798,6 +3981,7 @@ function showPage(id, catFilter, routeOptions) {
   if (id !== 'plant') window.scrollTo({top:0,behavior:'smooth'});
   if (id === 'catalog') { try{ setTimeout(function(){ if(!_csList.length) csBuild(); }, 200); }catch(e){} }
   try{ triggerReveals(); }catch(e){ showAllReveals(); }
+  if (id === 'quote') { try{ cartRender(); cartSuggest(); }catch(e){ console.error(e); } }
   if (id === 'catalog') {
     initCatalog();
     if (catFilter) { filterCat(catFilter); prevCat = catFilter; }
@@ -4112,9 +4296,374 @@ document.addEventListener('click', function(e){
   if(!a || e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1) return;
   e.preventDefault();
 }, true);
+
+// ══ QUOTE REQUEST (cart) ═══════════════════════════════════
+// Kept completely separate from the Visit & Enquire form: its own
+// storage, its own fields and its own message.
+var CART_KEY = 'ssn_quote_cart';
+var CART_INFO_KEY = 'ssn_quote_info';
+var CART = [];
+
+function cartLoad(){
+  try{ var v = JSON.parse(localStorage.getItem(CART_KEY) || '[]'); if(Array.isArray(v)) CART = v.slice(0, 80); }catch(e){ CART = []; }
+}
+function cartSave(){
+  try{ localStorage.setItem(CART_KEY, JSON.stringify(CART)); }catch(e){}
+  cartBadge();
+}
+function cartCount(){ return CART.reduce(function(n, x){ return n + (parseInt(x.qty,10) || 0); }, 0); }
+function cartBadge(){
+  var n = CART.length;
+  ['cart-count','cart-count-m'].forEach(function(id){
+    var el = document.getElementById(id); if(el) el.textContent = n;
+  });
+  var b = document.getElementById('nav-quote-btn');
+  if(b) b.classList.toggle('empty', !n);
+  document.querySelectorAll('.card-quote').forEach(function(btn){
+    var inCart = CART.some(function(x){ return x.key === btn.getAttribute('data-key'); });
+    btn.classList.toggle('added', inCart);
+    btn.innerHTML = inCart ? '&#10003; Added' : '&#43; Quote';
+  });
+}
+function cartToast(msg){
+  var t = document.getElementById('q-toast'), m = document.getElementById('q-toast-msg');
+  if(!t || !m) return;
+  m.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._t); t._t = setTimeout(function(){ t.classList.remove('show'); }, 3200);
+}
+function cartPlant(key){
+  var p = (typeof PLANT_DATA === 'object' && PLANT_DATA) ? PLANT_DATA[key] : null;
+  return p || null;
+}
+// key may be a catalogue key; name-only items are allowed too
+function cartAdd(key, qty, toast){
+  var p = cartPlant(key);
+  if(!p && !key) return;
+  qty = Math.max(1, Math.min(parseInt(qty, 10) || 1, 100000));
+  var name = p ? p.name : String(key);
+  var found = CART.filter(function(x){ return x.key === key || (!x.key && x.name === name); })[0];
+  if(found){ found.qty = Math.min(found.qty + qty, 100000); }
+  else {
+    if(CART.length >= 60){ cartToast('That is the most plants one quote can hold.'); return; }
+    CART.push({ key: p ? key : '', name: name, bot: p ? (p.botanical || '') : '', cat: p ? (p.catLabel || '') : '', qty: qty, size: '', note: '' });
+  }
+  cartSave();
+  try{ if(typeof ssnTrack === 'function') ssnTrack('quote_add'); }catch(e){}
+  if(toast !== false) cartToast(name + (found ? ' quantity updated' : ' added to your quote'));
+  var pg = document.getElementById('page-quote');
+  if(pg && pg.classList.contains('active')) cartRender();
+}
+function cartUpdate(i, field, value){
+  var it = CART[i]; if(!it) return;
+  if(field === 'qty') it.qty = Math.max(1, Math.min(parseInt(value, 10) || 1, 100000));
+  else it[field] = String(value || '').slice(0, 120);
+  cartSave(); cartTotals(); cartPreview();
+}
+function cartRemove(i){
+  var gone = CART.splice(i, 1)[0];
+  cartSave(); cartRender();
+  if(gone) cartToast(gone.name + ' removed');
+}
+function cartClear(){
+  if(!CART.length) return;
+  CART = []; cartSave(); cartRender(); cartToast('Quote list cleared');
+}
+function cartEsc(v){
+  return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function cartTotals(){
+  var sub = document.getElementById('q-sub'), tot = document.getElementById('q-total');
+  var v = CART.length, n = cartCount();
+  if(sub) sub.textContent = v ? (v + (v === 1 ? ' variety' : ' varieties') + ' · ' + n + ' plants in total') : 'Nothing added yet.';
+  if(tot) tot.innerHTML = v ? ('Total: <b>' + n + '</b> plants across ' + v + (v === 1 ? ' variety' : ' varieties')) : '';
+}
+function cartRender(){
+  var wrap = document.getElementById('q-table-wrap'), empty = document.getElementById('q-empty'), rows = document.getElementById('q-rows');
+  if(!rows) return;
+  if(!CART.length){
+    if(wrap) wrap.style.display = 'none';
+    if(empty) empty.style.display = '';
+    rows.innerHTML = '';
+    cartTotals(); cartBadge(); cartPreview();
+    return;
+  }
+  if(wrap) wrap.style.display = '';
+  if(empty) empty.style.display = 'none';
+  rows.innerHTML = CART.map(function(x, i){
+    return '<tr>'
+      + '<td data-l="Plant"><span class="q-name">' + cartEsc(x.name) + (x.bot ? '<i>' + cartEsc(x.bot) + '</i>' : '') + '</span></td>'
+      + '<td data-l="Size"><input class="q-in" value="' + cartEsc(x.size) + '" placeholder="e.g. 6 ft" data-i="' + i + '" data-f="size" aria-label="Size for ' + cartEsc(x.name) + '"></td>'
+      + '<td data-l="Qty"><input class="q-in q-qty" type="number" min="1" max="100000" value="' + (x.qty || 1) + '" data-i="' + i + '" data-f="qty" aria-label="Quantity for ' + cartEsc(x.name) + '"></td>'
+      + '<td data-l="Notes"><input class="q-in" value="' + cartEsc(x.note) + '" placeholder="Pot size, timeline&hellip;" data-i="' + i + '" data-f="note" aria-label="Note for ' + cartEsc(x.name) + '"></td>'
+      + '<td class="rm"><button class="q-rm" onclick="cartRemove(' + i + ')" aria-label="Remove ' + cartEsc(x.name) + '">&#10005;</button></td>'
+      + '</tr>';
+  }).join('');
+  cartTotals(); cartBadge(); cartPreview();
+}
+// Suggestions: a few plants from categories the visitor has not picked yet
+function cartSuggest(){
+  var box = document.getElementById('q-sugg'); if(!box) return;
+  var chosen = {}; CART.forEach(function(x){ if(x.cat) chosen[x.cat] = 1; });
+  var picks = [], seen = {}, keys;
+  try{ keys = Object.keys(PLANT_DATA); }catch(e){ keys = []; }
+  var wanted = ['avenue__gulmohar','palm__bismarck-palm','avenue__ashoka-tree','fruit__mangifera-indica','flowering__jacaranda','shrub__bougainvillea','palm__foxtail-palm','avenue__neem'];
+  wanted.concat(keys).forEach(function(k){
+    if(picks.length >= 4 || seen[k]) return;
+    var p = PLANT_DATA[k]; if(!p) return;
+    if(CART.some(function(x){ return x.key === k; })) return;
+    seen[k] = 1; picks.push({ key: k, p: p });
+  });
+  box.innerHTML = picks.map(function(o){
+    return '<button type="button" onclick="cartAdd(\'' + o.key.replace(/'/g, "\\'") + '\',1)">'
+      + '<b>' + cartEsc(o.p.name) + '</b>' + (o.p.botanical ? '<i>' + cartEsc(o.p.botanical) + '</i>' : '')
+      + '<span>&#43; Add to quote</span></button>';
+  }).join('');
+}
+// ── The message, in a readable table for email and a tidy list for WhatsApp ──
+function cartField(id){ var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function cartPad(v, n){ v = String(v == null ? '' : v); return v.length >= n ? v.slice(0, n) : v + new Array(n - v.length + 1).join(' '); }
+function cartMessage(channel){
+  var name = cartField('q-name'), phone = cartField('q-phone'), email = cartField('q-email');
+  var type = cartField('q-type'), place = cartField('q-place'), notes = cartField('q-notes');
+  var L = [];
+  if(channel === 'whatsapp'){
+    L.push('*QUOTE REQUEST*');
+    L.push('_Gangumalla’s Sri Satyanarayana Nursery_');
+    L.push('──────────────');
+    if(name)  L.push('*Name:* ' + name);
+    if(phone) L.push('*Phone:* ' + phone);
+    if(email) L.push('*Email:* ' + email);
+    if(type)  L.push('*I am a:* ' + type);
+    if(place) L.push('*Delivery:* ' + place);
+    if(CART.length){
+      L.push('', '*PLANTS REQUESTED* (' + CART.length + (CART.length === 1 ? ' variety' : ' varieties') + ' · ' + cartCount() + ' plants)');
+      CART.forEach(function(x, i){
+        L.push('');
+        L.push((i + 1) + '. *' + x.name + '*' + (x.bot ? ' — _' + x.bot + '_' : ''));
+        L.push('   Qty: ' + x.qty + (x.size ? '  ·  Size: ' + x.size : ''));
+        if(x.note) L.push('   Note: ' + x.note);
+      });
+      L.push('', '──────────────');
+      L.push('*Total:* ' + cartCount() + ' plants');
+    }
+    if(notes) L.push('', '*Notes:* ' + notes);
+    L.push('', 'Please share prices, available sizes and transport.');
+    return L.join('\n');
+  }
+  // Email: a fixed-width table
+  var W = { n: 30, s: 12, q: 6 };
+  L.push('QUOTE REQUEST');
+  L.push('Gangumalla’s Sri Satyanarayana Nursery — Kadiyapulanka, Andhra Pradesh');
+  L.push('================================================================');
+  L.push('');
+  if(name)  L.push('Name           : ' + name);
+  if(phone) L.push('Phone/WhatsApp : ' + phone);
+  if(email) L.push('Email          : ' + email);
+  if(type)  L.push('I am a         : ' + type);
+  if(place) L.push('Delivery to    : ' + place);
+  if(CART.length){
+    L.push('');
+    L.push('PLANTS REQUESTED  (' + CART.length + (CART.length === 1 ? ' variety' : ' varieties') + ', ' + cartCount() + ' plants)');
+    L.push('----------------------------------------------------------------');
+    L.push(' #  ' + cartPad('PLANT', W.n) + cartPad('SIZE', W.s) + cartPad('QTY', W.q) + 'NOTES');
+    L.push('----------------------------------------------------------------');
+    CART.forEach(function(x, i){
+      var no = cartPad((i + 1) + '.', 4);
+      L.push(no + cartPad(x.name, W.n) + cartPad(x.size || '-', W.s) + cartPad(x.qty, W.q) + (x.note || '-'));
+      if(x.bot) L.push('    ' + x.bot);
+    });
+    L.push('----------------------------------------------------------------');
+    L.push('    ' + cartPad('TOTAL', W.n) + cartPad('', W.s) + cartPad(cartCount(), W.q));
+    L.push('');
+  }
+  if(notes){ L.push('NOTES'); L.push('----------------------------------------------------------------'); L.push(notes); L.push(''); }
+  L.push('Please send current prices, available sizes and transport options.');
+  L.push('');
+  L.push('Sent from srisatyanarayananursery.in');
+  return L.join('\n');
+}
+function cartPreview(){
+  var pre = document.getElementById('q-preview-text');
+  if(pre) pre.textContent = cartMessage('email');
+  cartInfoSave();
+}
+function cartInfoSave(){
+  try{
+    localStorage.setItem(CART_INFO_KEY, JSON.stringify({
+      name: cartField('q-name'), phone: cartField('q-phone'), email: cartField('q-email'),
+      type: cartField('q-type'), place: cartField('q-place'), notes: cartField('q-notes')
+    }));
+  }catch(e){}
+}
+function cartInfoLoad(){
+  try{
+    var v = JSON.parse(localStorage.getItem(CART_INFO_KEY) || '{}');
+    ['name','phone','email','type','place','notes'].forEach(function(f){
+      var el = document.getElementById('q-' + f); if(el && v[f]) el.value = v[f];
+    });
+  }catch(e){}
+}
+function cartSend(channel){
+  var pending = document.getElementById('q-plant');
+  if(pending && pending.value.trim()) cartAddTyped();
+  if(!CART.length){
+    cartToast('Add at least one plant to request a quote');
+    var t = document.getElementById('q-plant'); if(t) t.focus();
+    return;
+  }
+  var missing = !cartField('q-name') ? 'q-name' : (!cartField('q-phone') ? 'q-phone' : null);
+  if(missing){
+    var f = document.getElementById(missing);
+    if(f){ f.focus(); f.setCustomValidity('Please complete this field.'); f.reportValidity(); setTimeout(function(){ f.setCustomValidity(''); }, 0); }
+    return;
+  }
+  var body = cartMessage(channel);
+  try{ if(typeof ssnTrack === 'function') ssnTrack('quote_' + channel); }catch(e){}
+  if(channel === 'email'){
+    var subject = 'Quote request - ' + cartField('q-name') + ' (' + CART.length + ' plant' + (CART.length === 1 ? '' : 's') + ', ' + cartCount() + ' in total)';
+    window.location.href = 'mailto:srisatyanarayananursery@yahoo.co.in?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  } else {
+    window.open('https://wa.me/919440179027?text=' + encodeURIComponent(body), '_blank', 'noopener,noreferrer');
+  }
+}
+// Typed / searched additions on the quote page
+function cartAddTyped(){
+  var inp = document.getElementById('q-plant'), qEl = document.getElementById('q-qty'), sEl = document.getElementById('q-size');
+  var name = inp ? inp.value.trim().replace(/\s+/g, ' ') : '';
+  var hint = document.getElementById('q-hint');
+  if(!name){ if(hint){ hint.textContent = 'Type or pick a plant name first.'; hint.classList.add('err'); } if(inp) inp.focus(); return; }
+  var qty = Math.max(1, Math.min(parseInt(qEl ? qEl.value : 1, 10) || 1, 100000));
+  var size = sEl ? sEl.value.trim().slice(0, 40) : '';
+  var key = '';
+  try{
+    Object.keys(PLANT_DATA).some(function(k){
+      if(String(PLANT_DATA[k].name).toLowerCase() === name.toLowerCase()){ key = k; return true; }
+      return false;
+    });
+  }catch(e){}
+  if(key) cartAdd(key, qty, false);
+  else {
+    var found = CART.filter(function(x){ return x.name.toLowerCase() === name.toLowerCase(); })[0];
+    if(found) found.qty = Math.min(found.qty + qty, 100000);
+    else CART.push({ key: '', name: name.slice(0, 80), bot: '', cat: '', qty: qty, size: '', note: '' });
+    cartSave();
+  }
+  if(size){
+    var last = CART.filter(function(x){ return x.name.toLowerCase() === name.toLowerCase(); })[0];
+    if(last && !last.size) last.size = size;
+    cartSave();
+  }
+  if(inp) inp.value = ''; if(qEl) qEl.value = 1; if(sEl) sEl.value = '';
+  var box = document.getElementById('q-plant-list'); if(box) box.classList.remove('open');
+  if(hint){ hint.textContent = name + ' added to your quote.'; hint.classList.remove('err'); }
+  cartRender();
+  if(inp) inp.focus();
+}
+// Search box on the quote page — same catalogue list as the enquiry form
+var _qBrowse = false;
+function cartSuggestBox(){
+  var inp = document.getElementById('q-plant'), box = document.getElementById('q-plant-list');
+  if(!inp || !box) return;
+  var q = inp.value.trim().toLowerCase();
+  var all = (typeof enqCatalogue === 'function') ? enqCatalogue() : [];
+  if(!q){
+    if(!_qBrowse){ box.classList.remove('open'); return; }
+    var groups = {}, order = [];
+    all.forEach(function(p){ var c = p.cat || 'Other'; if(!groups[c]){ groups[c] = []; order.push(c); } groups[c].push(p); });
+    order.sort();
+    var bh = '';
+    order.forEach(function(c){
+      bh += '<div class="enq-group">' + cartEsc(c) + ' &middot; ' + groups[c].length + '</div>';
+      groups[c].forEach(function(p){ bh += '<div class="enq-opt-item" data-name="' + cartEsc(p.name) + '"><span>' + cartEsc(p.name) + '</span></div>'; });
+    });
+    box.innerHTML = bh; box.scrollTop = 0; box.classList.add('open');
+    return;
+  }
+  var starts = [], contains = [];
+  all.forEach(function(p){
+    var n = p.name.toLowerCase();
+    if(n.indexOf(q) === 0) starts.push(p); else if(n.indexOf(q) > 0) contains.push(p);
+  });
+  var list = starts.concat(contains).slice(0, 40);
+  var h = list.map(function(p){
+    return '<div class="enq-opt-item" data-name="' + cartEsc(p.name) + '"><span>' + cartEsc(p.name) + '</span><small>' + cartEsc(p.cat) + '</small></div>';
+  }).join('');
+  if(!list.some(function(p){ return p.name.toLowerCase() === q; })){
+    h += '<div class="enq-opt-item enq-new" data-name="' + cartEsc(inp.value.trim()) + '"><span>&#43; Add &ldquo;' + cartEsc(inp.value.trim()) + '&rdquo; as a new plant</span><small>not in catalogue</small></div>';
+  }
+  box.innerHTML = h; box.classList.add('open');
+}
+// "+ Quote" on every catalogue card
+function cartDecorateCards(){
+  document.querySelectorAll('.plant-card[data-key]').forEach(function(card){
+    if(card.querySelector('.card-quote')) return;
+    var wrap = card.querySelector('.card-img-wrap') || card;
+    var key = card.getAttribute('data-key');
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'card-quote'; b.setAttribute('data-key', key);
+    b.setAttribute('aria-label', 'Add this plant to your quote request');
+    b.innerHTML = '&#43; Quote';
+    b.addEventListener('click', function(e){ e.stopPropagation(); e.preventDefault(); cartAdd(key, 1); });
+    wrap.appendChild(b);
+  });
+  cartBadge();
+}
+(function cartInit(){
+  function start(){
+    cartLoad(); cartInfoLoad(); cartBadge(); cartRender(); cartDecorateCards();
+    // copy the "I am a…" list from the enquiry form so both stay in step
+    var from = document.getElementById('enquiry-type'), to = document.getElementById('q-type');
+    if(from && to && to.options.length < 2) to.innerHTML = from.innerHTML;
+    var inp = document.getElementById('q-plant'), box = document.getElementById('q-plant-list'), br = document.getElementById('q-browse');
+    if(inp && box){
+      inp.addEventListener('input', function(){ if(!inp.value.trim()) _qBrowse = false; cartSuggestBox(); });
+      inp.addEventListener('click', function(){ if(!inp.value.trim() && !box.classList.contains('open')){ _qBrowse = true; cartSuggestBox(); } });
+      inp.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ e.preventDefault(); cartAddTyped(); } if(e.key === 'Escape'){ box.classList.remove('open'); _qBrowse = false; } });
+      inp.addEventListener('blur', function(){ setTimeout(function(){ box.classList.remove('open'); _qBrowse = false; }, 160); });
+      box.addEventListener('mousedown', function(e){
+        var it = e.target.closest('.enq-opt-item'); if(!it) return;
+        e.preventDefault();
+        inp.value = it.getAttribute('data-name');
+        box.classList.remove('open'); _qBrowse = false;
+        var q = document.getElementById('q-qty'); if(q){ q.focus(); q.select(); }
+      });
+      if(br){ br.addEventListener('mousedown', function(e){ e.preventDefault(); }); br.addEventListener('click', function(){ if(box.classList.contains('open')){ box.classList.remove('open'); _qBrowse = false; } else { _qBrowse = true; inp.focus(); cartSuggestBox(); } }); }
+    }
+    var rows = document.getElementById('q-rows');
+    if(rows){
+      rows.addEventListener('input', function(e){
+        var t = e.target; if(!t.dataset || t.dataset.i == null) return;
+        cartUpdate(+t.dataset.i, t.dataset.f, t.value);
+      });
+    }
+    ['q-name','q-phone','q-email','q-type','q-place','q-notes'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.addEventListener('input', function(){ cartPreview(); });
+    });
+    // a link such as #quote/add/<plant key> from a plant page
+    (function fromLink(){
+      var m = /^#quote\/add\/(.+)$/.exec(location.hash || '');
+      if(!m) return;
+      var k = ''; try{ k = decodeURIComponent(m[1]); }catch(e){ k = m[1]; }
+      if(k) cartAdd(k, 1, false);
+      history.replaceState({page:'quote'}, '', '#quote');
+      if(typeof showPage === 'function') showPage('quote', null, {push:false});
+    })();
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+
 function routeFromLocation(){
   var route=(location.hash||'#home').slice(1).split('/');
   var page=route[0] || 'home';
+  if(page==='quote' && route[1]==='add' && route[2]){
+    var qk=''; try{ qk=decodeURIComponent(route.slice(2).join('/')); }catch(e){}
+    if(qk && typeof cartAdd==='function') cartAdd(qk, 1, false);
+    history.replaceState({page:'quote'},'','#quote');
+    showPage('quote', null, {push:false});
+    return;
+  }
   if(ALL_PAGES.indexOf(page)<0) page='home';
   if(page==='plant'){
     var plantKey=route.slice(1).join('/');
@@ -5688,6 +6237,7 @@ if(window.ssnMediaReady) window.ssnMediaReady.then(function(){ ssnApplyCardPhoto
     <a href="#" data-page="clients" onclick="mGo('clients');return false;"><span class="mi">&#11088;</span>Clients &amp; Visitors</a>
     <a href="#" data-page="gallery" onclick="mGo('gallery');return false;"><span class="mi">&#128247;</span>Gallery</a>
     <a href="#" data-page="contact" onclick="mGo('contact');return false;"><span class="mi">&#128205;</span>Visit &amp; Enquire</a>
+    <a href="#" data-page="quote" onclick="mGo('quote');return false;"><span class="mi">&#128722;</span>My Quote Request <span class="qn" id="cart-count-m" style="margin-left:auto;background:var(--gold);color:#142319;border-radius:10px;min-width:20px;text-align:center;font-size:.7rem;padding:1px 6px;">0</span></a>
   </nav>
   <div class="m-drawer-foot">
     <a href="tel:+919440179027" class="m-call">&#128222; Call the Nursery</a>
@@ -6174,6 +6724,7 @@ function waCatalog(e){
 }
 </script>
 
+<div class="q-toast" id="q-toast"><span id="q-toast-msg"></span><button type="button" onclick="showPage('quote')">View list</button></div>
 <a class="wa-fab" href="https://wa.me/919440179027?text=Hello%2C%20I%20came%20across%20your%20website%20and%20would%20like%20to%20enquire%20about%20plants." target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp">
   <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
 </a>
