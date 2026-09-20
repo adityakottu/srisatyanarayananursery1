@@ -1,0 +1,10 @@
+{
+  "name": "Gangumalla’s Sri Satyanarayana Nursery",
+  "short_name": "SSN Nursery",
+  "description": "Wholesale and retail plant nursery at Kadiyapulanka, Andhra Pradesh, since 1963.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f8f3e8",
+  "theme_color": "#1f3a2d",
+  "icons": [{ "src": "images/gallery-e92598cf.png", "sizes": "any", "type": "image/png" }]
+}

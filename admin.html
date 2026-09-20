@@ -1,4 +1,12 @@
 <!DOCTYPE html>
+<!--
+  © Gangumalla’s Sri Satyanarayana Nursery. All rights reserved.
+  Website design, layout, code, text and photographs are the property of
+  Gangumalla’s Sri Satyanarayana Nursery. Copying, reuse or adaptation of any
+  part of this site, including its design, for another business is prohibited
+  without written permission. See LICENSE.
+-->
+
 <html lang="en">
 <head>
 <script>
@@ -12,6 +20,7 @@
 </script>
 
 <meta charset="UTF-8">
+<link rel="icon" type="image/png" href="images/gallery-e92598cf.png">
 <meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <script src="data/plants.js"></script>
@@ -676,7 +685,7 @@ input,select,textarea{font-family:inherit;}
 <aside class="sidebar">
   <div class="sb-logo">
     <div class="sb-name">Nursery Admin</div>
-    <div class="sb-sub">Gangumalla's Sri Satyanarayana</div>
+    <div class="sb-sub">Gangumalla's Sri Satyanarayana Nursery</div>
     <div class="sb-pill">&#9679; Admin Panel</div>
   </div>
   <div class="sb-nav">
@@ -1994,6 +2003,7 @@ function getAllPlants(){
     var edit=Object.assign({},ov[k]||{});
     // An old stock sentence saved with a photo is not a real edit — show the current text
     if(edit.description && /is grown and supplied by Gangumalla.s Sri Satyanarayana Nursery at Kadiyapulanka, Kadiyam\.\s*Available wholesale and retail in a range of sizes\./.test(edit.description)) delete edit.description;
+if(edit.tagline && ["A dependable shade and avenue tree for Indian conditions.", "Grown for its seasonal flowering display.", "A productive fruiting variety suited to local climates.", "An architectural palm for premium landscapes.", "A versatile shrub for hedging, borders and colour.", "A spreading ground cover for quick, low green carpet.", "A hardy, drought-tolerant specimen needing little care.", "An aquatic plant for ponds, tanks and water features."].indexOf(edit.tagline)>=0) delete edit.tagline;
     all[k]=Object.assign({},p,edit,{_key:k,_type:ov[k]?'edited':'builtin'});
   });
   // Custom
@@ -4817,7 +4827,7 @@ function ghPublishAttempt(silent, opts, attempt){
 
   say('Checking the live website&hellip;');
   var pubVersion = '';
-  var snap, data, contentJs, contentSha;
+  var snap, data, contentJs, contentSha, media = {};
 
   return ghSnapshot(c).then(function(s){
     snap = s;
@@ -4837,7 +4847,10 @@ function ghPublishAttempt(silent, opts, attempt){
     say('Gathering your content&hellip;');
     return pubCollect();
   }).then(function(d){
-    data = d;
+    // Photos go up as real image files under media/, and the content file
+    // keeps only their paths — pages load far faster and plant pages can show them.
+    var ex = SSNPageBuilder.extractMedia ? SSNPageBuilder.extractMedia(d) : { data: d, media: {} };
+    data = ex.data; media = ex.media;
     delete data.__v;
     // Version = hash of the content itself: unchanged content gives a
     // byte-identical file, so nothing is committed and the repo stays small.
@@ -4885,14 +4898,24 @@ function ghPublishAttempt(silent, opts, attempt){
         if(p === GH_CONTENT_PATH) contentSha = hashes[i];
         if(snap.blobs[p] !== hashes[i]) changed.push(p);
       });
-      // Pages whose plant no longer exists
+      // Photos already published as files and still referenced by the content
+      var mediaRefs = {};
+      (function walk(v){
+        if(typeof v === 'string'){ if(/^media\/[a-z0-9]+\.(jpg|png|webp|gif)$/.test(v)) mediaRefs[v] = 1; return; }
+        if(v && typeof v === 'object') for(var k in v) if(Object.prototype.hasOwnProperty.call(v, k)) walk(v[k]);
+      })(data);
+      // Pages whose plant no longer exists, and photos nothing uses any more
       var removed = Object.keys(snap.blobs).filter(function(p){
+        if(/^media\/[a-z0-9]+\.(jpg|png|webp|gif)$/.test(p)) return !(p in media) && !mediaRefs[p];
         return /^plants\/[^\/]+\/index\.html$/.test(p) && !(p in built.files);
       });
+      // Photo files are named by their content, so an existing name is already up to date
+      Object.keys(media).forEach(function(p){ if(!snap.blobs[p]) changed.push(p); });
       return { built: built, changed: changed, removed: removed };
     });
   }).then(function(plan){
     var pages = plan.changed.filter(function(p){ return p.indexOf('plants/') === 0; }).length;
+    var photos = plan.changed.filter(function(p){ return p.indexOf('media/') === 0; });
     if(!plan.changed.length && !plan.removed.length){
       ghSetSeen(c, contentSha, snap.headSha);
       ghDismissConflict();            // provably in sync with the live site
@@ -4906,9 +4929,20 @@ function ghPublishAttempt(silent, opts, attempt){
       ? ghApi(c, '/git/blobs', { method:'POST', body:{ content: plan.built.files[GH_CONTENT_PATH], encoding:'utf-8' } })
       : Promise.resolve(null);
 
-    return bigUpload.then(function(blob){
+    // Photos are binary, so each one is uploaded as its own blob (a few at a time)
+    var photoShas = {};
+    var photoUpload = photos.reduce(function(chain, p, i){
+      return chain.then(function(){
+        say('Uploading photo ' + (i + 1) + ' of ' + photos.length + '&hellip;');
+        return ghApi(c, '/git/blobs', { method:'POST', body:{ content: media[p], encoding:'base64' } })
+          .then(function(b){ photoShas[p] = b.sha; });
+      });
+    }, Promise.resolve());
+
+    return photoUpload.then(function(){ return bigUpload; }).then(function(blob){
       var entries = plan.changed.map(function(p){
         if(p === GH_CONTENT_PATH) return { path:p, mode:'100644', type:'blob', sha: blob.sha };
+        if(photoShas[p]) return { path:p, mode:'100644', type:'blob', sha: photoShas[p] };
         return { path:p, mode:'100644', type:'blob', content: plan.built.files[p] };
       });
       plan.removed.forEach(function(p){ entries.push({ path:p, mode:'100644', type:'blob', sha:null }); });
@@ -4917,6 +4951,7 @@ function ghPublishAttempt(silent, opts, attempt){
       var parts = [];
       if(plan.changed.indexOf(GH_CONTENT_PATH) >= 0) parts.push('content');
       if(pages) parts.push(pages + ' page' + (pages === 1 ? '' : 's'));
+      if(photos.length) parts.push(photos.length + ' photo' + (photos.length === 1 ? '' : 's'));
       if(plan.removed.length) parts.push(plan.removed.length + ' removed');
       return ghApi(c, '/git/commits', { method:'POST', body:{
         message: 'Publish from admin — ' + parts.join(', ') + '\n\n' + new Date().toLocaleString(),

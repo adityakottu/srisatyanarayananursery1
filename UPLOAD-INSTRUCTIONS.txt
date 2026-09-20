@@ -7,26 +7,30 @@ Upload everything in this folder to the repository, EXCEPT:
    data/version.json        -- deliberately NOT included; keep your live one
 
 New or changed:
-   index.html                 enquiry form, home-page search details
-   admin.html                 new publish engine, conflict protection
-   data/site-config.js        NEW - the site's public address
-   data/page-builder.js       NEW - shared page template
-   data/plant-routes.js       6 new routes for your published custom plants
-   plants/                    all pages rebuilt (better Google data, WhatsApp
-                              previews); 6 new pages for custom plants
-   sitemap.xml, robots.txt    NEW
-   tools/                     updated build and release check
-   README.md                  updated
+   index.html                 brand name, Kadiyapulanka labels, catalogue names
+                              link to each plant's page, directory link,
+                              photo fix for plants opened from a link
+   admin.html                 photos published as image files, VIP fixes
+   vip.html                   supply note, quick facts
+   data/plants.js             unique tagline for every plant
+   data/page-builder.js       new branded plant pages + plant directory
+   plants/                    all pages rebuilt; plants/index.html is the new
+                              A-Z Plant Directory
+   media/                     NEW - your uploaded photos as image files
+   sitemap.xml                directory added, duplicate pages left out
+   tools/, README.md          updated
 
 AFTER UPLOADING
   1  Open the admin on the device you normally publish from.
-  2  Import & Export -> the first Publish Now will pause and ask you to
-     "Load live content". Do that once. It is the new protection working:
-     this device has not synced with the live site under the new system yet.
-  3  Publish Now. From then on it works as before.
+  2  Import & Export -> Publish Now. If it asks you to "Load live content",
+     do that once, then Publish Now again.
+  3  That publish moves every photo out of data/site-content.js into media/.
+     The content file drops from about 8.5 MB to a few KB, so the site loads
+     much faster, and plant pages show their photos.
 
-  Do this on each device you publish from.
+  Photos added later are uploaded as files automatically on each publish.
 
 LATER, WHEN MOVING TO THE MAIN DOMAIN
   Change baseUrl in data/site-config.js, upload it, press Publish Now.
-  Every page, the sitemap and the home page follow automatically.
+  Every page, the directory, the sitemap and the home page follow automatically.
+  Then submit https://<your-domain>/sitemap.xml in Google Search Console.

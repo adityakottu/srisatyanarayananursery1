@@ -1,4 +1,12 @@
 <!DOCTYPE html>
+<!--
+  © Gangumalla’s Sri Satyanarayana Nursery. All rights reserved.
+  Website design, layout, code, text and photographs are the property of
+  Gangumalla’s Sri Satyanarayana Nursery. Copying, reuse or adaptation of any
+  part of this site, including its design, for another business is prohibited
+  without written permission. See LICENSE.
+-->
+
 <html lang="en">
 <head>
 <script>
@@ -40,6 +48,13 @@
 </script>
 
 <meta charset="UTF-8">
+<link rel="icon" type="image/png" href="images/gallery-e92598cf.png">
+<link rel="apple-touch-icon" href="images/gallery-e92598cf.png">
+<link rel="manifest" href="site.webmanifest">
+<meta name="theme-color" content="#1f3a2d">
+<meta name="author" content="Gangumalla’s Sri Satyanarayana Nursery">
+<meta name="copyright" content="© Gangumalla’s Sri Satyanarayana Nursery. All rights reserved.">
+
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Gangumalla's Sri Satyanarayana Nursery — Private Collection</title>
 <meta name="robots" content="noindex,nofollow">
@@ -841,6 +856,27 @@ section{padding:90px 0;}
 /* On a single-photo plant nothing should stray into a second column */
 #vdet-gallery.single > *{grid-column:1 !important;}
 
+
+/* ── Private entry screen ── */
+#access-denied{position:relative;background:#0e1810 url('images/hero-f34e7a95.jpg') center/cover no-repeat;}
+#access-denied::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(14,24,16,.78) 0%,rgba(14,24,16,.94) 70%);}
+.ad-card{position:relative;z-index:1;max-width:520px;width:100%;display:flex;flex-direction:column;align-items:center;gap:14px;padding:44px 36px;border:1px solid rgba(185,137,63,.28);background:rgba(14,24,16,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-radius:4px;}
+.ad-logo{width:48px;height:auto;opacity:.95;}
+.ad-eyebrow{font-size:.66rem;letter-spacing:.28em;text-transform:uppercase;color:#d9b877;}
+#access-denied .ad-title{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(2rem,6vw,3rem);line-height:1.08;margin:0;color:#f8f3e8;}
+#access-denied .ad-title em{font-style:italic;color:#d9b877;}
+.ad-rule{width:48px;height:1px;background:#b9893f;margin:4px 0;}
+#access-denied .ad-sub{font-size:.9rem;line-height:1.7;color:rgba(248,243,232,.72);}
+#access-denied .ad-form{display:flex;gap:0;width:100%;max-width:380px;margin-top:10px;flex-wrap:nowrap;}
+#access-denied .ad-code{flex:1;min-width:0;background:rgba(248,243,232,.06);border:1px solid rgba(185,137,63,.55);border-right:none;border-radius:2px 0 0 2px;padding:13px 16px;color:#f8f3e8;font:500 .95rem 'Inter',sans-serif;letter-spacing:.18em;text-align:center;}
+#access-denied .ad-code::placeholder{letter-spacing:.12em;color:rgba(248,243,232,.4);}
+#access-denied .ad-code:focus{outline:none;border-color:#d9b877;background:rgba(248,243,232,.1);}
+#access-denied .ad-go{background:#b9893f;color:#142319;border-radius:0 2px 2px 0;padding:0 22px;font:600 .88rem 'Inter',sans-serif;letter-spacing:.04em;transition:background .2s;}
+#access-denied .ad-go:hover{background:#d9b877;}
+#access-denied .ad-note{font-size:.78rem;color:rgba(248,243,232,.62);margin:6px 0 0;}
+.ad-back{font-size:.76rem;color:#d9b877;text-decoration:none;letter-spacing:.04em;margin-top:6px;}
+.ad-back:hover{text-decoration:underline;}
+@media(max-width:480px){.ad-card{padding:34px 22px;}#access-denied .ad-form{flex-direction:column;gap:8px;}#access-denied .ad-code{border-right:1px solid rgba(185,137,63,.55);border-radius:2px;}#access-denied .ad-go{border-radius:2px;padding:13px;}}
 </style>
   <script src="data/site-content.js" onerror="window.SSN_PUBLISHED=window.SSN_PUBLISHED||null"></script>
 </head>
@@ -849,14 +885,19 @@ section{padding:90px 0;}
 
 </script>
 <div id="access-denied">
-  <div class="ad-icon">&#127807;</div>
-  <div class="ad-title">Private Collection</div>
-  <div class="ad-sub">This page is for invited clients only.<br>Enter your personal access code below.</div>
-  <div class="ad-form">
-    <input class="ad-code" id="ad-code" type="text" placeholder="Enter access code..." autocomplete="off">
-    <button class="ad-go" onclick="tryAccess()">Enter</button>
+  <div class="ad-card">
+    <img class="ad-logo" src="images/gallery-e92598cf.png" alt="Gangumalla&rsquo;s Sri Satyanarayana Nursery" width="48" height="60">
+    <div class="ad-eyebrow">By invitation only</div>
+    <h1 class="ad-title">The Private <em>Collection</em></h1>
+    <div class="ad-rule"></div>
+    <div class="ad-sub">Rare and specimen plants reserved for our invited clients.<br>Enter your personal access code to continue.</div>
+    <div class="ad-form">
+      <input class="ad-code" id="ad-code" type="text" placeholder="Access code" autocomplete="off" aria-label="Access code">
+      <button class="ad-go" onclick="tryAccess()">Enter &rarr;</button>
+    </div>
+    <p class="ad-note">Or open the private link shared with you directly.</p>
+    <a class="ad-back" href="./">&larr; Back to the main website</a>
   </div>
-  <p class="ad-note">Or open the private link shared with you directly.</p>
 </div>
 
 <div id="vip-page">
@@ -947,7 +988,7 @@ section{padding:90px 0;}
     </div>
   </section>
 
-  <div class="vip-foot"><p>&copy; 20
+  <div class="vip-foot">
       <!-- Social & Contact Links -->
       
 <div style="background:rgba(185,137,63,.06);border-top:1px solid rgba(185,137,63,.15);padding:16px 24px;">
@@ -984,7 +1025,7 @@ section{padding:90px 0;}
         </div>
       </div>
 
-      <p style="font-size:.65rem;color:rgba(248,243,232,.15);text-align:center;padding:14px 20px;">&copy; 2026 Gangumalla&rsquo;s Sri Satyanarayana Nursery &mdash; Private Client Page &mdash; Confidential</p></div>
+      <p style="font-size:.7rem;color:rgba(248,243,232,.55);text-align:center;padding:14px 20px;">&copy; 1963&ndash;<span class="js-year">2026</span> Gangumalla&rsquo;s Sri Satyanarayana Nursery. All rights reserved. &mdash; Private Client Page &mdash; Confidential</p></div>
 </div>
 
 <div class="mb-ov" id="mb-ov" onclick="closeMod(event)">
@@ -1029,7 +1070,7 @@ function vipFactsHTML(p){
 function vipSetFacts(id,p){var el=document.getElementById(id);if(!el)return;var h=vipFactsHTML(p);el.innerHTML=h;el.style.display=h?'':'none';
   var sp=document.getElementById(id.replace('-facts','-supply')); if(!sp) return;
   var esc=function(t){return String(t||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
-  sp.innerHTML=p&&p.name?'<strong>'+esc(p.name)+'</strong>'+(p.botanical?' (<em>'+esc(p.botanical)+'</em>)':'')+' is sourced and supplied by Gangumalla&rsquo;s Sri Satyanarayana Nursery at Kadiyapulanka, Kadiyam. An exclusive specimen, reserved for our VIP clients &mdash; contact us for current availability, sizing and pricing.':'';
+  sp.innerHTML=p&&p.name?'<strong>'+esc(p.name)+'</strong>'+(p.botanical?' (<em>'+esc(p.botanical)+'</em>)':'')+' is sourced and supplied by Gangumalla&rsquo;s Sri Satyanarayana Nursery at Kadiyapulanka, Andhra Pradesh. An exclusive specimen, reserved for our VIP clients &mdash; contact us for current availability, sizing and pricing.':'';
 }
 function openVipDetail(idx){
   var plants=getVipPlants();
@@ -1897,5 +1938,6 @@ function waCatalog(e){
 }
 </script>
 
+<script>(function(){var y=new Date().getFullYear();document.querySelectorAll(".js-year").forEach(function(e){if(y>2025)e.textContent=y;});})();</script>
 </body>
 </html>

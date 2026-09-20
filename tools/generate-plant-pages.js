@@ -27,7 +27,18 @@ if (!base) { console.error('Could not read PLANT_DATA_RAW from data/plants.js');
 const config = extract(read('data/site-config.js'), 'SSN_CONFIG');
 if (!config || !config.baseUrl) { console.error('baseUrl missing in data/site-config.js'); process.exit(1); }
 
-const published = exists('data/site-content.js') ? extract(read('data/site-content.js'), 'SSN_PUBLISHED') : null;
+const rawPublished = exists('data/site-content.js') ? extract(read('data/site-content.js'), 'SSN_PUBLISHED') : null;
+// Photos saved inline by the admin become files under media/, exactly as Publish Now does
+const extracted = builder.extractMedia(rawPublished);
+const published = extracted.data;
+let mediaWritten = 0;
+for (const [rel, b64] of Object.entries(extracted.media)) {
+  const abs = path.join(ROOT, rel);
+  if (fs.existsSync(abs)) continue;
+  fs.mkdirSync(path.dirname(abs), { recursive: true });
+  fs.writeFileSync(abs, Buffer.from(b64, 'base64'));
+  mediaWritten++;
+}
 const previousSitemap = exists('sitemap.xml') ? read('sitemap.xml') : '';
 
 const result = builder.buildSite({
@@ -62,4 +73,5 @@ if (fs.existsSync(plantsDir)) {
 }
 
 console.log(`${result.plantCount} plant pages · ${written} written · ${same} unchanged · ${removed} removed`);
+console.log(`Photos: ${Object.keys(extracted.media).length} in media/ (${mediaWritten} new)`);
 console.log(`Site URL: ${config.baseUrl}`);

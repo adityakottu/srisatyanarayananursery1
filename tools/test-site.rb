@@ -40,11 +40,16 @@ expect.call(site_url.start_with?('https://'), 'data/site-config.js baseUrl must 
 sample = page_dirs.first(25) + page_dirs.last(5)
 sample.each do |slug|
   page = read.call("plants/#{slug}/index.html")
-  expect.call(page.include?(%(<link rel="canonical" href="#{site_url}/plants/#{slug}/">)), "#{slug}: canonical does not use the configured site address")
+  expect.call(page =~ %r{<link rel="canonical" href="#{Regexp.escape(site_url)}/plants/[a-z0-9-]+/">}, "#{slug}: canonical does not use the configured site address")
   expect.call(!page.include?('"@type":"Product"'), "#{slug}: Product schema without offers is invalid for Google")
 end
 sitemap = read.call('sitemap.xml') rescue ''
-expect.call(sitemap.scan('<loc>').length == routes.length + 1, 'sitemap.xml does not list every plant page plus the home page')
+# Every page is in the sitemap except duplicates that point their canonical at a twin
+canon_pages = page_dirs.select { |slug| read.call("plants/#{slug}/index.html").include?(%(<link rel="canonical" href="#{site_url}/plants/#{slug}/">)) }
+expect.call(sitemap.scan('<loc>').length == canon_pages.length + 2, "sitemap.xml should list #{canon_pages.length} canonical plant pages, the directory and the home page")
+expect.call(sitemap.include?("<loc>#{site_url}/plants/</loc>") && File.exist?(File.join(ROOT, 'plants', 'index.html')), 'plant directory page missing or not in the sitemap')
+dir = read.call('plants/index.html')
+expect.call(dir.scan('<li><a href=').length == routes.length, 'plant directory does not link every plant')
 expect.call(sitemap.include?("<loc>#{site_url}/</loc>"), 'sitemap.xml does not use the configured site address')
 robots = read.call('robots.txt') rescue ''
 expect.call(robots.include?("Sitemap: #{site_url}/sitemap.xml"), 'robots.txt does not point at the sitemap')
