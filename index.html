@@ -136,23 +136,23 @@ nav{
 .btn-nav-cta{
   position:relative;overflow:hidden;white-space:nowrap;flex-shrink:0;
   display:inline-flex;align-items:center;gap:9px;
-  background:linear-gradient(135deg,var(--green) 0%,var(--green-deep) 100%);
-  color:var(--cream);border:1.5px solid rgba(185,137,63,.65);
+  background:var(--cream);
+  color:var(--green-deep);border:1.5px solid var(--gold);
   padding:12px 24px;font-size:.82rem;font-weight:600;letter-spacing:.03em;
-  border-radius:6px;box-shadow:0 4px 14px rgba(20,35,25,.28),inset 0 1px 0 rgba(255,255,255,.08);
+  border-radius:6px;box-shadow:0 2px 10px rgba(185,137,63,.18);
   transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s ease,background .3s ease,border-color .3s ease;
 }
 .btn-nav-cta::before{
   content:'';position:absolute;top:0;left:-60%;width:35%;height:100%;
-  background:linear-gradient(115deg,transparent,rgba(255,255,255,.5),transparent);
+  background:linear-gradient(115deg,transparent,rgba(255,255,255,.75),transparent);
   transform:skewX(-18deg);transition:left .65s ease;pointer-events:none;
 }
 .btn-nav-cta:hover{
-  background:linear-gradient(135deg,var(--green-deep) 0%,#0c1610 100%);
-  border-color:var(--gold);box-shadow:0 12px 28px rgba(20,35,25,.4),0 0 0 1px rgba(185,137,63,.25);transform:translateY(-2px);
+  background:linear-gradient(135deg,var(--gold) 0%,#caa05a 100%);
+  border-color:var(--gold);box-shadow:0 10px 26px rgba(185,137,63,.42);transform:translateY(-2px);
 }
 .btn-nav-cta:hover::before{left:130%;}
-.btn-nav-cta:active{transform:translateY(0);box-shadow:0 4px 12px rgba(20,35,25,.32);}
+.btn-nav-cta:active{transform:translateY(0);box-shadow:0 4px 12px rgba(185,137,63,.32);}
 
 /* ─── Buttons ─────────────────────────────────────────────── */
 .btn{display:inline-block;padding:13px 28px;font-size:.85rem;letter-spacing:.04em;
@@ -2773,9 +2773,9 @@ nav.m-drawer-nav,
 
 /* ══ Quote cart ═══════════════════════════════════════════ */
 .nav-quote-cta{display:inline-flex;align-items:center;gap:9px;}
-.nav-quote-cta .qn{background:var(--gold);color:var(--green-deep);border-radius:11px;min-width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:600;padding:0 5px;transition:background .3s,color .3s;}
+.nav-quote-cta .qn{background:var(--green-deep);color:var(--gold-l);border-radius:11px;min-width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:600;padding:0 5px;transition:background .3s,color .3s;}
 .nav-quote-cta.empty .qn{display:none;}
-.nav-quote-cta:not(.empty){border-color:var(--gold);box-shadow:0 4px 14px rgba(185,137,63,.28),inset 0 1px 0 rgba(255,255,255,.08);}
+.nav-quote-cta:not(.empty){border-color:var(--gold);box-shadow:0 4px 16px rgba(185,137,63,.32);}
 .nav-quote-cta:not(.empty) .qn{animation:qnPulse 2.6s ease-in-out infinite;}
 @keyframes qnPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.14);}}
 .cta-long,.cta-short{white-space:nowrap;}
@@ -2788,7 +2788,12 @@ nav.m-drawer-nav,
 .nav-quote .qn{background:var(--gold);color:var(--green-deep);border-radius:11px;min-width:20px;height:20px;display:inline-flex;
   align-items:center;justify-content:center;font-size:.7rem;font-weight:600;padding:0 5px;}
 .nav-quote.empty .qn{background:var(--line);color:var(--muted);}
-.q-hero{background:radial-gradient(120% 80% at 50% -5%,#234433 0%,var(--green-deep) 60%,#0e1810 100%);padding:54px 0 46px;color:var(--cream);}
+/* --hdr-h is the fixed header's measured height; the fallback covers the
+   tallest it gets (brand name and notice strip both wrapping) so the
+   heading never starts underneath it before the script runs. */
+.q-hero{background:radial-gradient(120% 80% at 50% -5%,#234433 0%,var(--green-deep) 60%,#0e1810 100%);
+  padding:calc(var(--hdr-h,124px) + 40px) 0 46px;color:var(--cream);}
+@media(max-width:768px){.q-hero{padding:calc(var(--hdr-h,124px) + 26px) 0 38px;}}
 .q-hero h1{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(2rem,5vw,3.2rem);line-height:1.08;}
 .q-hero h1 em{font-style:italic;color:var(--gold-l);}
 .q-hero p{color:rgba(248,243,232,.7);margin-top:12px;max-width:560px;font-size:.95rem;}
@@ -2920,6 +2925,18 @@ nav.m-drawer-nav,
 }
 @media(max-width:1180px){
   .btn-nav-cta.nav-quote-cta{padding:10px 16px!important;font-size:.78rem!important;}
+}
+/* the nav links and the button run out of room before the mobile menu takes over */
+@media(min-width:769px) and (max-width:900px){
+  .nav-links{gap:10px!important;}
+  .nav-links a{font-size:.75rem;}
+  .btn-nav-cta.nav-quote-cta{padding:9px 13px!important;}
+}
+@media(min-width:769px) and (max-width:840px){
+  .nav-links{gap:8px!important;}
+  .nav-links a{font-size:.72rem;}
+  .brand-name{font-size:.86rem;}
+  .btn-nav-cta.nav-quote-cta{padding:8px 11px!important;font-size:.74rem!important;}
 }
 @media(max-width:640px){
   .btn-nav-cta.nav-quote-cta{padding:9px 14px!important;font-size:.76rem!important;border-radius:20px;}
@@ -4956,6 +4973,20 @@ function routeFromLocation(){
 window.addEventListener('popstate', routeFromLocation);
 window.addEventListener('hashchange', routeFromLocation);
 document.addEventListener('DOMContentLoaded', routeFromLocation);
+
+// The header is fixed, and its height changes as the brand name and notice
+// strip rewrap, so publish the measured height for page content to clear.
+(function(){
+  var wrap = document.querySelector('.nav-wrap');
+  if(!wrap) return;
+  function setHdrH(){
+    document.documentElement.style.setProperty('--hdr-h', Math.round(wrap.getBoundingClientRect().height) + 'px');
+  }
+  setHdrH();
+  window.addEventListener('resize', setHdrH);
+  window.addEventListener('load', setHdrH);
+  if(typeof ResizeObserver !== 'undefined') new ResizeObserver(setHdrH).observe(wrap);
+})();
 
 // ── Catalog filter ────────────────────────────────────────────────
 function initCatalog() {
