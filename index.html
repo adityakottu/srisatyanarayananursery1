@@ -2811,7 +2811,12 @@ nav.m-drawer-nav,
 .q-name i{display:block;font-family:'Inter',sans-serif;font-style:normal;font-size:.74rem;color:var(--muted);margin-top:2px;}
 .q-in{width:100%;background:#fff;border:1px solid var(--line);border-radius:3px;padding:8px 10px;font:400 .85rem 'Inter',sans-serif;color:var(--ink);}
 .q-in:focus{outline:none;border-color:var(--gold);}
-.q-qty{width:74px;text-align:center;}
+.q-qty{width:44px;text-align:center;border-left:none;border-right:none;border-radius:0;padding:8px 2px;-moz-appearance:textfield;}
+.q-qty::-webkit-outer-spin-button,.q-qty::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.q-stepper{display:inline-flex;align-items:stretch;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:#fff;}
+.q-stepbtn{width:30px;background:var(--cream3);border:none;color:var(--green);font-size:1rem;line-height:1;cursor:pointer;transition:background .2s,color .2s;}
+.q-stepbtn:hover{background:var(--gold);color:var(--green-deep);}
+.q-stepper:focus-within{border-color:var(--gold);}
 .q-rm{background:none;border:1px solid rgba(184,64,64,.3);color:#a33;border-radius:50%;width:30px;height:30px;cursor:pointer;line-height:1;}
 .q-rm:hover{background:#b84040;color:#fff;border-color:#b84040;}
 .q-foot{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:2px solid var(--gold);}
@@ -2841,9 +2846,8 @@ nav.m-drawer-nav,
 .q-sugg b{display:block;font:500 .92rem 'Fraunces',serif;color:var(--green-deep);}
 .q-sugg i{display:block;font-style:normal;font-size:.72rem;color:var(--muted);margin-top:3px;}
 .q-sugg span{display:block;font-size:.7rem;color:var(--gold-text);margin-top:8px;letter-spacing:.05em;}
-.q-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;}
-.q-links a{font-size:.8rem;text-decoration:none;color:var(--green);border:1px solid var(--line);border-radius:18px;padding:7px 15px;transition:all .2s;}
-.q-links a:hover{border-color:var(--gold);background:rgba(185,137,63,.08);}
+.q-links{display:flex;justify-content:center;margin-top:20px;}
+.q-links .btn{padding:11px 26px;font-size:.82rem;}
 .card-quote{position:absolute;top:10px;right:10px;z-index:4;background:rgba(248,243,232,.94);border:1px solid var(--line);color:var(--green);
   border-radius:16px;padding:5px 11px;font:600 .7rem 'Inter',sans-serif;cursor:pointer;opacity:0;transition:opacity .25s,background .2s;}
 .plant-card:hover .card-quote,.card-quote:focus{opacity:1;}
@@ -2949,10 +2953,15 @@ nav.m-drawer-nav,
   .q-table tr{border:1px solid var(--line);border-radius:6px;padding:12px;margin-bottom:12px;position:relative;}
   .q-table td{border:none;padding:6px 0;}
   .q-table td[data-l]::before{content:attr(data-l);display:block;font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-text);margin-bottom:4px;}
-  .q-table td.rm{position:absolute;top:10px;right:10px;padding:0;}
+  /* width:auto, or the shared td width:100% above stretches this across the
+     card and drags the button to the far left, out from under the tap. */
+  .q-table td.rm{position:absolute;top:10px;right:10px;left:auto;width:auto;padding:0;}
   .q-table td[data-l="Plant"]::before{display:none;}
-  .q-table td[data-l="Plant"]{padding-right:44px;}
-  .q-qty{width:100%;}
+  .q-table td[data-l="Plant"]{padding-right:48px;}
+  .q-rm{width:36px;height:36px;}
+  .q-stepper{display:flex;width:100%;}
+  .q-qty{width:auto;flex:1;}
+  .q-stepbtn{width:52px;font-size:1.15rem;}
   .q-fields{grid-template-columns:1fr;}
   .nav-quote{margin-left:0;}
 }
@@ -3721,7 +3730,7 @@ nav.m-drawer-nav,
 
               <div id="q-table-wrap" style="display:none;">
                 <table class="q-table">
-                  <thead><tr><th>Plant</th><th style="width:120px;">Size</th><th style="width:96px;">Qty</th><th style="width:26%;">Notes</th><th style="width:44px;"></th></tr></thead>
+                  <thead><tr><th>Plant</th><th style="width:120px;">Size</th><th style="width:118px;">Qty</th><th style="width:26%;">Notes</th><th style="width:44px;"></th></tr></thead>
                   <tbody id="q-rows"></tbody>
                 </table>
                 <div class="q-foot">
@@ -3753,12 +3762,7 @@ nav.m-drawer-nav,
               <p class="q-sub">Popular with landscapers and estates &mdash; add them in one tap.</p>
               <div class="q-sugg" id="q-sugg"></div>
               <div class="q-links">
-                <a href="#" onclick="showPage('catalog','avenue');return false;">&#127795; Avenue &amp; Shade Trees</a>
-                <a href="#" onclick="showPage('catalog','palm');return false;">&#127796; Palms &amp; Cycads</a>
-                <a href="#" onclick="showPage('catalog','fruit');return false;">&#127822; Fruit Plants</a>
-                <a href="#" onclick="showPage('catalog','flowering');return false;">&#127800; Flowering Trees</a>
-                <a href="#" onclick="showPage('catalog','shrub');return false;">&#127807; Shrubs &amp; Hedges</a>
-                <a href="#" onclick="showPage('catalog');return false;">View the full catalog &rarr;</a>
+                <button type="button" class="btn btn-outline" onclick="showPage('catalog')">View the Full Catalog &rarr;</button>
               </div>
             </div>
 
@@ -4523,6 +4527,13 @@ function cartUpdate(i, field, value){
   else it[field] = String(value || '').slice(0, 120);
   cartSave(); cartTotals(); cartPreview();
 }
+function cartStep(i, d){
+  var it = CART[i]; if(!it) return;
+  var next = Math.max(1, Math.min((parseInt(it.qty, 10) || 1) + d, 100000));
+  var input = document.querySelector('#q-rows input[data-i="' + i + '"][data-f="qty"]');
+  if(input) input.value = next;
+  cartUpdate(i, 'qty', next);
+}
 function cartRemove(i){
   var gone = CART.splice(i, 1)[0];
   cartSave(); cartRender();
@@ -4557,7 +4568,11 @@ function cartRender(){
     return '<tr>'
       + '<td data-l="Plant"><span class="q-name">' + cartEsc(x.name) + (x.bot ? '<i>' + cartEsc(x.bot) + '</i>' : '') + '</span></td>'
       + '<td data-l="Size"><input class="q-in" value="' + cartEsc(x.size) + '" placeholder="e.g. 6 ft" data-i="' + i + '" data-f="size" aria-label="Size for ' + cartEsc(x.name) + '"></td>'
-      + '<td data-l="Qty"><input class="q-in q-qty" type="number" min="1" max="100000" value="' + (x.qty || 1) + '" data-i="' + i + '" data-f="qty" aria-label="Quantity for ' + cartEsc(x.name) + '"></td>'
+      + '<td data-l="Qty"><div class="q-stepper">'
+        + '<button type="button" class="q-stepbtn" onclick="cartStep(' + i + ',-1)" aria-label="One less ' + cartEsc(x.name) + '">&minus;</button>'
+        + '<input class="q-in q-qty" type="number" min="1" max="100000" inputmode="numeric" value="' + (x.qty || 1) + '" data-i="' + i + '" data-f="qty" aria-label="Quantity for ' + cartEsc(x.name) + '">'
+        + '<button type="button" class="q-stepbtn" onclick="cartStep(' + i + ',1)" aria-label="One more ' + cartEsc(x.name) + '">&plus;</button>'
+        + '</div></td>'
       + '<td data-l="Notes"><input class="q-in" value="' + cartEsc(x.note) + '" placeholder="Pot size, timeline&hellip;" data-i="' + i + '" data-f="note" aria-label="Note for ' + cartEsc(x.name) + '"></td>'
       + '<td class="rm"><button class="q-rm" onclick="cartRemove(' + i + ')" aria-label="Remove ' + cartEsc(x.name) + '">&#10005;</button></td>'
       + '</tr>';
