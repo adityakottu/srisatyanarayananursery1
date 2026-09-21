@@ -82,7 +82,10 @@ button{cursor:pointer;font-family:inherit;border:none;}
 .nav-enq{background:var(--gold);color:var(--green-deep);padding:8px 20px;font-size:.78rem;font-weight:600;letter-spacing:.04em;border-radius:var(--radius);transition:background .2s;}
 .nav-enq:hover{background:var(--gold-l);}
 .vip-hero{min-height:100vh;display:flex;align-items:center;background:radial-gradient(130% 90% at 60% -5%,#1a3828 0%,#0c1a0f 55%,#070d08 100%);position:relative;overflow:hidden;padding-top:80px;}
-.hero-orn{position:absolute;right:-5%;top:8%;width:52%;opacity:.3;pointer-events:none;}
+.vip-hero::before{content:'';position:absolute;inset:0;background:url('images/hero-f34e7a95.jpg') center/cover no-repeat;opacity:.34;filter:saturate(.6) contrast(1.05);}
+.vip-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(104deg,rgba(7,13,8,.95) 0%,rgba(12,26,15,.86) 42%,rgba(26,56,40,.6) 72%,rgba(185,137,63,.12) 100%);}
+.hero-orn{z-index:1;}
+.hero-orn{position:absolute;right:-5%;top:8%;width:52%;opacity:.26;pointer-events:none;}
 .hero-orn path{stroke:rgba(185,137,63,.45);stroke-width:.8;fill:none;}
 .hero-inner{position:relative;z-index:2;padding:80px 0 100px;}
 .hero-ey{display:inline-flex;align-items:center;gap:8px;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-l);font-weight:500;margin-bottom:24px;}
@@ -860,7 +863,7 @@ section{padding:90px 0;}
 /* ── Private entry screen ── */
 #access-denied{position:relative;background:#0e1810 url('images/hero-f34e7a95.jpg') center/cover no-repeat;}
 #access-denied::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(14,24,16,.78) 0%,rgba(14,24,16,.94) 70%);}
-.ad-card{position:relative;z-index:1;max-width:520px;width:100%;display:flex;flex-direction:column;align-items:center;gap:14px;padding:44px 36px;border:1px solid rgba(185,137,63,.28);background:rgba(14,24,16,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-radius:4px;}
+.ad-card{position:relative;z-index:1;box-shadow:0 30px 80px rgba(0,0,0,.55);max-width:520px;width:100%;display:flex;flex-direction:column;align-items:center;gap:14px;padding:44px 36px;border:1px solid rgba(185,137,63,.28);background:rgba(14,24,16,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-radius:4px;}
 .ad-logo{width:48px;height:auto;opacity:.95;}
 .ad-eyebrow{font-size:.66rem;letter-spacing:.28em;text-transform:uppercase;color:#d9b877;}
 #access-denied .ad-title{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(2rem,6vw,3rem);line-height:1.08;margin:0;color:#f8f3e8;}
@@ -877,6 +880,72 @@ section{padding:90px 0;}
 .ad-back{font-size:.76rem;color:#d9b877;text-decoration:none;letter-spacing:.04em;margin-top:6px;}
 .ad-back:hover{text-decoration:underline;}
 @media(max-width:480px){.ad-card{padding:34px 22px;}#access-denied .ad-form{flex-direction:column;gap:8px;}#access-denied .ad-code{border-right:1px solid rgba(185,137,63,.55);border-radius:2px;}#access-denied .ad-go{border-radius:2px;padding:13px;}}
+
+/* ── Private selection ── */
+.nav-acts{display:flex;align-items:center;gap:10px;}
+.nav-sel{display:inline-flex;align-items:center;gap:8px;background:rgba(185,137,63,.1);border:1px solid rgba(185,137,63,.4);color:var(--gold-l);
+  padding:8px 16px;font-size:.78rem;letter-spacing:.04em;border-radius:var(--radius);cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+.nav-sel:hover{background:rgba(185,137,63,.2);}
+.nav-sel .vqn{background:var(--gold);color:var(--green-deep);border-radius:10px;min-width:19px;height:19px;display:inline-flex;align-items:center;
+  justify-content:center;font-size:.68rem;font-weight:700;padding:0 5px;}
+.nav-sel.empty .vqn{display:none;}
+.vq-scrim{position:fixed;inset:0;background:rgba(4,8,5,.72);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .35s;z-index:120;}
+.vq-scrim.open{opacity:1;pointer-events:auto;}
+.vq-drawer{position:fixed;top:0;right:0;bottom:0;width:min(440px,92vw);background:linear-gradient(180deg,#132218 0%,#0b140d 100%);
+  border-left:1px solid rgba(185,137,63,.28);box-shadow:-22px 0 60px rgba(0,0,0,.5);transform:translateX(104%);transition:transform .42s cubic-bezier(.22,1,.36,1);
+  z-index:130;display:flex;flex-direction:column;}
+.vq-drawer.open{transform:none;}
+.vq-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:22px 24px 16px;border-bottom:1px solid rgba(185,137,63,.18);}
+.vq-ey{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+.vq-head h3{font-family:'Fraunces',serif;font-weight:300;font-size:1.5rem;color:var(--cream);}
+.vq-x{background:none;border:1px solid rgba(248,243,232,.2);color:rgba(248,243,232,.6);width:32px;height:32px;border-radius:50%;cursor:pointer;}
+.vq-x:hover{border-color:var(--gold);color:var(--gold-l);}
+.vq-body{flex:1;overflow-y:auto;padding:18px 24px;}
+.vq-empty{text-align:center;color:rgba(248,243,232,.45);font-size:.86rem;padding:40px 10px;}
+.vq-empty .ic{font-size:2rem;opacity:.5;margin-bottom:10px;}
+.vq-item{border:1px solid rgba(185,137,63,.18);border-radius:8px;padding:14px 15px;margin-bottom:12px;background:rgba(248,243,232,.03);}
+.vq-item .nm{font-family:'Fraunces',serif;font-size:1rem;color:var(--cream);}
+.vq-item .bt{font-style:italic;font-size:.74rem;color:var(--gold-l);margin-top:2px;}
+.vq-item .rowx{display:flex;align-items:center;gap:8px;margin-top:10px;}
+.vq-item input{background:rgba(248,243,232,.07);border:1px solid rgba(185,137,63,.28);color:var(--cream);border-radius:4px;padding:7px 9px;
+  font:400 .82rem 'Inter',sans-serif;min-width:0;}
+.vq-item input:focus{outline:none;border-color:var(--gold);}
+.vq-item .q{width:66px;text-align:center;}
+.vq-item .s{flex:1;}
+.vq-item .n{width:100%;margin-top:8px;}
+.vq-rm{margin-left:auto;background:none;border:1px solid rgba(220,120,110,.35);color:#eda79c;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:.72rem;}
+.vq-rm:hover{background:#b84040;color:#fff;border-color:#b84040;}
+.vq-total{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:12px 0 2px;border-top:1px solid rgba(185,137,63,.25);
+  color:var(--cream);font-size:.88rem;}
+.vq-total b{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:500;color:var(--gold-l);}
+.vq-form{border-top:1px solid rgba(185,137,63,.18);padding:16px 24px 22px;background:rgba(0,0,0,.18);}
+.vq-form label{display:block;font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin:10px 0 5px;}
+.vq-form input,.vq-form textarea{width:100%;background:rgba(248,243,232,.07);border:1px solid rgba(185,137,63,.28);color:var(--cream);
+  border-radius:4px;padding:10px 12px;font:400 .86rem 'Inter',sans-serif;}
+.vq-form input:focus,.vq-form textarea:focus{outline:none;border-color:var(--gold);}
+.vq-send{display:flex;gap:9px;margin-top:14px;}
+.vq-send button{flex:1;border:none;border-radius:4px;padding:12px 10px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;}
+.vq-wa{background:#25D366;color:#fff;}
+.vq-em{background:var(--gold);color:var(--green-deep);}
+.vq-note{font-size:.7rem;color:rgba(248,243,232,.4);margin-top:10px;text-align:center;}
+.vq-toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,18px);background:#132218;border:1px solid rgba(185,137,63,.4);color:var(--cream);
+  padding:11px 20px;border-radius:24px;font-size:.84rem;z-index:140;opacity:0;pointer-events:none;transition:all .25s;}
+.vq-toast.show{opacity:1;transform:translate(-50%,0);}
+.vq-add{position:absolute;top:10px;right:10px;z-index:4;background:rgba(11,20,13,.86);border:1px solid rgba(185,137,63,.45);color:var(--gold-l);
+  border-radius:16px;padding:5px 11px;font:600 .68rem 'Inter',sans-serif;cursor:pointer;opacity:0;transition:opacity .25s,background .2s;}
+.vip-card:hover .vq-add{opacity:1;}
+.vq-add:hover{background:var(--gold);color:var(--green-deep);}
+.vq-add.in{opacity:1;background:rgba(185,137,63,.28);}
+@media(hover:none){.vq-add{opacity:1;}}
+.vdet-qty{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.vdet-qty .box{display:inline-flex;border:1px solid rgba(185,137,63,.4);border-radius:4px;overflow:hidden;}
+.vdet-qty .box button{width:36px;background:rgba(185,137,63,.1);border:none;color:var(--gold-l);font-size:1rem;cursor:pointer;}
+.vdet-qty .box input{width:56px;text-align:center;background:transparent;border:none;border-left:1px solid rgba(185,137,63,.25);
+  border-right:1px solid rgba(185,137,63,.25);color:var(--cream);font:500 .95rem 'Inter',sans-serif;padding:9px 0;}
+.vdet-qty .box input:focus{outline:none;}
+.vdet-add{background:var(--gold);color:var(--green-deep);border:none;border-radius:4px;padding:11px 22px;font:600 .84rem 'Inter',sans-serif;cursor:pointer;}
+.vdet-add:hover{background:var(--gold-l);}
+@media(max-width:560px){.nav-acts .nav-enq{display:none;}.vq-drawer{width:100vw;}}
 </style>
   <script src="data/site-content.js" onerror="window.SSN_PUBLISHED=window.SSN_PUBLISHED||null"></script>
 </head>
@@ -910,7 +979,10 @@ section{padding:90px 0;}
       </div>
     </div>
     <div class="vip-badge">&#9670; VIP Client Access</div>
-    <button class="nav-enq" onclick="document.getElementById('eq-sec').scrollIntoView({behavior:'smooth'})">Private Enquiry</button>
+    <div class="nav-acts">
+      <button class="nav-sel empty" id="vq-btn" onclick="vqOpen()" aria-label="Open my selection">&#128722; My Selection <span class="vqn" id="vq-count">0</span></button>
+      <button class="nav-enq" onclick="document.getElementById('eq-sec').scrollIntoView({behavior:'smooth'})">Private Enquiry</button>
+    </div>
   </nav>
 
   <div class="vip-sect" id="vip-main-sects">
@@ -925,7 +997,7 @@ section{padding:90px 0;}
       <p class="hero-sub">A private selection of the finest specimens from our nursery — available exclusively to valued clients by personal invitation.</p>
       <div class="ha">
         <button class="btn-gp" onclick="document.getElementById('col-sec').scrollIntoView({behavior:'smooth'})">View the Collection</button>
-        <button style="background:#b9893f;color:#142319;border:none;border-radius:4px;padding:13px 28px;font-size:.9rem;font-weight:600;cursor:pointer;" class="btn-gh" onclick="document.getElementById('eq-sec').scrollIntoView({behavior:'smooth'})">Make an Enquiry</button>
+        <button style="background:rgba(185,137,63,.12);color:#e3c88a;border:1.5px solid rgba(185,137,63,.6);border-radius:4px;padding:13px 28px;font-size:.9rem;font-weight:600;cursor:pointer;" class="btn-gh" onclick="document.getElementById('eq-sec').scrollIntoView({behavior:'smooth'})">Make an Enquiry</button>
       </div>
       <div class="hstats">
         <div><div class="hsn" id="stat-count">&#8212;</div><div class="hsl">Exclusive Varieties</div></div>
@@ -1028,6 +1100,30 @@ section{padding:90px 0;}
       <p style="font-size:.7rem;color:rgba(248,243,232,.55);text-align:center;padding:14px 20px;">&copy; 1963&ndash;<span class="js-year">2026</span> Gangumalla&rsquo;s Sri Satyanarayana Nursery. All rights reserved. &mdash; Private Client Page &mdash; Confidential</p></div>
 </div>
 
+
+<!-- ══ Private selection (VIP quote) ═══════════════════════ -->
+<div class="vq-scrim" id="vq-scrim" onclick="vqClose()"></div>
+<aside class="vq-drawer" id="vq-drawer" aria-label="My private selection" aria-hidden="true">
+  <header class="vq-head">
+    <div>
+      <div class="vq-ey">&#9670; Private Selection</div>
+      <h3>My Selection</h3>
+    </div>
+    <button class="vq-x" onclick="vqClose()" aria-label="Close">&#10005;</button>
+  </header>
+  <div class="vq-body" id="vq-body"></div>
+  <div class="vq-form" id="vq-form">
+    <label for="vq-name">Your name *</label><input id="vq-name" type="text" placeholder="Full name" autocomplete="name">
+    <label for="vq-phone">Phone / WhatsApp *</label><input id="vq-phone" type="tel" placeholder="+91" autocomplete="tel">
+    <label for="vq-notes">Notes</label><textarea id="vq-notes" rows="2" placeholder="Site, timeline, delivery&hellip;"></textarea>
+    <div class="vq-send">
+      <button type="button" class="vq-wa" onclick="vqSend('whatsapp')">&#128172; Send on WhatsApp</button>
+      <button type="button" class="vq-em" onclick="vqSend('email')">&#9993; Send by Email</button>
+    </div>
+    <p class="vq-note">Prices and delivery for the private collection are confirmed personally.</p>
+  </div>
+</aside>
+<div class="vq-toast" id="vq-toast"></div>
 <div class="mb-ov" id="mb-ov" onclick="closeMod(event)">
   <div class="modal" id="modal">
     <div id="mimg-wrap"></div>
@@ -1167,7 +1263,7 @@ function renderAll(){
     var w=((p.care||{}).water||'').split('\u2014')[0].trim();
     var d=(p.care||{}).difficulty||'';
     return '<div class="vip-card reveal" onclick="openDp('+i+')">'
-      +'<div class="vci">'+(p.image?'<img src="'+p.image+'">'+'<span class="vlbl">&#9670; Exclusive</span>':'<span class="ni">'+icon+'</span>')+'</div>'
+      +'<div class="vci"><button type="button" class="vq-add" data-nm="'+vqEsc(p.name)+'" onclick="event.stopPropagation();vqAdd('+i+',1)" aria-label="Add to my selection">&#43; Select</button>'+(p.image?'<img src="'+p.image+'">'+'<span class="vlbl">&#9670; Exclusive</span>':'<span class="ni">'+icon+'</span>')+'</div>'
       +'<div class="vcb"><div class="vcn">'+p.name+'</div>'
       +(p.botanical?'<div class="vcbot">'+p.botanical+'</div>':'')
       +(p.description?'<div class="vcd">'+p.description+'</div>':'')
@@ -1175,6 +1271,7 @@ function renderAll(){
       +'</div></div>';
   }).join('');
   trigRev();
+  try{ vqBadge(); }catch(e){}
 }
 function fcat(c){activeCat=c;renderAll();}
 
@@ -1232,6 +1329,192 @@ function sendVipEnquiry(channel){
 }
 function enqAbout(){closeMod();document.getElementById('enq-plant').value=curName;document.getElementById('eq-sec').scrollIntoView({behavior:'smooth'});}
 document.addEventListener('keydown',function(e){if(e.key==='Escape') closeMod();});
+
+
+// ══ PRIVATE SELECTION (VIP quote) ═════════════════════════
+// Its own list, kept apart from the Private Enquiry form below.
+var VQ_KEY = 'ssn_vip_selection', VQ_INFO = 'ssn_vip_selection_info', VQ = [];
+function vqEsc(v){ return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function vqLoad(){ try{ var v=JSON.parse(localStorage.getItem(VQ_KEY)||'[]'); if(Array.isArray(v)) VQ=v.slice(0,40); }catch(e){ VQ=[]; } }
+function vqSave(){ try{ localStorage.setItem(VQ_KEY, JSON.stringify(VQ)); }catch(e){} vqBadge(); }
+function vqCount(){ return VQ.reduce(function(n,x){ return n+(parseInt(x.qty,10)||0); },0); }
+function vqBadge(){
+  var c=document.getElementById('vq-count'), b=document.getElementById('vq-btn');
+  if(c) c.textContent=VQ.length;
+  if(b) b.classList.toggle('empty', !VQ.length);
+  document.querySelectorAll('.vq-add').forEach(function(el){
+    var nm=el.getAttribute('data-nm')||'';
+    var inList=VQ.some(function(x){ return x.name===nm; });
+    el.classList.toggle('in', inList);
+    el.innerHTML = inList ? '&#10003; Selected' : '&#43; Select';
+  });
+}
+function vqToast(m){
+  var t=document.getElementById('vq-toast'); if(!t) return;
+  t.textContent=m; t.classList.add('show');
+  clearTimeout(t._t); t._t=setTimeout(function(){ t.classList.remove('show'); },3000);
+}
+function vqPlantAt(idx){
+  var plants=getPlants();
+  var filtered=activeCat==='all'?plants:plants.filter(function(p){return p.cat===activeCat;});
+  return filtered[idx]||null;
+}
+function vqAddPlant(p, qty){
+  if(!p) return;
+  qty=Math.max(1,Math.min(parseInt(qty,10)||1,10000));
+  var found=VQ.filter(function(x){ return x.name===p.name; })[0];
+  if(found) found.qty=Math.min(found.qty+qty,10000);
+  else {
+    if(VQ.length>=30){ vqToast('That is the most this selection can hold.'); return; }
+    VQ.push({name:p.name, bot:p.botanical||'', size:p.height||p.size||'', qty:qty, note:''});
+  }
+  vqSave(); vqRender();
+  vqToast(p.name+(found?' quantity updated':' added to your selection'));
+}
+function vqAdd(idx, qty){ vqAddPlant(vqPlantAt(idx), qty); }
+function vdQty(step){
+  var el=document.getElementById('vdet-qty'); if(!el) return;
+  el.value=Math.max(1,Math.min((parseInt(el.value,10)||1)+step,10000));
+}
+function vdAdd(){
+  var el=document.getElementById('vdet-qty');
+  var qty=Math.max(1,Math.min(parseInt(el?el.value:1,10)||1,10000));
+  var p=(typeof _dpPlant!=='undefined'&&_dpPlant)?_dpPlant:null;
+  if(!p && typeof curName!=='undefined'){ p=(getPlants()||[]).filter(function(x){ return x.name===curName; })[0]||null; }
+  if(!p){ vqToast('Open a plant first'); return; }
+  vqAddPlant(p, qty);
+  var n=document.getElementById('vdet-added');
+  if(n) n.innerHTML='&#10003; '+qty+' &times; added';
+  if(el) el.value=1;
+}
+function vqUpdate(i,f,v){
+  var it=VQ[i]; if(!it) return;
+  if(f==='qty') it.qty=Math.max(1,Math.min(parseInt(v,10)||1,10000));
+  else it[f]=String(v||'').slice(0,120);
+  vqSave(); vqTotals();
+}
+function vqRemove(i){ var g=VQ.splice(i,1)[0]; vqSave(); vqRender(); if(g) vqToast(g.name+' removed'); }
+function vqTotals(){
+  var t=document.getElementById('vq-total-line');
+  if(t) t.innerHTML = VQ.length ? ('<span>'+VQ.length+(VQ.length===1?' variety':' varieties')+'</span><b>'+vqCount()+' plants</b>') : '';
+}
+function vqRender(){
+  var body=document.getElementById('vq-body'); if(!body) return;
+  if(!VQ.length){
+    body.innerHTML='<div class="vq-empty"><div class="ic">&#9670;</div><p>Nothing selected yet.</p><p style="margin-top:8px;">Press &ldquo;+ Select&rdquo; on any plant in the collection.</p></div>';
+    vqBadge(); return;
+  }
+  body.innerHTML = VQ.map(function(x,i){
+    return '<div class="vq-item"><div style="display:flex;align-items:flex-start;gap:8px;">'
+      + '<div style="min-width:0;"><div class="nm">'+vqEsc(x.name)+'</div>'+(x.bot?'<div class="bt">'+vqEsc(x.bot)+'</div>':'')+'</div>'
+      + '<button class="vq-rm" onclick="vqRemove('+i+')" aria-label="Remove">&#10005;</button></div>'
+      + '<div class="rowx"><input class="q" type="number" min="1" max="10000" value="'+(x.qty||1)+'" data-i="'+i+'" data-f="qty" aria-label="Quantity">'
+      + '<input class="s" value="'+vqEsc(x.size)+'" placeholder="Size / height" data-i="'+i+'" data-f="size" aria-label="Size"></div>'
+      + '<input class="n" value="'+vqEsc(x.note)+'" placeholder="Note for this plant" data-i="'+i+'" data-f="note" aria-label="Note">'
+      + '</div>';
+  }).join('') + '<div class="vq-total" id="vq-total-line"></div>';
+  vqTotals(); vqBadge();
+}
+function vqOpen(){
+  vqRender();
+  var d=document.getElementById('vq-drawer'), sc=document.getElementById('vq-scrim');
+  if(d){ d.classList.add('open'); d.setAttribute('aria-hidden','false'); }
+  if(sc) sc.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function vqClose(){
+  var d=document.getElementById('vq-drawer'), sc=document.getElementById('vq-scrim');
+  if(d){ d.classList.remove('open'); d.setAttribute('aria-hidden','true'); }
+  if(sc) sc.classList.remove('open');
+  document.body.style.overflow='';
+  vqInfoSave();
+}
+function vqField(id){ var e=document.getElementById(id); return e?e.value.trim():''; }
+function vqInfoSave(){ try{ localStorage.setItem(VQ_INFO, JSON.stringify({name:vqField('vq-name'),phone:vqField('vq-phone'),notes:vqField('vq-notes')})); }catch(e){} }
+function vqInfoLoad(){
+  try{ var v=JSON.parse(localStorage.getItem(VQ_INFO)||'{}');
+    ['name','phone','notes'].forEach(function(f){ var el=document.getElementById('vq-'+f); if(el&&v[f]) el.value=v[f]; });
+  }catch(e){}
+}
+function vqMessage(channel){
+  var name=vqField('vq-name'), phone=vqField('vq-phone'), notes=vqField('vq-notes'), L=[];
+  if(channel==='whatsapp'){
+    L.push('*PRIVATE QUOTE REQUEST*');
+    L.push('_Gangumalla’s Sri Satyanarayana Nursery — VIP Collection_');
+    L.push('──────────────');
+    if(name) L.push('*Name:* '+name);
+    if(phone) L.push('*Phone:* '+phone);
+    L.push('', '*SPECIMENS SELECTED* ('+VQ.length+(VQ.length===1?' variety':' varieties')+' · '+vqCount()+' plants)');
+    VQ.forEach(function(x,i){
+      L.push('');
+      L.push((i+1)+'. *'+x.name+'*'+(x.bot?' — _'+x.bot+'_':''));
+      L.push('   Qty: '+x.qty+(x.size?'  ·  Size: '+x.size:''));
+      if(x.note) L.push('   Note: '+x.note);
+    });
+    L.push('', '──────────────');
+    L.push('*Total:* '+vqCount()+' plants');
+    if(notes) L.push('', '*Notes:* '+notes);
+    L.push('', 'Please advise availability, sizes and delivery.');
+    return L.join('\n');
+  }
+  function pad(v,n){ v=String(v==null?'':v); return v.length>=n?v.slice(0,n):v+new Array(n-v.length+1).join(' '); }
+  L.push('PRIVATE QUOTE REQUEST');
+  L.push('Gangumalla’s Sri Satyanarayana Nursery — VIP Collection');
+  L.push('================================================================');
+  L.push('');
+  if(name) L.push('Name           : '+name);
+  if(phone) L.push('Phone/WhatsApp : '+phone);
+  L.push('');
+  L.push('SPECIMENS SELECTED  ('+VQ.length+(VQ.length===1?' variety':' varieties')+', '+vqCount()+' plants)');
+  L.push('----------------------------------------------------------------');
+  L.push(' #  '+pad('PLANT',30)+pad('SIZE',16)+pad('QTY',6)+'NOTES');
+  L.push('----------------------------------------------------------------');
+  VQ.forEach(function(x,i){
+    L.push(pad((i+1)+'.',4)+pad(x.name,30)+pad(x.size||'-',16)+pad(x.qty,6)+(x.note||'-'));
+    if(x.bot) L.push('    '+x.bot);
+  });
+  L.push('----------------------------------------------------------------');
+  L.push('    '+pad('TOTAL',30)+pad('',16)+pad(vqCount(),6));
+  if(notes){ L.push(''); L.push('NOTES'); L.push('----------------------------------------------------------------'); L.push(notes); }
+  L.push('');
+  L.push('Please advise availability, sizes and delivery for the above.');
+  return L.join('\n');
+}
+function vqSend(channel){
+  if(!VQ.length){ vqToast('Select at least one plant first'); return; }
+  var missing = !vqField('vq-name') ? 'vq-name' : (!vqField('vq-phone') ? 'vq-phone' : null);
+  if(missing){
+    var f=document.getElementById(missing);
+    if(f){ f.focus(); f.setCustomValidity('Please complete this field.'); f.reportValidity(); setTimeout(function(){ f.setCustomValidity(''); },0); }
+    return;
+  }
+  vqInfoSave();
+  var body=vqMessage(channel);
+  if(channel==='email'){
+    window.location.href='mailto:srisatyanarayananursery@yahoo.co.in?subject='
+      + encodeURIComponent('Private quote request - '+vqField('vq-name')+' ('+VQ.length+' specimen'+(VQ.length===1?'':'s')+')')
+      + '&body='+encodeURIComponent(body);
+  } else {
+    window.open('https://wa.me/919440179027?text='+encodeURIComponent(body),'_blank','noopener,noreferrer');
+  }
+}
+(function vqInit(){
+  function start(){
+    vqLoad(); vqInfoLoad(); vqRender();
+    var body=document.getElementById('vq-body');
+    if(body) body.addEventListener('input', function(e){
+      var t=e.target; if(!t.dataset||t.dataset.i==null) return;
+      vqUpdate(+t.dataset.i, t.dataset.f, t.value);
+    });
+    ['vq-name','vq-phone','vq-notes'].forEach(function(id){
+      var el=document.getElementById(id); if(el) el.addEventListener('change', vqInfoSave);
+    });
+    document.addEventListener('keydown', function(e){
+      if(e.key==='Escape'){ var d=document.getElementById('vq-drawer'); if(d&&d.classList.contains('open')) vqClose(); }
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
 
 function trigRev(){
   var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:.1});
@@ -1350,7 +1633,12 @@ function openDp(idx){
   var plants=getPlants();
   var filtered=activeCat==='all'?plants:plants.filter(function(p){return p.cat===activeCat;});
   var p=filtered[idx]; if(!p) return;
+  window._dpPlant = p;
   if(typeof curName!=='undefined') curName=p.name;
+  try{
+    var _vq=document.getElementById('vdet-qty'); if(_vq) _vq.value=1;
+    var _va=document.getElementById('vdet-added'); if(_va) _va.textContent='';
+  }catch(e){}
   var images = vipResolveImages(p);
   _dpImages=images; _dpCur=0;
   if(typeof vpgRender==='function') vpgRender(images, p.name);
@@ -1761,6 +2049,11 @@ function vipResolveImages(p){
     <h1 id="vdet-name" style="font-family:Fraunces,serif;font-size:clamp(1.5rem,5vw,2.2rem);font-weight:300;color:#f8f3e8;margin-bottom:8px;line-height:1.15;"></h1>
     <div id="vdet-tag" style="font-size:.9rem;color:rgba(248,243,232,.52);font-style:italic;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid rgba(185,137,63,.15);"></div>
     <div id="vdet-price" style="display:none;background:rgba(185,137,63,.12);border:1px solid rgba(185,137,63,.28);border-radius:6px;padding:8px 14px;margin-bottom:18px;font-size:.9rem;color:#e3c88a;font-weight:500;"></div>
+    <div class="vdet-qty">
+      <div class="box"><button type="button" onclick="vdQty(-1)" aria-label="Fewer">&minus;</button><input id="vdet-qty" type="number" min="1" max="10000" value="1" aria-label="Quantity"><button type="button" onclick="vdQty(1)" aria-label="More">&plus;</button></div>
+      <button type="button" class="vdet-add" onclick="vdAdd()">&#128722; Add to my selection</button>
+      <span id="vdet-added" style="font-size:.78rem;color:#e3c88a;"></span>
+    </div>
     <div id="vdet-care" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:22px;"></div>
     <div style="margin-bottom:20px;">
       <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;color:#b9893f;margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid rgba(185,137,63,.15);">About This Plant</div>
