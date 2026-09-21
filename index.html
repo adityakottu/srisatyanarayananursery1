@@ -126,7 +126,7 @@ nav{
 .brand svg{width:26px;height:26px;flex-shrink:0;}
 .brand-name{font-family:'Fraunces',serif;font-weight:500;font-size:.98rem;color:var(--green);}
 
-@media(min-width:769px) and (max-width:1000px){.nav-links a{white-space:nowrap;font-size:.78rem;}.nav-links{gap:12px!important;}.btn-nav-cta{padding-left:14px!important;padding-right:14px!important;}.brand-logo-img{display:none;}}
+@media(min-width:769px) and (max-width:1000px){.nav-links a{white-space:nowrap;font-size:.78rem;}.nav-links{gap:12px!important;}.brand-logo-img{display:none;}}
 @media(min-width:769px) and (max-width:1240px){.brand-name{max-width:200px;line-height:1.2;}.nav-links{gap:clamp(12px,1.6vw,26px);}}
 .brand-sub{font-size:.58rem;letter-spacing:.07em;color:var(--gold);text-transform:uppercase;margin-top:2px;}
 .nav-links{display:flex;gap:26px;font-size:.83rem;}
@@ -134,10 +134,25 @@ nav{
 .nav-links a:hover,.nav-links a.active{opacity:1;color:var(--green);}
 .nav-links a.active{border-bottom:1.5px solid var(--gold);padding-bottom:3px;}
 .btn-nav-cta{
-  background:var(--green);color:var(--cream);padding:8px 20px;
-  font-size:.78rem;letter-spacing:.04em;border-radius:var(--radius);transition:background .2s;
+  position:relative;overflow:hidden;white-space:nowrap;flex-shrink:0;
+  display:inline-flex;align-items:center;gap:9px;
+  background:linear-gradient(180deg,#fffdf9 0%,var(--cream3) 100%);
+  color:var(--green-deep);border:1.5px solid rgba(185,137,63,.55);
+  padding:12px 24px;font-size:.82rem;font-weight:600;letter-spacing:.03em;
+  border-radius:6px;box-shadow:0 2px 8px rgba(185,137,63,.16),inset 0 1px 0 rgba(255,255,255,.7);
+  transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s ease,background .3s ease,border-color .3s ease;
 }
-.btn-nav-cta:hover{background:var(--green-deep);}
+.btn-nav-cta::before{
+  content:'';position:absolute;top:0;left:-60%;width:35%;height:100%;
+  background:linear-gradient(115deg,transparent,rgba(255,255,255,.85),transparent);
+  transform:skewX(-18deg);transition:left .65s ease;pointer-events:none;
+}
+.btn-nav-cta:hover{
+  background:linear-gradient(135deg,var(--gold) 0%,#caa05a 100%);
+  border-color:var(--gold);box-shadow:0 10px 24px rgba(185,137,63,.4);transform:translateY(-2px);
+}
+.btn-nav-cta:hover::before{left:130%;}
+.btn-nav-cta:active{transform:translateY(0);box-shadow:0 4px 12px rgba(185,137,63,.3);}
 
 /* ─── Buttons ─────────────────────────────────────────────── */
 .btn{display:inline-block;padding:13px 28px;font-size:.85rem;letter-spacing:.04em;
@@ -2758,10 +2773,16 @@ nav.m-drawer-nav,
 
 /* ══ Quote cart ═══════════════════════════════════════════ */
 .nav-quote-cta{display:inline-flex;align-items:center;gap:9px;}
-.nav-quote-cta .qn{background:var(--gold);color:var(--green-deep);border-radius:11px;min-width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:600;padding:0 5px;}
+.nav-quote-cta .qn{background:var(--green-deep);color:var(--gold-l);border-radius:11px;min-width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:600;padding:0 5px;transition:background .3s,color .3s;}
 .nav-quote-cta.empty .qn{display:none;}
+.nav-quote-cta:not(.empty){border-color:var(--gold);box-shadow:0 4px 14px rgba(185,137,63,.3),inset 0 1px 0 rgba(255,255,255,.7);}
+.nav-quote-cta:not(.empty) .qn{animation:qnPulse 2.6s ease-in-out infinite;}
+.nav-quote-cta:hover .qn{background:var(--green-deep);color:var(--gold-l);}
+@keyframes qnPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.14);}}
+.cta-long,.cta-short{white-space:nowrap;}
 .cta-short{display:none;}
-@media(max-width:1000px){.cta-long{display:none;}.cta-short{display:inline;}}
+@media(max-width:1180px){.cta-long{display:none;}.cta-short{display:inline;}}
+@media (prefers-reduced-motion:reduce){.nav-quote-cta:not(.empty) .qn{animation:none;}}
 .nav-quote{display:inline-flex;align-items:center;gap:7px;background:transparent;border:1px solid var(--line);color:var(--green);
   border-radius:20px;padding:6px 14px;font:500 .78rem 'Inter',sans-serif;cursor:pointer;transition:all .2s;margin-left:14px;}
 .nav-quote:hover{border-color:var(--gold);background:rgba(185,137,63,.09);}
@@ -2898,8 +2919,11 @@ nav.m-drawer-nav,
   .q-nav .btn{flex:1;min-width:150px;text-align:center;}
   .q-nav-note{width:100%;margin-right:0;}
 }
-@media(max-width:1000px){
-  .btn-nav-cta.nav-quote-cta{padding:8px 13px!important;font-size:.72rem!important;}
+@media(max-width:1180px){
+  .btn-nav-cta.nav-quote-cta{padding:10px 16px!important;font-size:.78rem!important;}
+}
+@media(max-width:640px){
+  .btn-nav-cta.nav-quote-cta{padding:9px 14px!important;font-size:.76rem!important;border-radius:20px;}
 }
 @media(max-width:900px){.q-grid{grid-template-columns:1fr;}}
 @media(max-width:640px){
@@ -3757,7 +3781,7 @@ nav.m-drawer-nav,
               <div class="q-rev-who" id="q-rev-who"></div>
               <div class="q-rev-list" id="q-rev-list"></div>
               <p class="q-rev-notes" id="q-rev-notes"></p>
-              <details class="q-preview"><summary>See the exact message we will send</summary><pre id="q-preview-text"></pre></details>
+              <details class="q-preview" id="q-preview"><summary>See the exact message we will send</summary><pre id="q-preview-text"></pre></details>
               <div class="q-send">
                 <button type="button" class="btn" style="background:#25D366;color:#fff;" onclick="cartSend('whatsapp')">&#128172; Send on WhatsApp</button>
                 <button type="button" class="btn btn-green" onclick="cartSend('email')">&#9993; Send by Email</button>
@@ -4772,6 +4796,10 @@ function qHeight(){
   var stage = document.getElementById('q-stage'), sl = qSlides()[Q_STEP - 1];
   if(stage && sl) stage.style.height = sl.offsetHeight + 'px';
 }
+(function(){
+  var qp = document.getElementById('q-preview');
+  if(qp) qp.addEventListener('toggle', function(){ qHeight(); setTimeout(qHeight, 320); });
+})();
 function qPaint(){
   var track = document.getElementById('q-track');
   if(track) track.style.transform = 'translateX(-' + ((Q_STEP - 1) * 100) + '%)';
