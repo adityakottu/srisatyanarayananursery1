@@ -2827,6 +2827,8 @@ nav.m-drawer-nav,
 .q-note-lbl{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-text);margin:0 0 6px;display:block;}
 .q-fields{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .q-fields .full{grid-column:1/-1;}
+.q-req{margin:-4px 0 2px;font-size:.78rem;color:var(--muted);}
+.q-req strong{color:var(--green-deep);font-weight:600;}
 .q-fields label{display:block;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
 .q-fields input,.q-fields select,.q-fields textarea{width:100%;background:#fff;border:1px solid var(--line);border-radius:3px;
   padding:11px 13px;font:400 .9rem 'Inter',sans-serif;color:var(--ink);}
@@ -2859,6 +2861,12 @@ nav.m-drawer-nav,
   box-shadow:0 14px 34px rgba(0,0,0,.3);display:flex;align-items:center;gap:12px;}
 .q-toast.show{opacity:1;transform:translate(-50%,0);}
 .q-toast button{background:var(--gold);color:var(--green-deep);border:none;border-radius:14px;padding:5px 12px;font:600 .74rem 'Inter',sans-serif;cursor:pointer;}
+#page-quote .enq-add{grid-template-columns:minmax(0,1fr) 126px minmax(0,.7fr) auto;}
+#page-quote .enq-field-qty .q-stepper{display:flex;width:100%;height:100%;}
+#page-quote .enq-field-qty .q-stepper input{border:none;border-radius:0;flex:1;min-width:0;padding:11px 2px;text-align:center;-moz-appearance:textfield;}
+#page-quote .enq-field-qty .q-stepper input::-webkit-outer-spin-button,
+#page-quote .enq-field-qty .q-stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+#page-quote .enq-field-qty .q-stepbtn{width:36px;flex:0 0 36px;}
 #page-quote .enq-field input{background:#fff;border:1px solid var(--line);color:var(--ink);border-radius:3px;padding:11px 13px;font:400 .9rem 'Inter',sans-serif;}
 #page-quote .enq-field input::placeholder{color:#9a9285;}
 #page-quote .enq-field input:focus{outline:none;border-color:var(--gold);}
@@ -3467,11 +3475,11 @@ nav.m-drawer-nav,
         <p class="plant-tagline" id="plant-detail-tagline"></p>
         <div class="pd-quote">
           <div class="pd-qty">
-            <button type="button" class="pd-step" onclick="pdQty(-1)" aria-label="Fewer">&minus;</button>
+            <button type="button" class="pd-step" onclick="qtyNudge('pd-qty',-1)" aria-label="Fewer">&minus;</button>
             <input id="pd-qty" type="number" min="1" max="100000" value="1" inputmode="numeric" aria-label="Quantity">
-            <button type="button" class="pd-step" onclick="pdQty(1)" aria-label="More">&plus;</button>
+            <button type="button" class="pd-step" onclick="qtyNudge('pd-qty',1)" aria-label="More">&plus;</button>
           </div>
-          <button class="btn btn-gold pd-add" onclick="pdAddToQuote()">&#128722; Add to Quote Request</button>
+          <button class="btn btn-gold pd-add" onclick="pdAddToQuote()">&#128722; Add to Quote</button>
           <a class="pd-wa" id="pd-wa" href="https://wa.me/919440179027" target="_blank" rel="noopener">&#128172; Ask on WhatsApp</a>
         </div>
         <p class="pd-added" id="pd-added" aria-live="polite"></p>
@@ -3749,7 +3757,13 @@ nav.m-drawer-nav,
                     </div>
                     <div class="enq-suggest" id="q-plant-list" role="listbox"></div>
                   </div>
-                  <div class="enq-field enq-field-qty"><input id="q-qty" type="number" inputmode="numeric" min="1" max="100000" value="1" aria-label="Quantity"></div>
+                  <div class="enq-field enq-field-qty">
+                    <div class="q-stepper">
+                      <button type="button" class="q-stepbtn" onclick="qtyNudge('q-qty',-1)" aria-label="Fewer">&minus;</button>
+                      <input id="q-qty" type="number" inputmode="numeric" min="1" max="100000" value="1" aria-label="Quantity">
+                      <button type="button" class="q-stepbtn" onclick="qtyNudge('q-qty',1)" aria-label="More">&plus;</button>
+                    </div>
+                  </div>
                   <div class="enq-field enq-field-size"><input id="q-size" type="text" placeholder="Size, e.g. 6 ft" maxlength="40" aria-label="Size (optional)"></div>
                   <button type="button" class="enq-add-btn" onclick="cartAddTyped()">&#43; Add</button>
                 </div>
@@ -3757,18 +3771,18 @@ nav.m-drawer-nav,
               </div>
             </div>
 
-            <div class="q-panel" style="margin-top:22px;">
+            <div class="q-nav">
+              <span class="q-nav-note" id="q-nav-note-1">Add at least one plant to continue.</span>
+              <button class="btn btn-gold" id="q-next-1" onclick="qStep(2)">Finalise plants &rarr;</button>
+            </div>
+
+            <div class="q-panel" style="margin-top:26px;">
               <h2><span>&#10024;</span> You may also like</h2>
               <p class="q-sub">Popular with landscapers and estates &mdash; add them in one tap.</p>
               <div class="q-sugg" id="q-sugg"></div>
               <div class="q-links">
                 <button type="button" class="btn btn-outline" onclick="showPage('catalog')">View the Full Catalog &rarr;</button>
               </div>
-            </div>
-
-            <div class="q-nav">
-              <span class="q-nav-note" id="q-nav-note-1">Add at least one plant to continue.</span>
-              <button class="btn btn-gold" id="q-next-1" onclick="qStep(2)">Finalise plants &rarr;</button>
             </div>
           </section>
 
@@ -3779,8 +3793,9 @@ nav.m-drawer-nav,
               <p class="q-sub">We reply on WhatsApp or by email, usually the same day.</p>
               <div class="q-fields">
                 <div class="full"><label for="q-name">Your name *</label><input id="q-name" type="text" placeholder="Full name" autocomplete="name"></div>
-                <div><label for="q-phone">Phone / WhatsApp *</label><input id="q-phone" type="tel" placeholder="+91" autocomplete="tel"></div>
-                <div><label for="q-email">Email</label><input id="q-email" type="email" placeholder="optional" autocomplete="email"></div>
+                <div><label for="q-phone">Phone / WhatsApp</label><input id="q-phone" type="tel" placeholder="+91" autocomplete="tel"></div>
+                <div><label for="q-email">Email</label><input id="q-email" type="email" placeholder="name@example.com" autocomplete="email"></div>
+                <p class="q-req full">Leave us <strong>either one</strong> &mdash; a phone number or an email &mdash; whichever you would rather we reply on.</p>
                 <div class="full"><label for="q-type">I am a&hellip;</label><select id="q-type"><option value="">Select one&hellip;</option></select></div>
                 <div class="full"><label for="q-place">Delivery city / site</label><input id="q-place" type="text" placeholder="e.g. Hyderabad, or the project site"></div>
                 <div class="full"><label for="q-notes">Notes for the whole order</label><textarea id="q-notes" placeholder="Timeline, pot sizes, transport, site conditions&hellip;"></textarea></div>
@@ -4610,6 +4625,12 @@ function cartSuggest(){
 }
 // ── The message, in a readable table for email and a tidy list for WhatsApp ──
 function cartField(id){ var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+// A name, and one way to reply on — phone or email, whichever they gave.
+function cartMissing(){
+  if(!cartField('q-name')) return { id: 'q-name', msg: 'Please tell us your name.' };
+  if(!cartField('q-phone') && !cartField('q-email')) return { id: 'q-phone', msg: 'Please give a phone number or an email, so we can send your quote back.' };
+  return null;
+}
 function cartPad(v, n){ v = String(v == null ? '' : v); return v.length >= n ? v.slice(0, n) : v + new Array(n - v.length + 1).join(' '); }
 function cartMessage(channel){
   var name = cartField('q-name'), phone = cartField('q-phone'), email = cartField('q-email');
@@ -4700,10 +4721,10 @@ function cartSend(channel){
     var t = document.getElementById('q-plant'); if(t) t.focus();
     return;
   }
-  var missing = !cartField('q-name') ? 'q-name' : (!cartField('q-phone') ? 'q-phone' : null);
-  if(missing){
-    var f = document.getElementById(missing);
-    if(f){ f.focus(); f.setCustomValidity('Please complete this field.'); f.reportValidity(); setTimeout(function(){ f.setCustomValidity(''); }, 0); }
+  var miss = cartMissing();
+  if(miss){
+    var f = document.getElementById(miss.id);
+    if(f){ f.focus(); f.setCustomValidity(miss.msg); f.reportValidity(); setTimeout(function(){ f.setCustomValidity(''); }, 0); }
     return;
   }
   var body = cartMessage(channel);
@@ -4800,10 +4821,9 @@ function cartDecorateCards(){
 
 
 // ── Plant page: quantity + add to quote ───────────────────
-function pdQty(step){
-  var el = document.getElementById('pd-qty'); if(!el) return;
-  var v = (parseInt(el.value, 10) || 1) + step;
-  el.value = Math.max(1, Math.min(v, 100000));
+function qtyNudge(id, step){
+  var el = document.getElementById(id); if(!el) return;
+  el.value = Math.max(1, Math.min((parseInt(el.value, 10) || 1) + step, 100000));
 }
 function pdAddToQuote(){
   var el = document.getElementById('pd-qty');
@@ -4867,12 +4887,12 @@ function qStep(n, opts){
     return;
   }
   if(n > 2){
-    var missing = !cartField('q-name') ? 'q-name' : (!cartField('q-phone') ? 'q-phone' : null);
-    if(missing){
-      var f = document.getElementById(missing);
+    var miss = cartMissing();
+    if(miss){
+      var f = document.getElementById(miss.id);
       var n2 = document.getElementById('q-nav-note-2');
-      if(n2){ n2.textContent = 'Your name and phone number, please.'; n2.classList.add('err'); }
-      if(f){ f.focus(); f.setCustomValidity('Please complete this field.'); f.reportValidity(); setTimeout(function(){ f.setCustomValidity(''); }, 0); }
+      if(n2){ n2.textContent = miss.msg; n2.classList.add('err'); }
+      if(f){ f.focus(); f.setCustomValidity(miss.msg); f.reportValidity(); setTimeout(function(){ f.setCustomValidity(''); }, 0); }
       return;
     }
   }
