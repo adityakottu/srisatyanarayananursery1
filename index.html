@@ -216,10 +216,12 @@ section{padding:108px 0;}
 .cred-item p{font-size:.85rem;color:rgba(248,243,232,.66);margin-top:7px;font-weight:300;}
 
 /* ─── Preview cards (home) ────────────────────────────────── */
-.preview-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
-  background:var(--line);border:1px solid var(--line);}
-.preview-card{background:var(--cream);padding:36px 26px;display:flex;flex-direction:column;
-  justify-content:space-between;transition:background .3s;cursor:pointer;min-height:230px;}
+.preview-grid{display:flex;gap:1px;overflow-x:auto;
+  background:var(--line);border:1px solid var(--line);
+  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.preview-grid::-webkit-scrollbar{display:none;}
+.preview-card{flex:0 0 calc(25% - .75px);background:var(--cream);padding:36px 26px;display:flex;flex-direction:column;
+  justify-content:space-between;transition:background .3s;cursor:pointer;min-height:230px;scroll-snap-align:start;}
 .preview-card:hover{background:var(--cream2);}
 .preview-card .num{font-size:.68rem;color:var(--gold);letter-spacing:.07em;margin-bottom:12px;}
 .preview-card h3{font-size:1.08rem;font-weight:500;margin-bottom:8px;}
@@ -602,7 +604,8 @@ section{padding:108px 0;}
   .plant-hero-inner{grid-template-columns:1fr;}
   .plant-hero-art{width:200px;height:200px;margin-bottom:24px;}
   .cred-grid,.related-grid{grid-template-columns:repeat(2,1fr);}
-  .preview-grid,.gallery-grid{grid-template-columns:repeat(2,1fr);}
+  .gallery-grid{grid-template-columns:repeat(2,1fr);}
+  .preview-card{flex-basis:calc(50% - .5px);}
     .supply-card{flex-basis:44%;}
   .process-row{grid-template-columns:1fr;gap:26px;}
   .care-bar-inner{gap:0;}
@@ -610,6 +613,8 @@ section{padding:108px 0;}
 @media(max-width:768px){
   nav{padding:14px 18px;}
   .nav-links{display:none;}
+  /* a part-card peeking at the edge is what tells a phone user to swipe */
+  .preview-card{flex-basis:80%;padding:30px 22px;min-height:196px;}
   .wrap{padding:0 18px;}
   .hero-stats{gap:26px;}
   .cards-grid{grid-template-columns:repeat(3,1fr);}
@@ -3155,9 +3160,25 @@ nav.m-drawer-nav,
           <div><span class="num">04</span><svg viewBox="0 0 48 48"><circle cx="24" cy="22" r="12" stroke="#1f3a2d" stroke-width="1.4" fill="none"/><path d="M24 10V6" stroke="#1f3a2d" stroke-width="1.4" stroke-linecap="round"/></svg></div>
           <div><h3>Fruit Plants</h3><p>Grafted varieties bred for yield and longevity.</p></div>
         </div>
+        <div class="preview-card reveal" onclick="showPage('catalog','shrub')">
+          <div><span class="num">05</span><svg viewBox="0 0 48 48"><path d="M10 40V22a14 14 0 0 1 28 0v18M8 40h32M24 40V17M24 26l-7-6M24 28l7-6" stroke="#1f3a2d" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><h3>Shrubs &amp; Hedges</h3><p>Dense, clippable greens for borders and screens.</p></div>
+        </div>
+        <div class="preview-card reveal" onclick="showPage('catalog','ground')">
+          <div><span class="num">06</span><svg viewBox="0 0 48 48"><path d="M7 21c6-8 11-8 17 0s11 8 17 0M7 33c6-8 11-8 17 0s11 8 17 0" stroke="#1f3a2d" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg></div>
+          <div><h3>Ground Cover</h3><p>Low, spreading carpets for lawns, verges and beds.</p></div>
+        </div>
+        <div class="preview-card reveal" onclick="showPage('catalog','desert')">
+          <div><span class="num">07</span><svg viewBox="0 0 48 48"><path d="M24 42V11M24 27h7a5 5 0 0 0 5-5v-5M24 31h-7a5 5 0 0 1-5-5v-7M19 42h10" stroke="#1f3a2d" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><h3>Desert &amp; Succulents</h3><p>Drought-hardy form for dry beds and planters.</p></div>
+        </div>
+        <div class="preview-card reveal" onclick="showPage('catalog','aquatic')">
+          <div><span class="num">08</span><svg viewBox="0 0 48 48"><path d="M24 30c-6 0-10-5-10-5s4-9 10-9 10 9 10 9-4 5-10 5Z" stroke="#1f3a2d" stroke-width="1.4" fill="none" stroke-linejoin="round"/><path d="M8 38c4 0 4-2 8-2s4 2 8 2 4-2 8-2 4 2 8 2" stroke="#1f3a2d" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg></div>
+          <div><h3>Aquatic &amp; Pond</h3><p>Water plants for ponds, fountains and courtyards.</p></div>
+        </div>
       </div>
       <div style="margin-top:22px;" class="reveal">
-        <button class="btn btn-outline" onclick="showPage('catalog')">See All 8 Categories &rarr;</button>
+        <button class="btn btn-outline" onclick="showPage('catalog')">Browse the Full Catalog &rarr;</button>
       </div>
     </div>
   </section>
@@ -5039,6 +5060,7 @@ window.addEventListener('hashchange', routeFromLocation);
 document.addEventListener('DOMContentLoaded', routeFromLocation);
 document.addEventListener('DOMContentLoaded', function(){
   try{ ssnScrollArrows(document.querySelector('.supply-grid')); }catch(e){}
+  try{ ssnScrollArrows(document.querySelector('.preview-grid')); }catch(e){}
 });
 
 // ── Sideways card rows: arrows for mouse users ────────────
