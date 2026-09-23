@@ -238,6 +238,34 @@ section{padding:108px 0;}
 .supply-section{background:var(--cream3);}
 .supply-grid{display:flex;gap:18px;overflow-x:auto;padding:4px 4px 18px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .supply-grid::-webkit-scrollbar{display:none;}
+
+/* ─── Sideways card rows: arrows for mouse users ──────────── */
+/* Touch and trackpad users can already swipe, so these only appear
+   where a pointer can hover. Hovering an arrow scrolls continuously. */
+.hsw{position:relative;}
+.hs-arrow{
+  position:absolute;top:50%;z-index:6;width:46px;height:46px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--cream);color:var(--green-deep);border:1.5px solid var(--gold);
+  box-shadow:0 4px 16px rgba(20,35,25,.18);cursor:pointer;
+  font-size:1.05rem;line-height:1;padding:0;
+  opacity:0;visibility:hidden;transform:translateY(-50%) scale(.85);
+  transition:opacity .3s ease,transform .3s cubic-bezier(.22,1,.36,1),background .3s ease,box-shadow .3s ease,visibility .3s;
+}
+.hs-arrow.on{opacity:.92;visibility:visible;transform:translateY(-50%) scale(1);}
+.hs-arrow:hover,.hs-arrow:focus-visible{
+  background:linear-gradient(135deg,var(--gold) 0%,#caa05a 100%);
+  box-shadow:0 10px 26px rgba(185,137,63,.42);
+  transform:translateY(-50%) scale(1.12);outline:none;
+}
+.hs-arrow:active{transform:translateY(-50%) scale(1.02);}
+.hs-prev{left:-29px;}
+.hs-next{right:-29px;}
+/* narrower gutters lower down, so tuck them just inside the row */
+@media(max-width:1100px){.hs-prev{left:-8px;}.hs-next{right:-8px;}}
+/* no hover pointer (phones, most tablets) - swiping is easier there */
+@media(hover:none),(pointer:coarse){.hs-arrow{display:none;}}
+@media (prefers-reduced-motion:reduce){.hs-arrow{transition:opacity .2s;}}
 .supply-card{flex:0 0 min(31%,340px);background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:28px 24px 25px;min-height:218px;position:relative;overflow:hidden;scroll-snap-align:start;transition:transform .28s ease,box-shadow .28s ease,border-color .28s;}
 .supply-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green-deep),var(--gold));opacity:0;transition:opacity .28s;}
 .supply-card:hover,.supply-card:focus-within{transform:translateY(-5px);box-shadow:0 16px 40px rgba(20,35,25,.1);border-color:rgba(185,137,63,.3);}
@@ -1053,7 +1081,7 @@ footer{background:var(--green-deep);color:rgba(248,243,232,.5);padding:0;overflo
 
 /* Gallery lightbox */
 .g-lightbox{display:none;position:fixed;inset:0;z-index:999;
-  background:rgba(10,16,12,.93);backdrop-filter:blur(8px);
+  background:rgba(10,16,12,.93);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
   align-items:center;justify-content:center;flex-direction:column;}
 .g-lightbox.open{display:flex;}
 .g-lightbox-img{max-width:88vw;max-height:78vh;object-fit:contain;
@@ -1240,8 +1268,7 @@ nav{
   border-radius:14px;
   padding:34px 18px 30px;
   text-align:center;
-  backdrop-filter:blur(6px);
-  -webkit-backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
   transition:transform .32s cubic-bezier(.22,1,.36,1),
              border-color .32s, box-shadow .32s, background .32s;
 }
@@ -1409,7 +1436,7 @@ nav{
   border:1px solid rgba(185,137,63,.42);
   color:var(--gold-l);border-radius:22px;padding:6px 15px;
   font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
 }
 .hero-stats{
   display:flex;gap:clamp(24px,4vw,50px);
@@ -1509,7 +1536,7 @@ nav{
   color:var(--gold-l);
   border-radius:24px;padding:7px 17px;
   font-size:.67rem;letter-spacing:.15em;text-transform:uppercase;
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
 }
 /* Thin gold rules top and bottom */
 .showcase::before,.showcase::after{
@@ -1661,7 +1688,7 @@ nav{
   border:1px solid rgba(185,137,63,.44);
   color:var(--gold-l);border-radius:24px;padding:6px 16px;
   font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
 }
 @media(max-width:768px){
   #page-about .page-hero{min-height:clamp(360px,54vh,480px);padding-top:150px;}
@@ -2005,7 +2032,7 @@ nav{
   display:flex;align-items:center;justify-content:space-between;
   padding:14px clamp(14px,3vw,28px);
   background:linear-gradient(to bottom, rgba(14,24,16,.97), rgba(14,24,16,.82));
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
   border-bottom:1px solid rgba(185,137,63,.18);
 }
 .pg-fs-title{font-family:'Fraunces',serif;font-size:1.02rem;font-weight:300;color:#f8f3e8;}
@@ -2150,7 +2177,7 @@ nav{
 .m-backdrop{
   position:fixed;inset:0;z-index:8900;
   background:rgba(10,18,12,.6);
-  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
   opacity:0;pointer-events:none;transition:opacity .35s;
 }
 .m-backdrop.open{opacity:1;pointer-events:auto;}
@@ -2371,7 +2398,7 @@ nav{
 .map-frame-street{position:relative;}
 .map-frame-street iframe{height:420px;}
 .sv-badge{position:absolute;top:14px;left:14px;display:inline-flex;align-items:center;gap:8px;
-  padding:7px 14px;border-radius:20px;background:rgba(14,26,18,.78);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  padding:7px 14px;border-radius:20px;background:rgba(14,26,18,.78);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
   border:1px solid rgba(185,137,63,.45);color:#f3e7c9;font-family:'Inter',sans-serif;font-size:.72rem;letter-spacing:.06em;
   pointer-events:none;box-shadow:0 6px 18px rgba(0,0,0,.25);}
 .sv-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 3px rgba(185,137,63,.25);}
@@ -5010,6 +5037,76 @@ function routeFromLocation(){
 window.addEventListener('popstate', routeFromLocation);
 window.addEventListener('hashchange', routeFromLocation);
 document.addEventListener('DOMContentLoaded', routeFromLocation);
+document.addEventListener('DOMContentLoaded', function(){
+  try{ ssnScrollArrows(document.querySelector('.supply-grid')); }catch(e){}
+});
+
+// ── Sideways card rows: arrows for mouse users ────────────
+// A mouse has no sideways gesture, so these rows are awkward to scroll
+// without them. Hovering an arrow scrolls continuously; clicking moves
+// one card. Arrows only show while a row actually has more to scroll.
+function ssnScrollArrows(sc){
+  if(!sc || sc.dataset.hsReady) return;
+  sc.dataset.hsReady = '1';
+
+  var wrap = document.createElement('div');
+  wrap.className = 'hsw';
+  sc.parentNode.insertBefore(wrap, sc);
+  wrap.appendChild(sc);
+
+  var slowed = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function cardStep(){
+    var card = sc.firstElementChild;
+    if(!card) return Math.round(sc.clientWidth * 0.8);
+    var gap = parseFloat(getComputedStyle(sc).columnGap || getComputedStyle(sc).gap) || 18;
+    return Math.round(card.getBoundingClientRect().width + gap);
+  }
+
+  function makeArrow(dir){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'hs-arrow ' + (dir < 0 ? 'hs-prev' : 'hs-next');
+    b.setAttribute('aria-label', dir < 0 ? 'Scroll left' : 'Scroll right');
+    b.innerHTML = dir < 0 ? '&#10094;' : '&#10095;';
+    var raf = null;
+    function glide(){ sc.scrollLeft += dir * 7; raf = requestAnimationFrame(glide); }
+    // mandatory snap pulls every small step back, so it is suspended while gliding
+    function start(){
+      if(raf !== null || slowed) return;
+      sc.style.scrollSnapType = 'none';
+      raf = requestAnimationFrame(glide);
+    }
+    function stop(){
+      if(raf === null) return;
+      cancelAnimationFrame(raf); raf = null;
+      sc.style.scrollSnapType = '';
+    }
+    b.addEventListener('mouseenter', start);
+    b.addEventListener('mouseleave', stop);
+    b.addEventListener('blur', stop);
+    // the pointer is still over the button after a click, so gliding carries
+    // on; an animated scroll would fight it, hence the instant jump there
+    b.addEventListener('click', function(){
+      sc.scrollBy({ left: dir * cardStep(), behavior: (slowed || raf !== null) ? 'auto' : 'smooth' });
+    });
+    wrap.appendChild(b);
+    return b;
+  }
+
+  var prev = makeArrow(-1), next = makeArrow(1);
+
+  function sync(){
+    var more = sc.scrollWidth - sc.clientWidth;
+    if(more < 8){ prev.classList.remove('on'); next.classList.remove('on'); return; }
+    prev.classList.toggle('on', sc.scrollLeft > 4);
+    next.classList.toggle('on', sc.scrollLeft < more - 4);
+  }
+  sc.addEventListener('scroll', sync, { passive: true });
+  window.addEventListener('resize', sync);
+  if(typeof ResizeObserver !== 'undefined') new ResizeObserver(sync).observe(sc);
+  sync();
+}
 
 // The header is fixed, and its height changes as the brand name and notice
 // strip rewrap, so publish the measured height for page content to clear.
@@ -5324,9 +5421,12 @@ function initCatBadges() {
     log('enquiry','Enquiry button clicked');
   }
   function newSession(){
-    var sk='ssn_session_'+Date.now().toString().slice(0,-4);
-    if(sessionStorage.getItem('ssn_sess')) return;
-    sessionStorage.setItem('ssn_sess','1');
+    // Private/locked-down browsers make storage throw, and an analytics
+    // counter must never take the page down with it.
+    try{
+      if(sessionStorage.getItem('ssn_sess')) return;
+      sessionStorage.setItem('ssn_sess','1');
+    }catch(e){ return; }
     var d=getD(); d.sessions=(d.sessions||0)+1;
     d.updated=Date.now(); saveD(d);
     log('session','New session started');
@@ -5503,13 +5603,21 @@ var VV_DEFAULT2 = [
 ];
 
 function getVisitors(){
+  // Published content is what every visitor must see; localStorage is only
+  // this browser's own unpublished draft, so it comes second.
+  try{
+    var pub = window.SSN_MEDIA && window.SSN_MEDIA.ssn_vip_visitors;
+    if(pub && pub.length) return pub;
+  }catch(e){}
   try{var s=JSON.parse(localStorage.getItem(VV_LS)||'null');return s&&s.length?s:VV_DEFAULT2;}
   catch(e){return VV_DEFAULT2;}
 }
 
 // ── Hero photo ────────────────────────────────────────────────────
 function loadHeroPhoto(){
-  var photo = localStorage.getItem(HERO_LS);
+  var photo = null;
+  try{ photo = (window.SSN_MEDIA && window.SSN_MEDIA.ssn_hero_photo) || null; }catch(e){}
+  if(!photo) photo = localStorage.getItem(HERO_LS);
   var bg = document.getElementById('hero-photo-bg');
   var img = document.getElementById('hero-photo-img');
   if(photo && bg && img){
@@ -5541,6 +5649,7 @@ function renderHomeGlimpse(){
       + (v.date ? '<div class="vis-date">'+v.date+'</div>' : '')
       + '</div>';
   }).join('');
+  try{ ssnScrollArrows(scroll); }catch(e){}
 }
 
 // ── Heritage visitors grid ────────────────────────────────────────
@@ -5618,7 +5727,9 @@ document.addEventListener('DOMContentLoaded', function(){
 (function(){
   var LOGO_LS = 'ssn_logo';
   function applyLogo(){
-    var logo = localStorage.getItem(LOGO_LS);
+    var logo = null;
+    try{ logo = (window.SSN_MEDIA && window.SSN_MEDIA.ssn_logo) || null; }catch(e){}
+    if(!logo) logo = localStorage.getItem(LOGO_LS);
     if(!logo) return;
     // Replace the SVG leaf icon in the navbar with the custom logo
     var brandSvgs = document.querySelectorAll('.brand svg, .brand-logo');
@@ -5630,6 +5741,7 @@ document.addEventListener('DOMContentLoaded', function(){
       svg.parentNode.replaceChild(img, svg);
     });
   }
+  window.ssnApplyLogo = applyLogo;   // so it can re-run when published content lands
   document.addEventListener('DOMContentLoaded', applyLogo);
   window.addEventListener('storage', function(e){ if(e.key===LOGO_LS) applyLogo(); });
 })();
@@ -6144,7 +6256,8 @@ document.addEventListener('DOMContentLoaded', function(){
       setTimeout(function(){
         ['ssnRenderGallery','ssnRenderVideos','ssnRenderStats','ssnRenderHeroPhoto',
          'ssnRenderHeritagePhoto','ssnRenderStoryPhoto','ssnRenderChapterPhotos',
-         'ssnRenderAboutPhoto','ssnApplyCardPhotos'].forEach(function(fn){
+         'ssnRenderAboutPhoto','ssnApplyCardPhotos',
+         'renderHomeGlimpse','renderHeritageVisitors','loadHeroPhoto','ssnApplyLogo'].forEach(function(fn){
           try{ if(typeof window[fn]==='function') window[fn](); }catch(e){}
         });
         // A plant opened straight from a link was drawn before the photos arrived
