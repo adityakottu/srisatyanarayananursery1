@@ -81,7 +81,10 @@ button{cursor:pointer;font-family:inherit;border:none;}
 .vip-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(185,137,63,.15);border:1px solid rgba(185,137,63,.38);color:var(--gold-l);font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:5px 14px;border-radius:20px;}
 .nav-enq{background:var(--gold);color:var(--green-deep);padding:8px 20px;font-size:.78rem;font-weight:600;letter-spacing:.04em;border-radius:var(--radius);transition:background .2s;}
 .nav-enq:hover{background:var(--gold-l);}
-.vip-hero{min-height:100vh;display:flex;align-items:center;background:radial-gradient(130% 90% at 60% -5%,#1a3828 0%,#0c1a0f 55%,#070d08 100%);position:relative;overflow:hidden;padding-top:80px;}
+/* --vip-hdr-h is the fixed nav's measured height; the fallback covers the
+   tallest it gets (brand name wrapping on narrow phones) so the eyebrow
+   never starts underneath it before the script runs. */
+.vip-hero{min-height:100vh;display:flex;align-items:center;background:radial-gradient(130% 90% at 60% -5%,#1a3828 0%,#0c1a0f 55%,#070d08 100%);position:relative;overflow:hidden;padding-top:calc(var(--vip-hdr-h,124px) + 32px);}
 .vip-hero::before{content:'';position:absolute;inset:0;background:url('images/hero-f34e7a95.jpg') center/cover no-repeat;opacity:.34;filter:saturate(.6) contrast(1.05);}
 .vip-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(104deg,rgba(7,13,8,.95) 0%,rgba(12,26,15,.86) 42%,rgba(26,56,40,.6) 72%,rgba(185,137,63,.12) 100%);}
 .hero-orn{z-index:1;}
@@ -90,6 +93,8 @@ button{cursor:pointer;font-family:inherit;border:none;}
 .hero-inner{position:relative;z-index:2;padding:80px 0 100px;}
 .hero-ey{display:inline-flex;align-items:center;gap:8px;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-l);font-weight:500;margin-bottom:24px;}
 .hero-ey::before,.hero-ey::after{content:'';display:block;width:30px;height:1px;background:var(--gold);opacity:.6;}
+/* on the narrowest phones the decorative rules push the line to wrap */
+@media(max-width:360px){.hero-ey::before,.hero-ey::after{display:none;}.hero-ey{letter-spacing:.14em;gap:0;}}
 .vip-hero h1{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(2.6rem,5.5vw,5.2rem);line-height:1.04;letter-spacing:-.015em;color:var(--cream);max-width:800px;}
 .vip-hero h1 em{font-style:italic;font-weight:500;color:var(--gold-l);}
 .hero-sub{color:rgba(248,243,232,.6);font-size:1.02rem;max-width:480px;margin-top:22px;font-weight:300;line-height:1.68;}
@@ -1565,6 +1570,17 @@ document.addEventListener('DOMContentLoaded',function(){
   var i=document.getElementById('ad-code');
   if(i) i.addEventListener('keydown',function(e){if(e.key==='Enter')tryAccess();});
 });
+// The nav is fixed and grows taller as the brand name wraps on narrow
+// phones, so publish its real height for the hero to clear.
+(function(){
+  var nav=document.querySelector('.vip-nav');
+  if(!nav) return;
+  function setH(){ document.documentElement.style.setProperty('--vip-hdr-h', Math.round(nav.getBoundingClientRect().height)+'px'); }
+  setH();
+  window.addEventListener('resize',setH);
+  window.addEventListener('load',setH);
+  if(typeof ResizeObserver!=='undefined') new ResizeObserver(setH).observe(nav);
+})();
 if(checkAccess()){
   document.getElementById('vip-page').classList.add('show');
   renderAll(); trigRev();

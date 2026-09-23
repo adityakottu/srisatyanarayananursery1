@@ -238,6 +238,34 @@ section{padding:108px 0;}
 .supply-section{background:var(--cream3);}
 .supply-grid{display:flex;gap:18px;overflow-x:auto;padding:4px 4px 18px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .supply-grid::-webkit-scrollbar{display:none;}
+
+/* ─── Sideways card rows: arrows for mouse users ──────────── */
+/* Touch and trackpad users can already swipe, so these only appear
+   where a pointer can hover. Hovering an arrow scrolls continuously. */
+.hsw{position:relative;}
+.hs-arrow{
+  position:absolute;top:50%;z-index:6;width:46px;height:46px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--cream);color:var(--green-deep);border:1.5px solid var(--gold);
+  box-shadow:0 4px 16px rgba(20,35,25,.18);cursor:pointer;
+  font-size:1.05rem;line-height:1;padding:0;
+  opacity:0;visibility:hidden;transform:translateY(-50%) scale(.85);
+  transition:opacity .3s ease,transform .3s cubic-bezier(.22,1,.36,1),background .3s ease,box-shadow .3s ease,visibility .3s;
+}
+.hs-arrow.on{opacity:.92;visibility:visible;transform:translateY(-50%) scale(1);}
+.hs-arrow:hover,.hs-arrow:focus-visible{
+  background:linear-gradient(135deg,var(--gold) 0%,#caa05a 100%);
+  box-shadow:0 10px 26px rgba(185,137,63,.42);
+  transform:translateY(-50%) scale(1.12);outline:none;
+}
+.hs-arrow:active{transform:translateY(-50%) scale(1.02);}
+.hs-prev{left:-29px;}
+.hs-next{right:-29px;}
+/* narrower gutters lower down, so tuck them just inside the row */
+@media(max-width:1100px){.hs-prev{left:-8px;}.hs-next{right:-8px;}}
+/* no hover pointer (phones, most tablets) - swiping is easier there */
+@media(hover:none),(pointer:coarse){.hs-arrow{display:none;}}
+@media (prefers-reduced-motion:reduce){.hs-arrow{transition:opacity .2s;}}
 .supply-card{flex:0 0 min(31%,340px);background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:28px 24px 25px;min-height:218px;position:relative;overflow:hidden;scroll-snap-align:start;transition:transform .28s ease,box-shadow .28s ease,border-color .28s;}
 .supply-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green-deep),var(--gold));opacity:0;transition:opacity .28s;}
 .supply-card:hover,.supply-card:focus-within{transform:translateY(-5px);box-shadow:0 16px 40px rgba(20,35,25,.1);border-color:rgba(185,137,63,.3);}
@@ -5010,6 +5038,76 @@ function routeFromLocation(){
 window.addEventListener('popstate', routeFromLocation);
 window.addEventListener('hashchange', routeFromLocation);
 document.addEventListener('DOMContentLoaded', routeFromLocation);
+document.addEventListener('DOMContentLoaded', function(){
+  try{ ssnScrollArrows(document.querySelector('.supply-grid')); }catch(e){}
+});
+
+// ── Sideways card rows: arrows for mouse users ────────────
+// A mouse has no sideways gesture, so these rows are awkward to scroll
+// without them. Hovering an arrow scrolls continuously; clicking moves
+// one card. Arrows only show while a row actually has more to scroll.
+function ssnScrollArrows(sc){
+  if(!sc || sc.dataset.hsReady) return;
+  sc.dataset.hsReady = '1';
+
+  var wrap = document.createElement('div');
+  wrap.className = 'hsw';
+  sc.parentNode.insertBefore(wrap, sc);
+  wrap.appendChild(sc);
+
+  var slowed = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function cardStep(){
+    var card = sc.firstElementChild;
+    if(!card) return Math.round(sc.clientWidth * 0.8);
+    var gap = parseFloat(getComputedStyle(sc).columnGap || getComputedStyle(sc).gap) || 18;
+    return Math.round(card.getBoundingClientRect().width + gap);
+  }
+
+  function makeArrow(dir){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'hs-arrow ' + (dir < 0 ? 'hs-prev' : 'hs-next');
+    b.setAttribute('aria-label', dir < 0 ? 'Scroll left' : 'Scroll right');
+    b.innerHTML = dir < 0 ? '&#10094;' : '&#10095;';
+    var raf = null;
+    function glide(){ sc.scrollLeft += dir * 7; raf = requestAnimationFrame(glide); }
+    // mandatory snap pulls every small step back, so it is suspended while gliding
+    function start(){
+      if(raf !== null || slowed) return;
+      sc.style.scrollSnapType = 'none';
+      raf = requestAnimationFrame(glide);
+    }
+    function stop(){
+      if(raf === null) return;
+      cancelAnimationFrame(raf); raf = null;
+      sc.style.scrollSnapType = '';
+    }
+    b.addEventListener('mouseenter', start);
+    b.addEventListener('mouseleave', stop);
+    b.addEventListener('blur', stop);
+    // the pointer is still over the button after a click, so gliding carries
+    // on; an animated scroll would fight it, hence the instant jump there
+    b.addEventListener('click', function(){
+      sc.scrollBy({ left: dir * cardStep(), behavior: (slowed || raf !== null) ? 'auto' : 'smooth' });
+    });
+    wrap.appendChild(b);
+    return b;
+  }
+
+  var prev = makeArrow(-1), next = makeArrow(1);
+
+  function sync(){
+    var more = sc.scrollWidth - sc.clientWidth;
+    if(more < 8){ prev.classList.remove('on'); next.classList.remove('on'); return; }
+    prev.classList.toggle('on', sc.scrollLeft > 4);
+    next.classList.toggle('on', sc.scrollLeft < more - 4);
+  }
+  sc.addEventListener('scroll', sync, { passive: true });
+  window.addEventListener('resize', sync);
+  if(typeof ResizeObserver !== 'undefined') new ResizeObserver(sync).observe(sc);
+  sync();
+}
 
 // The header is fixed, and its height changes as the brand name and notice
 // strip rewrap, so publish the measured height for page content to clear.
@@ -5541,6 +5639,7 @@ function renderHomeGlimpse(){
       + (v.date ? '<div class="vis-date">'+v.date+'</div>' : '')
       + '</div>';
   }).join('');
+  try{ ssnScrollArrows(scroll); }catch(e){}
 }
 
 // ── Heritage visitors grid ────────────────────────────────────────
