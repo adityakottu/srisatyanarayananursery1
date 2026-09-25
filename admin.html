@@ -629,7 +629,25 @@ input,select,textarea{font-family:inherit;}
 .vpc-footer .btn{white-space:nowrap;}
 
 </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
+  <!--
+    Third-party code, loaded straight into the admin panel. Without an
+    integrity hash the browser runs whatever the CDN serves, so a compromised
+    or hijacked CDN gets to run code in the panel that holds the publish token.
+    The hash has to be generated from the actual file:
+
+      curl -s https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js \
+        | openssl dgst -sha384 -binary | openssl base64 -A
+
+    Paste the result into integrity="sha384-...". crossorigin is required for
+    integrity to be checked at all, and is already set.
+
+    Note also that 0.18.5 is the last build cdnjs carries, and it predates the
+    fix for the prototype-pollution issue in XLSX.read (CVE-2023-30533) — the
+    exact call used for the bulk import below. Current builds live at
+    https://cdn.sheetjs.com/ instead.
+  -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"
+          crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
 </head>
 <body>
 <div id="gh-conflict-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9000;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding:10px 16px;background:#8a2c22;color:#fff;font-size:.85rem;"><span>&#9888; Publishing paused &mdash; the live website was changed from another device.</span><button type="button" onclick="showView('import-export');document.getElementById('gh-conflict').scrollIntoView({block:'center'})" style="background:#fff;color:#8a2c22;border:none;border-radius:4px;padding:6px 12px;font-weight:600;cursor:pointer;">Review</button></div>

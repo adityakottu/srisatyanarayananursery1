@@ -580,7 +580,13 @@ chromeFoot('../') + waFab() + searchJs + REVEAL_JS +
   }
 
   function renderRobots(baseUrl) {
-    return 'User-agent: *\nAllow: /\nDisallow: /admin.html\nDisallow: /vip.html\n\nSitemap: ' +
+    // admin.html and vip.html are deliberately not named here. Listing them
+    // published their address to every scraper that reads robots.txt, and it
+    // worked against itself: Disallow stops a crawler fetching the page, so it
+    // never reads the noindex tag those pages already carry, and the bare URL
+    // can still end up indexed if anything links to it. The meta tag alone
+    // keeps them out of results without advertising where they live.
+    return 'User-agent: *\nAllow: /\n\nSitemap: ' +
       cleanBase(baseUrl) + '/sitemap.xml\n';
   }
 

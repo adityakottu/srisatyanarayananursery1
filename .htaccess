@@ -1,0 +1,99 @@
+# Apache configuration for the nursery site.
+#
+# This file does nothing on GitHub Pages, which ignores .htaccess. It takes
+# effect on Apache shared hosting (GoDaddy cPanel, Hostinger, Bluehost and the
+# like) once the site is uploaded to public_html.
+#
+# Test after uploading: https://securityheaders.com and
+# https://www.ssllabs.com/ssltest/ both read these back.
+
+# ── Canonical address ─────────────────────────────────────────────
+# One address for the site, so visitors and search engines never see the
+# same page under http and https, or with and without www. Both matter for
+# ranking: duplicates split the signals between them.
+RewriteEngine On
+
+# https first — redirecting to www before https would cost an extra hop.
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+# Then www. Drop this block instead if the domain is set up without www.
+RewriteCond %{HTTP_HOST} !^www\. [NC]
+RewriteCond %{HTTP_HOST} !^localhost [NC]
+RewriteRule ^(.*)$ https://www.%{HTTP_HOST}/$1 [R=301,L]
+
+ErrorDocument 404 /404.html
+
+# Directory listings would expose media/ and images/ wholesale.
+Options -Indexes
+
+<IfModule mod_headers.c>
+  # ── Security headers ────────────────────────────────────────────
+  # Stops the site being framed inside another page, which is how a
+  # clickjacking overlay gets a visitor to click the admin panel's buttons
+  # without seeing them.
+  Header always set X-Frame-Options "SAMEORIGIN"
+
+  # Stops a browser second-guessing a declared type — an uploaded photo
+  # that is really HTML should never be run as HTML.
+  Header always set X-Content-Type-Options "nosniff"
+
+  # Full URLs leak on outbound clicks otherwise, including any VIP access
+  # token sitting in the query string.
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # The site asks for none of these. Saying so explicitly means an injected
+  # script cannot ask on its behalf.
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+
+  # Tells browsers to use https for this domain without asking first.
+  # Only enable once https is confirmed working on the live domain and you
+  # are not going back: for two years browsers will refuse plain http here.
+  # Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains"
+
+  # ── Content Security Policy ─────────────────────────────────────
+  # 'unsafe-inline' is unavoidable while every script and style lives inline
+  # in the HTML; removing it means moving all of them to separate files first.
+  # Even so this is worth having: it is what stops an injected <script src>
+  # from loading code off an attacker's domain, and frame-ancestors backs up
+  # X-Frame-Options for browsers that prefer CSP.
+  #
+  # Uncomment after checking the site in a browser with the console open —
+  # a CSP that is too tight fails silently and visibly at the same time.
+  # Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; media-src 'self' https:; frame-src https://www.youtube.com https://maps.google.com https://www.google.com; connect-src 'self' https://api.github.com; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+
+  # ── Caching ─────────────────────────────────────────────────────
+  # index.html must never be cached. It carries the catalogue and is what
+  # Publish Now updates; a cached copy is how a visitor keeps seeing
+  # yesterday's plants after the admin has published new ones.
+  <FilesMatch "\.(html|json|xml|txt)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+
+  # Photos are content-addressed by filename, so they can be cached hard.
+  <FilesMatch "\.(jpg|jpeg|png|gif|webp|avif|svg|ico|woff2?)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_deflate.c>
+  # index.html is ~600KB of markup and compresses to a fraction of that.
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml \
+    application/javascript application/json application/xml image/svg+xml
+</IfModule>
+
+# ── Files that should never be served ─────────────────────────────
+# Notes, licences and build scripts get uploaded by accident with everything
+# else; none of them belong in a public web root.
+# Require is Apache 2.4 syntax. Guarded because an unrecognised directive in
+# .htaccess does not degrade — it returns 500 for every page on the site.
+<IfModule mod_authz_core.c>
+  <FilesMatch "^(UPLOAD-INSTRUCTIONS\.txt|README\.md|LICENSE|\.htaccess|.*\.rb)$">
+    Require all denied
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteRule ^tools/ - [F,L]
+</IfModule>

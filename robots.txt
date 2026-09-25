@@ -1,6 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /admin.html
-Disallow: /vip.html
 
 Sitemap: https://adityakottu.github.io/srisatyanarayananursery1/sitemap.xml

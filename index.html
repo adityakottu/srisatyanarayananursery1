@@ -4013,6 +4013,54 @@ function escapeHTML(value) {
   });
 }
 
+// Escaping alone does not make a URL safe to put in src or href: quoting
+// javascript:alert(1) leaves it perfectly valid. Photo and video addresses
+// come from the admin panel, so they are checked for scheme here and anything
+// unrecognised becomes empty rather than a live link.
+function safeURL(value) {
+  var url = String(value == null ? '' : value).trim();
+  if (!url) return '';
+  // Control characters are how a scheme gets smuggled past a naive check
+  // ("java\tscript:"), so they disqualify the value outright.
+  if (/[\u0000-\u001F\u007F]/.test(url)) return '';
+  // Relative paths (media/x.jpg, ../plants/neem/, /images/a.png) carry no
+  // scheme and cannot execute; a colon before the first slash means one.
+  var scheme = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(url);
+  if (!scheme) return url;
+  var proto = scheme[1].toLowerCase();
+  if (proto === 'http' || proto === 'https' || proto === 'mailto' || proto === 'tel') return url;
+  // Inline images are used for the admin's own previews; other data URLs
+  // (data:text/html, data:application/javascript) are script vectors.
+  if (proto === 'data' && /^data:image\/(png|jpeg|jpg|gif|webp|avif);base64,/i.test(url)) return url;
+  return '';
+}
+
+// YouTube only ever issues these characters, so anything else is not an id —
+// it is someone trying to break out of the attribute or the onclick argument.
+function safeYouTubeId(value) {
+  var id = String(value == null ? '' : value).trim();
+  return /^[A-Za-z0-9_-]{6,24}$/.test(id) ? id : '';
+}
+
+// For a URL going inside style="background-image:url('<here>')". HTML-escaping
+// is not enough on its own: the parser turns &#39; back into a bare quote
+// before CSS ever sees it, which closes the url() early. Percent-encoding the
+// characters that matter to CSS leaves the address valid but inert.
+function cssURL(value) {
+  return safeURL(value).replace(/['"()\\\s]/g, encodeURIComponent);
+}
+
+// For a value going inside a quoted JS string inside an HTML attribute, e.g.
+// onclick="showPlant('<here>')". escapeHTML on its own is not enough: it turns
+// an apostrophe into &#39;, which the parser hands back to JavaScript as a
+// bare quote that closes the string. So the quote is escaped for JavaScript
+// first, then the whole thing for HTML.
+function jsAttr(value) {
+  return escapeHTML(String(value == null ? '' : value)
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'"));
+}
+
 // ── Page state ────────────────────────────────────────────────────
 let prevPage = 'catalog';
 let prevCat  = 'all';
@@ -5294,26 +5342,26 @@ function initCatBadges() {
   function makeCard(key,p){
     var icon=SVG[p.cat]||SVG.ornamental;
     var imgH=p.image
-      ? '<img src="'+p.image+'" style="width:100%;height:100%;object-fit:cover;display:block;" alt="">'
+      ? '<img src="'+escapeHTML(safeURL(p.image))+'" style="width:100%;height:100%;object-fit:cover;display:block;" alt="">'
       : '<svg viewBox="0 0 48 48" style="width:72px;height:72px;">'+icon+'</svg>';
     var botH=(p.botanical&&p.botanical!=='-')
-      ? '<span class="card-bot">'+p.botanical+'</span>' : '';
+      ? '<span class="card-bot">'+escapeHTML(p.botanical)+'</span>' : '';
     var wF=((p.care||{}).water||'').split('—')[0].split(';')[0].trim().substring(0,42);
     var lF=((p.care||{}).light||'').split('—')[0].split(';')[0].trim().substring(0,42);
     var dF=(p.care||{}).difficulty||'';
-    return '<div class="plant-card" data-key="'+key+'" onclick="showPlant(\''+key+'\')">'+
+    return '<div class="plant-card" data-key="'+escapeHTML(key)+'" onclick="showPlant(\''+jsAttr(key)+'\')">'+
       '<div class="card-img-wrap">'+imgH+'</div>'+
       '<div class="card-hover-overlay">'+
         '<div class="hover-quick-facts">'+
-          '<div class="hover-fact"><span class="fi">&#128167;</span><span>'+wF+'</span></div>'+
-          '<div class="hover-fact"><span class="fi">&#9728;</span><span>'+lF+'</span></div>'+
-          '<div class="hover-fact"><span class="fi">&#11088;</span><span>'+dF+'</span></div>'+
+          '<div class="hover-fact"><span class="fi">&#128167;</span><span>'+escapeHTML(wF)+'</span></div>'+
+          '<div class="hover-fact"><span class="fi">&#9728;</span><span>'+escapeHTML(lF)+'</span></div>'+
+          '<div class="hover-fact"><span class="fi">&#11088;</span><span>'+escapeHTML(dF)+'</span></div>'+
         '</div>'+
         '<span class="hover-cta">View Full Details &#8594;</span>'+
       '</div>'+
       '<div class="card-body">'+
-        '<h3 class="card-name">'+((window.PLANT_ROUTES&&window.PLANT_ROUTES[key])?'<a class="card-link" href="'+window.PLANT_ROUTES[key]+'">'+p.name+'</a>':p.name)+'</h3>'+botH+
-        '<p class="card-tagline">'+p.tagline+'</p>'+
+        '<h3 class="card-name">'+((window.PLANT_ROUTES&&window.PLANT_ROUTES[key])?'<a class="card-link" href="'+escapeHTML(safeURL(window.PLANT_ROUTES[key]))+'">'+escapeHTML(p.name)+'</a>':escapeHTML(p.name))+'</h3>'+botH+
+        '<p class="card-tagline">'+escapeHTML(p.tagline)+'</p>'+
       '</div></div>';
   }
 
@@ -5525,16 +5573,16 @@ function renderClients(filter){
   el.innerHTML=filtered.map(function(v){
     var photoSection=v.photo
       ?'<div style="width:80px;height:80px;border-radius:50%;overflow:hidden;border:2.5px solid rgba(185,137,63,.5);margin:0 auto 14px;box-shadow:0 4px 16px rgba(20,35,25,.12);">'
-        +'<img src="'+v.photo+'" style="width:100%;height:100%;object-fit:cover;" alt="'+v.org+'">'
+        +'<img src="'+escapeHTML(safeURL(v.photo))+'" style="width:100%;height:100%;object-fit:cover;" alt="'+escapeHTML(v.org)+'">'
         +'</div>'
       :'<div style="width:64px;height:64px;border-radius:50%;background:var(--cream2);border:2px solid var(--line);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;">&#127775;</div>';
     return '<div class="client-card" style="text-align:center;">'
       +photoSection
-      +'<span class="cc-type '+v.type+'">'+( TYPE_LABELS[v.type]||v.type)+'</span>'
-      +'<div class="cc-org">'+v.org+'</div>'
-      +'<div class="cc-location">&#128205; '+v.location+'</div>'
-      +(v.quote?'<div class="cc-quote">&ldquo;'+v.quote+'&rdquo;</div>':'')
-      +(v.date?'<div class="cc-date">'+v.date+'</div>':'')
+      +'<span class="cc-type '+escapeHTML(v.type)+'">'+escapeHTML(TYPE_LABELS[v.type]||v.type)+'</span>'
+      +'<div class="cc-org">'+escapeHTML(v.org)+'</div>'
+      +'<div class="cc-location">&#128205; '+escapeHTML(v.location)+'</div>'
+      +(v.quote?'<div class="cc-quote">&ldquo;'+escapeHTML(v.quote)+'&rdquo;</div>':'')
+      +(v.date?'<div class="cc-date">'+escapeHTML(v.date)+'</div>':'')
       +'</div>';
   }).join('');
 }
@@ -5659,16 +5707,16 @@ function renderHomeGlimpse(){
 
   scroll.innerHTML = visitors.slice(0,8).map(function(v){
     var photoHtml = v.photo
-      ? '<img src="'+v.photo+'" alt="'+v.org+'">'
+      ? '<img src="'+escapeHTML(safeURL(v.photo))+'" alt="'+escapeHTML(v.org)+'">'
       : '<span class="vis-photo-ph">&#127775;</span>';
     return '<div class="vis-card">'
       + '<div class="vis-photo-wrap">'+photoHtml+'</div>'
-      + '<div class="vis-org">'+v.org+'</div>'
+      + '<div class="vis-org">'+escapeHTML(v.org)+'</div>'
       + '<div style="text-align:center;margin-bottom:8px;">'
-        + '<span class="vis-type-pill '+(v.type||'private')+'">'+(VV_TYPE_LBL[v.type]||v.type||'Client')+'</span>'
+        + '<span class="vis-type-pill '+escapeHTML(v.type||'private')+'">'+escapeHTML(VV_TYPE_LBL[v.type]||v.type||'Client')+'</span>'
       + '</div>'
-      + (v.quote ? '<div class="vis-quote">&ldquo;'+v.quote+'&rdquo;</div>' : '')
-      + (v.date ? '<div class="vis-date">'+v.date+'</div>' : '')
+      + (v.quote ? '<div class="vis-quote">&ldquo;'+escapeHTML(v.quote)+'&rdquo;</div>' : '')
+      + (v.date ? '<div class="vis-date">'+escapeHTML(v.date)+'</div>' : '')
       + '</div>';
   }).join('');
   try{ ssnScrollArrows(scroll); }catch(e){}
@@ -5685,14 +5733,14 @@ function renderHeritageVisitors(){
 
   grid.innerHTML = visitors.map(function(v){
     var photoHtml = v.photo
-      ? '<img src="'+v.photo+'" alt="'+v.org+'">'
+      ? '<img src="'+escapeHTML(safeURL(v.photo))+'" alt="'+escapeHTML(v.org)+'">'
       : '<span class="hvc-photo-ph">&#127775;</span>';
     return '<div class="hvc reveal">'
       + '<div class="hvc-photo">'+photoHtml+'</div>'
-      + '<span class="hvc-type">'+(VV_TYPE_LBL[v.type]||v.type||'Client')+'</span>'
-      + '<div class="hvc-org">'+v.org+'</div>'
-      + (v.location?'<div class="hvc-loc">&#128205; '+v.location+'</div>':'')
-      + (v.quote?'<div class="hvc-quote">&ldquo;'+v.quote+'&rdquo;</div>':'')
+      + '<span class="hvc-type">'+escapeHTML(VV_TYPE_LBL[v.type]||v.type||'Client')+'</span>'
+      + '<div class="hvc-org">'+escapeHTML(v.org)+'</div>'
+      + (v.location?'<div class="hvc-loc">&#128205; '+escapeHTML(v.location)+'</div>':'')
+      + (v.quote?'<div class="hvc-quote">&ldquo;'+escapeHTML(v.quote)+'&rdquo;</div>':'')
       + '</div>';
   }).join('');
 }
@@ -5912,8 +5960,8 @@ function ssnRenderVideos(){
   for(var i=0;i<v.length;i++){
     if(!v[i].ytId || !/^[A-Za-z0-9_-]{11}$/.test(v[i].ytId)) continue;
     h+='<div class="video-card">'
-      +'<div class="video-thumb" onclick="ssnPlayVideo(this,\''+v[i].ytId+'\')">'
-      +'<img src="https://img.youtube.com/vi/'+v[i].ytId+'/hqdefault.jpg" alt="'+escapeHTML(v[i].title||'')+'" loading="lazy">'
+      +'<div class="video-thumb" onclick="ssnPlayVideo(this,\''+jsAttr(safeYouTubeId(v[i].ytId))+'\')">'
+      +'<img src="https://img.youtube.com/vi/'+escapeHTML(safeYouTubeId(v[i].ytId))+'/hqdefault.jpg" alt="'+escapeHTML(v[i].title||'')+'" loading="lazy">'
       +'<div class="video-play">&#9654;</div></div>'
       +'<div class="video-body">'
       +(v[i].year?'<div class="video-year">'+escapeHTML(v[i].year)+'</div>':'')
@@ -5945,16 +5993,16 @@ function ssnBuildGalleryCard(p, i, total, lightboxIndex){
   d.className = 'g-frame' + (isTall ? ' g-tall' : '');
   var cap = p.caption || '';
   if(p.type === 'youtube' && p.ytId){
-    d.innerHTML = '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/'+p.ytId
+    d.innerHTML = '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/'+escapeHTML(safeYouTubeId(p.ytId))
       +'?rel=0&playsinline=1" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="display:block;border:0;"></iframe>'
       +'<span class="g-cap">'+escapeHTML(cap)+'</span>';
   } else if(p.type === 'video' && p.src){
-    d.innerHTML = '<video src="'+p.src+'" controls playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video>'
+    d.innerHTML = '<video src="'+escapeHTML(safeURL(p.src))+'" controls playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video>'
       +'<span class="g-cap">'+escapeHTML(cap)+'</span>';
   } else if(p.src){
     d.style.cursor = 'pointer';
     d.onclick = function(){ openGalleryLightbox(p.src, cap, lightboxIndex); };
-    d.innerHTML = '<img src="'+p.src+'" alt="'+escapeHTML(cap)+'" loading="lazy">'
+    d.innerHTML = '<img src="'+escapeHTML(safeURL(p.src))+'" alt="'+escapeHTML(cap)+'" loading="lazy">'
       +'<span class="g-cap">'+escapeHTML(cap)+'</span>';
   }
   return d;
@@ -6457,8 +6505,8 @@ function ssnRenderPlantPhotos(key,name){
   gal.classList.toggle('single', _pgPhotos.length<2);
   var tr='', th='';
   for(var i=0;i<_pgPhotos.length;i++){
-    tr+='<div class="pg-slide"><div class="pg-bg" style="background-image:url(\''+_pgPhotos[i]+'\')"></div><img src="'+_pgPhotos[i]+'" alt="'+(name||'')+'" loading="lazy"></div>';
-    th+='<div class="pg-thumb'+(i===0?' active':'')+'" data-i="'+i+'"><img src="'+_pgPhotos[i]+'" alt=""></div>';
+    tr+='<div class="pg-slide"><div class="pg-bg" style="background-image:url(\''+cssURL(_pgPhotos[i])+'\')"></div><img src="'+escapeHTML(safeURL(_pgPhotos[i]))+'" alt="'+escapeHTML(name||'')+'" loading="lazy"></div>';
+    th+='<div class="pg-thumb'+(i===0?' active':'')+'" data-i="'+i+'"><img src="'+escapeHTML(safeURL(_pgPhotos[i]))+'" alt=""></div>';
   }
   var t=document.getElementById('pg-track'); if(t) t.innerHTML=tr;
   var r=document.getElementById('pg-rail');  if(r) r.innerHTML=th;
@@ -6559,7 +6607,7 @@ function pgFsOpen(startIdx){
   var h='';
   for(var i=0;i<_pgPhotos.length;i++){
     h+='<figure class="pg-fs-fig">'
-      +'<img src="'+_pgPhotos[i]+'" alt="'+(window.curPlantName||'')+'" loading="lazy">'
+      +'<img src="'+escapeHTML(safeURL(_pgPhotos[i]))+'" alt="'+escapeHTML(window.curPlantName||'')+'" loading="lazy">'
       +(_pgPhotos.length>1?'<span class="pg-fs-num">'+(i+1)+' / '+_pgPhotos.length+'</span>':'')
       +'<span class="pg-fs-wm">Sri Satyanarayana Nursery</span>'
       +'</figure>';
