@@ -1190,14 +1190,14 @@ function openVipDetail(idx){
     {label:'Soil',val:care.soil},{label:'Difficulty',val:care.difficulty}
   ].filter(function(c){return c.val;});
   document.getElementById('vdp-care').innerHTML=careItems.map(function(c){
-    return '<div class="vdp-care-item"><div class="vdp-care-label">'+c.label+'</div>'
-      +'<div class="vdp-care-val">'+c.val+'</div></div>';
+    return '<div class="vdp-care-item"><div class="vdp-care-label">'+vqEsc(c.label)+'</div>'
+      +'<div class="vdp-care-val">'+vqEsc(c.val)+'</div></div>';
   }).join('');
   var uses=p.uses||[];
-  document.getElementById('vdp-uses').innerHTML=uses.map(function(u){return '<li>'+u+'</li>';}).join('');
+  document.getElementById('vdp-uses').innerHTML=uses.map(function(u){return '<li>'+vqEsc(u)+'</li>';}).join('');
   document.getElementById('vdp-uses-wrap').style.display=uses.length?'':'none';
   var tips=p.tips||[];
-  document.getElementById('vdp-tips').innerHTML=tips.map(function(t){return '<li>'+t+'</li>';}).join('');
+  document.getElementById('vdp-tips').innerHTML=tips.map(function(t){return '<li>'+vqEsc(t)+'</li>';}).join('');
   document.getElementById('vdp-tips-wrap').style.display=tips.length?'':'none';
   ov.classList.add('open');
   document.body.style.overflow='hidden';
@@ -1264,15 +1264,15 @@ function renderAll(){
   }
   grid.innerHTML=filtered.map(function(p,i){
     var icon=CICON[p.cat]||'&#10022;';
-    var imgH=p.image?'<img src="'+p.image+'" alt="'+p.name+'">':'<span class="ni">'+icon+'</span>';
+    var imgH=p.image?'<img src="'+vqURL(p.image)+'" alt="'+vqEsc(p.name)+'">':'<span class="ni">'+icon+'</span>';
     var w=((p.care||{}).water||'').split('\u2014')[0].trim();
     var d=(p.care||{}).difficulty||'';
     return '<div class="vip-card reveal" onclick="openDp('+i+')">'
-      +'<div class="vci"><button type="button" class="vq-add" data-nm="'+vqEsc(p.name)+'" onclick="event.stopPropagation();vqAdd('+i+',1)" aria-label="Add to my selection">&#43; Select</button>'+(p.image?'<img src="'+p.image+'">'+'<span class="vlbl">&#9670; Exclusive</span>':'<span class="ni">'+icon+'</span>')+'</div>'
-      +'<div class="vcb"><div class="vcn">'+p.name+'</div>'
-      +(p.botanical?'<div class="vcbot">'+p.botanical+'</div>':'')
-      +(p.description?'<div class="vcd">'+p.description+'</div>':'')
-      +'<div class="vcs">'+(w?'<span class="cchip">&#128167; '+w.substring(0,28)+'</span>':'')+(d?'<span class="cchip">&#11088; '+d+'</span>':'')+'</div>'
+      +'<div class="vci"><button type="button" class="vq-add" data-nm="'+vqEsc(p.name)+'" onclick="event.stopPropagation();vqAdd('+i+',1)" aria-label="Add to my selection">&#43; Select</button>'+(p.image?'<img src="'+vqURL(p.image)+'">'+'<span class="vlbl">&#9670; Exclusive</span>':'<span class="ni">'+icon+'</span>')+'</div>'
+      +'<div class="vcb"><div class="vcn">'+vqEsc(p.name)+'</div>'
+      +(p.botanical?'<div class="vcbot">'+vqEsc(p.botanical)+'</div>':'')
+      +(p.description?'<div class="vcd">'+vqEsc(p.description)+'</div>':'')
+      +'<div class="vcs">'+(w?'<span class="cchip">&#128167; '+vqEsc(w.substring(0,28))+'</span>':'')+(d?'<span class="cchip">&#11088; '+vqEsc(d)+'</span>':'')+'</div>'
       +'</div></div>';
   }).join('');
   trigRev();
@@ -1340,6 +1340,35 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape') closeMod();
 // Its own list, kept apart from the Private Enquiry form below.
 var VQ_KEY = 'ssn_vip_selection', VQ_INFO = 'ssn_vip_selection_info', VQ = [];
 function vqEsc(v){ return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+// Photo addresses come from the admin panel. Escaping does not disarm a URL —
+// a quoted javascript: link still runs — so the scheme is checked here and
+// anything unrecognised renders as no image rather than as a live link.
+function vqURL(v){
+  var url=String(v==null?'':v).trim();
+  if(!url) return '';
+  if(/[\u0000-\u001F\u007F]/.test(url)) return '';
+  var m=/^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(url);
+  if(!m) return vqEsc(url);                       // relative path, cannot execute
+  var proto=m[1].toLowerCase();
+  if(proto==='http'||proto==='https') return vqEsc(url);
+  if(proto==='data'&&/^data:image\/(png|jpeg|jpg|gif|webp|avif);base64,/i.test(url)) return vqEsc(url);
+  return '';
+}
+// Same check, but for style="background-image:url('<here>')". HTML entities are
+// decoded before CSS parses the value, so an escaped quote would still close
+// the url(); percent-encoding leaves the address usable but inert.
+function vqCssURL(v){
+  var url=String(v==null?'':v).trim();
+  if(!url||/[\u0000-\u001F\u007F]/.test(url)) return '';
+  var m=/^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(url);
+  if(m){
+    var proto=m[1].toLowerCase();
+    var ok=proto==='http'||proto==='https'||
+      (proto==='data'&&/^data:image\/(png|jpeg|jpg|gif|webp|avif);base64,/i.test(url));
+    if(!ok) return '';
+  }
+  return url.replace(/['"()\\\s]/g, encodeURIComponent);
+}
 function vqLoad(){ try{ var v=JSON.parse(localStorage.getItem(VQ_KEY)||'[]'); if(Array.isArray(v)) VQ=v.slice(0,40); }catch(e){ VQ=[]; } }
 function vqSave(){ try{ localStorage.setItem(VQ_KEY, JSON.stringify(VQ)); }catch(e){} vqBadge(); }
 function vqCount(){ return VQ.reduce(function(n,x){ return n+(parseInt(x.qty,10)||0); },0); }
@@ -1661,7 +1690,7 @@ function openDp(idx){
   var heroEl=document.getElementById('vdet-hero-img');
   if(heroEl){
     heroEl.innerHTML=images.length>0
-      ?'<img src="'+images[0]+'" alt="'+p.name+'" onclick="openImgViewer(0)" style="width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;">'
+      ?'<img src="'+vqURL(images[0])+'" alt="'+vqEsc(p.name)+'" onclick="openImgViewer(0)" style="width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;">'
       :'<div style="font-size:4rem;opacity:.2;color:#f8f3e8;display:flex;align-items:center;justify-content:center;width:100%;height:100%;">&#127807;</div>';
   }
   var lbl=document.getElementById('vdet-label');
@@ -1681,15 +1710,15 @@ function openDp(idx){
     var cItems=[['Water',care.water],['Light',care.light],['Soil',care.soil],['Difficulty',care.difficulty],['Growth',care.growth]].filter(function(x){return x[1];});
     careEl.innerHTML=cItems.map(function(x){
       return '<div style="background:rgba(255,255,255,.05);border-radius:7px;padding:11px 13px;">'
-        +'<div style="font-size:.63rem;text-transform:uppercase;letter-spacing:.1em;color:#b9893f;margin-bottom:3px;">'+x[0]+'</div>'
-        +'<div style="font-size:.82rem;color:rgba(248,243,232,.72);line-height:1.4;">'+x[1]+'</div></div>';
+        +'<div style="font-size:.63rem;text-transform:uppercase;letter-spacing:.1em;color:#b9893f;margin-bottom:3px;">'+vqEsc(x[0])+'</div>'
+        +'<div style="font-size:.82rem;color:rgba(248,243,232,.72);line-height:1.4;">'+vqEsc(x[1])+'</div></div>';
     }).join('');
   }
   var usW=document.getElementById('vdet-uses-wrap');
   var usEl=document.getElementById('vdet-uses');
   if(usW&&usEl){
     if(p.uses&&p.uses.length){
-      usEl.innerHTML=p.uses.map(function(u){return '<li style="font-size:.86rem;color:rgba(248,243,232,.62);padding:5px 0;display:flex;gap:9px;list-style:none;"><span style="color:#b9893f;">&#8250;</span>'+u+'</li>';}).join('');
+      usEl.innerHTML=p.uses.map(function(u){return '<li style="font-size:.86rem;color:rgba(248,243,232,.62);padding:5px 0;display:flex;gap:9px;list-style:none;"><span style="color:#b9893f;">&#8250;</span>'+vqEsc(u)+'</li>';}).join('');
       usW.style.display='';
     }else usW.style.display='none';
   }
@@ -1697,7 +1726,7 @@ function openDp(idx){
   var tpEl=document.getElementById('vdet-tips');
   if(tpW&&tpEl){
     if(p.tips&&p.tips.length){
-      tpEl.innerHTML=p.tips.map(function(t){return '<div style="background:rgba(185,137,63,.07);border-left:2px solid rgba(185,137,63,.35);border-radius:0 6px 6px 0;padding:10px 13px;margin-bottom:7px;font-size:.84rem;color:rgba(248,243,232,.62);">'+t+'</div>';}).join('');
+      tpEl.innerHTML=p.tips.map(function(t){return '<div style="background:rgba(185,137,63,.07);border-left:2px solid rgba(185,137,63,.35);border-radius:0 6px 6px 0;padding:10px 13px;margin-bottom:7px;font-size:.84rem;color:rgba(248,243,232,.62);">'+vqEsc(t)+'</div>';}).join('');
       tpW.style.display='';
     }else tpW.style.display='none';
   }
@@ -1798,8 +1827,8 @@ function vpgRender(images, name){
   gal.classList.toggle('single', _vpgPhotos.length<2);
   var tr='', th='';
   for(var i=0;i<_vpgPhotos.length;i++){
-    tr+='<div class="vpg-slide"><div class="vpg-bg" style="background-image:url(\''+_vpgPhotos[i]+'\')"></div><img src="'+_vpgPhotos[i]+'" alt="'+(name||'')+'" loading="lazy"></div>';
-    th+='<div class="vpg-thumb'+(i===0?' active':'')+'" data-i="'+i+'"><img src="'+_vpgPhotos[i]+'" alt=""></div>';
+    tr+='<div class="vpg-slide"><div class="vpg-bg" style="background-image:url(\''+vqCssURL(_vpgPhotos[i])+'\')"></div><img src="'+vqURL(_vpgPhotos[i])+'" alt="'+vqEsc(name||'')+'" loading="lazy"></div>';
+    th+='<div class="vpg-thumb'+(i===0?' active':'')+'" data-i="'+i+'"><img src="'+vqURL(_vpgPhotos[i])+'" alt=""></div>';
   }
   var t=document.getElementById('vpg-track'); if(t) t.innerHTML=tr;
   var r=document.getElementById('vpg-rail');  if(r) r.innerHTML=th;
@@ -1930,7 +1959,7 @@ function vipFsOpen(startIdx){
   var h='';
   for(var i=0;i<_vpgPhotos.length;i++){
     h+='<figure class="vfs-fig">'
-      +'<img src="'+_vpgPhotos[i]+'" alt="'+nm+'" loading="lazy">'
+      +'<img src="'+vqURL(_vpgPhotos[i])+'" alt="'+vqEsc(nm)+'" loading="lazy">'
       +(_vpgPhotos.length>1?'<span class="vfs-num">'+(i+1)+' / '+_vpgPhotos.length+'</span>':'')
       +'<span class="vfs-wm">Sri Satyanarayana Nursery</span></figure>';
   }
